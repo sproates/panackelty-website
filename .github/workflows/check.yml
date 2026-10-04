@@ -19,13 +19,22 @@ jobs:
     name: Website assembly
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    outputs:
+      browser_mode: ${{ steps.scope.outputs.mode }}
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
+      - name: Select browser coverage
+        id: scope
+        env:
+          SCOPE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          SCOPE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: echo "mode=$(node scripts/browser_scope.cjs)" >> "$GITHUB_OUTPUT"
       - run: make check
       - run: make build
       - uses: actions/upload-artifact@v7
@@ -64,6 +73,8 @@ jobs:
   browser:
     needs: prepare
     uses: ./.github/workflows/browser-validation.yml
+    with:
+      mode: ${{ needs.prepare.outputs.browser_mode }}
     permissions:
       contents: read
       actions: read
@@ -82,7 +93,7 @@ jobs:
         run: test "$ASSEMBLY" = success && test "$RELEASE" = success && test "$BROWSER" = success
 
   publish:
-    name: Publish staging website
+    name: Publish website
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: checks
     runs-on: ubuntu-24.04

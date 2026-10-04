@@ -54,3 +54,57 @@ assembly 8s, release integrity 11s, browser integration 83s and aggregate 2s;
 parallel durations are not additive. No action caches were declared in this
 initial run. This is one initial-run observation, not a warm-run or merge-to-live
 guarantee. Subsequent changes require fresh validation.
+
+## Cutover procedure and rollback
+
+The owner has approved PR merges for this migration, including backlog transfer.
+Independent review, current passing checks and existing protections still apply.
+Use the reviewed default branch for every deployment.
+
+1. Merge the reviewed website backlog/coverage-route PR and verify staging again.
+   Check the latest core main for site changes since `5f92782`; refresh any newer
+   accepted site changes before retiring the source. Snapshot the old Pages
+   settings and published provenance for rollback.
+2. Finish review and required checks for core retirement. Disable the old core
+   Pages workflow and confirm no active old deployment remains before changing
+   domain ownership. Merge the reviewed retirement PR; core releases and coverage
+   publication retain their own validation and ownership.
+3. Remove `panackelty.com` from core's Pages setting and assign it to this
+   repository's Pages setting. DNS stays unchanged: the apex has GitHub Pages'
+   four A/four AAAA records and www points to `sproates.github.io`. The workflows
+   use Pages settings, not a committed production CNAME file.
+4. Dispatch the new main-branch website workflow. Verify successful deployment,
+   every expected page/asset and provenance, Wasm MIME, HTTPS certificate/domain
+   ownership and the www redirect. Enable HTTPS enforcement once GitHub accepts
+   it. Keep the coordinating migration issue open if any check is unverified.
+5. Record live acceptance and remove obsolete staging-only wording. Core keeps
+   coordination/history links; website ROADMAP.md owns its transferred backlog.
+
+If new publication fails, stop new deployments and restore the old repository's
+saved domain setting to serve its previous deployment. Do not run both writers.
+Restore retired core publishing code only through a reviewed revert PR with
+required checks; a historical run must not silently deploy older source over
+new main. Verify restored live bytes/HTTPS before calling rollback complete.
+A temporary GitHub Pages routing/certificate delay is possible during the domain
+move even though no DNS propagation change is required.
+
+## Staging and backlog evidence
+
+Website PR#1 merged as `66fb316`. Its
+[main publication run](https://github.com/sproates/panackelty-website/actions/runs/37242899890)
+passed all checks, deployment and byte verification. Merge time was
+2026-10-04 23:12:13 UTC; run creation was 23:12:16 and completion 23:14:11:
+118 seconds merge-to-verified-staging, including three seconds before run creation.
+The browser loaded the project-path homepage and executed Hello, browser!
+from the staged playground. Production timing remains separate.
+
+Core analytics GI#252 transferred to website GI#2; deferred core website-CI GI#187
+transferred to website GI#3, preserving history and status. ROADMAP.md carries
+unissued adoption follow-ups and links core-owned programme/server dependencies.
+
+Routine documentation and explicit presentation-only paths now use browser smoke
+coverage for responsive resources, worker execution/errors and all selectable
+examples through homepage navigation, across all configured engines. HTML,
+release/runtime pins, workflows, assembly code, unknown changes and unavailable
+comparison history retain full integration. Each route keeps assembly/link and
+native released-example checks. No native core build is introduced.

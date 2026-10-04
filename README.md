@@ -5,6 +5,12 @@ reviewed released artifacts; they do not check out or compile the core project.
 The initial extraction is preparation for migration. The existing publisher
 continues to own `https://panackelty.com/` until a separately reviewed cutover.
 
+## Backlog
+
+[ROADMAP.md](ROADMAP.md) records website-owned work and cross-repository
+dependencies. Use this repository's issues for website changes; core language
+and release programmes remain in core.
+
 ## Develop and preview
 
 Use Node 24, Git, Make, a POSIX shell, awk and tar. No npm packages are needed
@@ -29,8 +35,12 @@ checksums and the published checksum files, then checks, runs and compiles the
 website examples using the matching released native toolchain. It supports
 Linux x86-64 and macOS arm64 and requires network access.
 
-Every PR runs these checks plus the reviewed browser integration suite from an
-immutable browser-repository commit. The required `Website checks` job fails
+Every PR runs these checks plus browser tests from an immutable reviewed
+browser-repository commit. Documentation and explicit presentation-only paths
+use smoke coverage across all three browsers: responsive resources, worker
+compilation/errors and homepage navigation with every example. HTML, pins,
+build/workflow code, unknown paths and missing comparison history retain the
+full integration suite. The required `Website checks` job fails
 if any dependency fails or is skipped. No core build or core CI run is required.
 PR artifacts contain review previews with source identity and no-index metadata.
 
