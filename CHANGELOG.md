@@ -1,0 +1,310 @@
+# Changelog
+
+Notable changes to Panackelty are recorded here. Preview releases may change
+source syntax, checking behavior, standard-library APIs, and bytecode as described
+in `RELEASE_POLICY.md`.
+
+## Unreleased
+
+- Check staged namespace declaration/signature identities and public access,
+  including generic/callable types and guard-helper dependencies. Namespace
+  execution remains gated; this internal preparation adds no executable syntax.
+- Retain identity-bound staged function bodies and check a bounded annotated-local,
+  direct-call, explicit-generic and return subset. Deferred inference, proofs,
+  effects and emission still block namespace execution.
+
+## 0.1.0-alpha.11 — 2026-10-04
+
+### Features and fixes
+
+- Add finite concurrent TCP servers through `await tcp_serve`, named async
+  handlers and `TcpServerLimits` from `stdlib/tcp`. Native Linux/macOS execution
+  owns connections, deadlines and drain/cancellation cleanup; embedded listening
+  is separately opt-in and browsers return unavailable. This additive API
+  retains bytecode v9 and is not part of alpha.10 downloads.
+
+- Add `await tcp_exchange(...)` for bounded native IPv4 request/response, with
+  nonblocking partial I/O, total timeout, response limits and owned cleanup.
+  Source and saved-bytecode clients work on Linux/macOS; WASI returns an explicit
+  unavailable error. Embedded native execution requires opt-in. DNS, TLS,
+  stream handles and source spawning are not included in this client API.
+- Refresh the v9 compiler seed and both verifiers for the additive async builtin;
+  existing v9 artifacts keep their meaning. Alpha.10 lacks the new builtin.
+
+- Add optional compiler source-map sidecars and `panack locate` for bounded
+  instruction lookup against exactly reproduced local source. Sidecars contain
+  source text: review them before sharing. Unavailable lookup is explicit;
+  automatic runtime source errors and stack explanations are not included.
+- Add `panack explain` for bounded natural-number subtraction proofs and local
+  call/await effect boundaries. Valid sibling functions can still be explained
+  after a function-body type error. Explanations do not certify whole-program
+  validity or provide transitive effects or runtime provenance.
+- Index declaration lookup to improve compiler-sized workloads without changing
+  language behavior or promising a speedup for every program.
+
+### Checking changes and migration
+
+- Invalidate guard proofs when mutable values change. Programs incorrectly
+  accepted using stale guard facts can now be rejected; establish the required
+  proof again after mutation rather than relying on the old value's guard.
+- Bytecode remains v9. The alpha.11 commands and TCP additions above are
+  not available in the alpha.10 native downloads or the pinned playground.
+
+### Development and website
+
+- Add a reproducible isolated build/validation baseline with explicit source,
+  toolchain, cache and workload records. This measures existing behavior; it does
+  not introduce dependency-aware compilation or weaken invalidation checks.
+  Controlled clean validation remains above its 120-second target, and warm
+  compiler validation remains above 15 seconds; performance work continues.
+- Generate website release history from this changelog, distinguish prepared
+  notes from verified downloads, and share navigation and footers across the
+  homepage, history and playground without changing the pinned browser runtime.
+
+### Installation and staged development
+
+- Add an optional installer for the already published alpha.10 native archives,
+  with checksum verification and versioned ownership-safe installation. This is
+  an installation convenience, not a new binary release or supported platform.
+- Stage namespace metadata and binding infrastructure. Public namespace forms
+  still fail closed; executable namespace support has not shipped.
+
+## 0.1.0-alpha.10 — 2026-09-30
+
+### Breaking changes and migration
+
+- Saved bytecode moves from v8 to v9. Recompile existing `.bc` files from source;
+  the VM rejects v8 artifacts. Source checking, the compiler seed and runtime
+  are packaged together.
+- `Option[T]`, `Result[T,E]` and their constructors are implicit. Remove imports
+  used only for these types; their names can no longer be redeclared.
+- Remove `stdlib/text` and `stdlib/collections` imports. Replace imported
+  `text_*` helpers with methods on strings, `array_first(values)` with
+  `values.first()`, and `array_sort_by(values, @compare)` with
+  `values.sort_by(@compare)`. The option/result modules retain explicitly
+  imported `option_value_or` and `result_value_or` helpers.
+
+### Language and runtime
+
+- Text and collection methods are available without imports, including
+  `.ends_with()`, `.first()` and stable `.sort_by()`. Standard method names
+  cannot be captured by unrelated global functions. Suffix matching is literal
+  and case-sensitive; sorting requires a pure comparator.
+- Add experimental `async`/`await`, `AsyncFn` references and typed fake-read
+  completions, with checked effects and nested suspension. This is a bounded
+  experiment: no real networking, source spawning or resource scopes.
+- Replace native-recursive calls with owned resumable VM frames and an internal
+  budgeted execution API. Add fake-host task/lifecycle experiments with scoped
+  joins, bounded completion queues, virtual deadlines and cancellation cleanup.
+- Amortise persistent array append while preserving immutable value semantics.
+
+### Website and development
+
+- Add a browser playground using the existing compiler and VM through
+  WebAssembly, with nine editable examples and a visual explanation of execution.
+  Source compilation and execution stay on the user's device. Host capabilities
+  remain more limited than the downloadable native toolchain.
+- Version the complete playground asset set together to avoid mixing cached
+  examples, workers, compiler and standard library across deployments.
+- Expand the website's examples, installation guide and engineering information;
+  publish native C coverage reports alongside it.
+- Reduce duplicated validation work, reuse safe build artifacts, overlap suites
+  and partition hosted checks. Keep unit, functional, bootstrap and exact-package
+  gates, with additional browser checks in Chromium, Firefox and WebKit.
+
+## 0.1.0-alpha.9 — 2026-09-26
+
+- Add `stdlib/testing` assertions and ordered reports, `stdlib/testing_files`
+  fixture discovery and temporary workspaces, and `stdlib/testing_commands`
+  byte-exact child-process and host-error assertions.
+- Complete repository-wide Python removal. Development tests, bootstrap,
+  conformance, packaging and release validation now use Panackelty, C and
+  standard host tools. A tested source policy rejects interpreter dependencies;
+  Linux and macOS CI also validate with Python unavailable from `PATH`.
+- Regenerate the compiler seed through verified self-hosted stages, checking
+  its input digest, compiler and standard-library fixed points, and expected
+  conformance output before publication.
+- Replace live compiler/VM oracles with reviewed portable fixtures and fixed
+  independent arithmetic expectations, preserving native fault-injection,
+  sanitizer and branch-coverage gates.
+- Reject Void-valued call arguments such as `print(print(1))`, which the
+  self-hosted checker previously accepted incorrectly. The compiler seed is
+  updated; bytecode remains version 8.
+- Known development limitation: clean validation still exceeds its 120-second
+  target. Validation-speed improvements are the next engineering priority;
+  coverage and failure checks remain intact.
+
+## 0.1.0-alpha.8 — 2026-09-24
+
+- Split the native VM into separately compiled modules, with self-contained
+  headers, clearer formatting and documented ownership contracts.
+- Fix cleanup after allocation failures in decoding, record construction,
+  frame growth, interpolation, arithmetic and nested execution. Failed
+  allocations now trap instead of leaving incomplete runtime values.
+- Correct full-width unsigned integer conversion and make exact decimal
+  comparison independent of allocation success.
+- Exact decimal division removes redundant fractional trailing zeros to match
+  the reference interpreter: `1.00 / 2.0` now prints `0.5` and `0.00 / 2.0`
+  prints `0`. Bytecode remains version 8.
+- Expand VM tests with allocation/syscall fault injection, persistent ownership
+  sequences, rich bytecode mutations and seeded numeric properties. CI runs
+  native sanitizers and publishes line/branch coverage reports.
+
+## 0.1.0-alpha.7 — 2026-09-24
+
+- Typed filesystem APIs accept `Path` and return structured `HostError` values:
+  bounded byte I/O, sorted directory enumeration, symlink-aware metadata,
+  directory creation/removal, and explicitly owned temporary files/directories.
+- Process execution supports exact executable paths, arguments, working
+  directories, environment overrides, concurrent byte streams, output limits,
+  and monotonic timeouts. Nonzero exits remain completed process results;
+  launch failures, timeouts, and limit failures are separate errors.
+- Checked UTF-8 decoding and exact-duration sleep complete the initial host API.
+  Negative or oversized sleep/timeout durations are rejected before execution.
+- Bytecode remains version 8; these APIs require the updated compiler and VM.
+  The prelude exports new host, filesystem, and process types, so conflicting
+  user declarations must be renamed or imports narrowed.
+- This POSIX preview does not promise atomic writes, recursive filesystem
+  operations, secure path/process containment, or portable suspension timing.
+
+## 0.1.0-alpha.6 — 2026-09-24
+
+- Opaque `Path` values preserve POSIX native filenames, with checked text/byte
+  construction, escaped display, and pure lexical operations.
+- Exact signed nanosecond `Duration` values support arithmetic, rational seconds,
+  and checked division without rounding.
+- Opaque monotonic `Instant` readings support deadlines and elapsed time. Clock
+  reads are effectful and return structured errors; arithmetic remains pure.
+- Bytecode remains version 8. New APIs require the updated compiler and VM;
+  older runtimes reject their new builtin calls. Existing string path helpers
+  remain for bootstrap compatibility.
+
+## 0.1.0-alpha.5 — 2026-09-24
+
+- Exact `Rat` values: integer `/` produces a normalized fraction; arithmetic with
+  integers stays rational. `.nat()` and `.dec()` convert exactly or trap.
+- First-class `Unit`, written `()`, supports generic success payloads such as
+  `Result[Unit,Str]`, collections, and callbacks while remaining distinct from Void.
+- Breaking change: bytecode 8 replaces version 7. Recompile existing artifacts.
+  Replace truncating natural division with `quotient(a, b)`; existing `Dec`
+  division keeps its exact-decimal behavior. Rounded conversions remain deferred.
+
+## 0.1.0-alpha.4 — 2026-09-24
+
+### Highlights
+
+- Generic source functions with abstract body checking, inference from all value
+  arguments, explicit complete type arguments, receiver-first calls, recursion,
+  and purity preservation. Type arguments erase into ordinary version-7 calls.
+- Portable `option_value_or[T]`, `result_value_or[T,E]`, and `array_first[T]`
+  standard-library helpers, with a runnable generic-functions example.
+- A VM execution guide with actual instruction listings, recorded execution
+  traces, and tested arithmetic, branch/call, and loop examples.
+
+### Compatibility
+
+- Bytecode remains version 7. Generic calls erase type arguments and retain one
+  ordinary function body; the native VM instruction set is unchanged.
+- Constraints, generic function references, partial type arguments, and
+  return-context inference remain deferred. Generic callbacks require a
+  non-generic wrapper.
+- The standard library exports three new helper names. Imports still share a
+  program-wide namespace, so programs declaring the same names must rename
+  them or narrow their imports.
+- This remains an experimental preview for Linux x86-64 and macOS arm64 under
+  the existing release policy.
+
+## 0.1.0-alpha.3 — 2026-09-15
+
+### Highlights
+
+- Local bindings may omit type annotations: `name = value` declares an immutable
+  local when the name is not visible, and `mut name = value` declares a mutable
+  local. Assignments retain fixed types and require mutability; shadowing remains
+  prohibited. An unknown assignment target now declares a local instead of
+  reporting an unknown-name error.
+- Inferred initializers must determine complete types without evidence from later
+  statements. Nested collection and constructor evidence combines consistently;
+  unresolved types request an annotation. Numeric defaults, guarded domain types,
+  and callable effects are preserved. Function signatures remain explicit.
+
+### Compatibility
+
+- Assigning to an unknown local name now declares an immutable binding instead
+  of reporting an error. A misspelled assignment can therefore introduce a new
+  variable; unused-binding warnings are not yet implemented.
+- Existing explicit local annotations remain supported. Function parameters,
+  return types, and record fields still require annotations. Incomplete local
+  types cannot be resolved from later assignments or uses.
+- Bytecode remains version 7. This is an experimental preview for Linux x86-64
+  and macOS arm64 under the compatibility policy in `RELEASE_POLICY.md`.
+
+## 0.1.0-alpha.2 — 2026-09-15
+
+### Highlights
+
+- Positioned compiler errors now include numbered source excerpts and carets,
+  including imported modules. Source snapshots, four-column tabs, and visible
+  Unicode/control escapes keep excerpts accurate and aligned.
+- Faster native string operations and self-hosted compiler validation, with
+  cached character metadata and direct indexing for ASCII strings.
+- Validation and packaging now support source checkout paths containing spaces.
+- Optimised native builds, reusable unit-test compiler probes, and reduced
+  duplicate CI work keep development feedback within the validation budgets.
+
+### Compatibility
+
+- The accepted language syntax and bytecode format remain unchanged (version 7).
+- Diagnostic output now includes source lines and carets after positioned
+  headers. Tools that consume compiler stderr should allow these extra lines.
+- This remains an experimental preview for Linux x86-64 and macOS arm64,
+  subject to the compatibility policy in `RELEASE_POLICY.md`.
+
+## 0.1.0-alpha.1 — 2026-09-04
+
+The first public developer preview.
+
+### Highlights
+
+- Self-hosted Panackelty compiler running on the native C11 VM
+- Arbitrary-precision `Nat` and `Int` values and exact base-10 `Dec` arithmetic
+- Guarded domain types and explicit pure/effectful function boundaries
+- Records, generic tagged unions, exhaustive matching, persistent collections,
+  callable values, modules, and a bundled standard library
+- Verified, deterministic version-7 bytecode
+- `check`, `compile`, `run`, and `disasm` commands
+- Python-free, relocatable download archives with SHA-256 checksums and build
+  provenance for both supported platforms
+- Download-first quick start and a compact tour backed by packaged, tested
+  example programs
+- Primary `file:line:column` locations for lexer, parser, name-resolution, and
+  type-checking failures, including failures in imported modules
+- A structured public bug-report form that collects version, platform, minimal
+  input, reproduction command, expected behavior, and complete output
+
+### Preview limitations
+
+- Source and standard-library compatibility are not yet stable
+- Bytecode compatibility is not promised across Panackelty releases
+- The initial binary targets are Linux x86-64 and macOS arm64
+- Windows, package management, concurrency, generic source functions, traits,
+  and a single-file executable are not included
+- Diagnostics outside the primary lexer, parser, name, and type failures do not
+  yet consistently include source locations; source excerpts are not rendered
+
+See `RELEASE_POLICY.md`, `SPEC.md`, and `ROADMAP.md` for the complete preview
+contract and remaining work.
+
+### Release verification
+
+- Published from annotated tag `v0.1.0-alpha.1`; each provenance file records
+  the exact tagged source commit
+- Passed complete validation and exact-archive smoke tests on Ubuntu 22.04
+  x86-64 and macOS 14 arm64 in the release workflow
+- Published exactly two archives with adjacent SHA-256 checksums and build
+  provenance, all tied to the tagged source commit
+- Downloaded all six public assets from the GitHub release and independently
+  verified both archive checksums
+- Repeated the packaged quick start with the downloaded macOS arm64 archive;
+  the downloaded Linux checksum matched the exact archive exercised by the
+  Ubuntu release job
