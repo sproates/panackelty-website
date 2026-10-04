@@ -17,7 +17,7 @@ function finish() {
     if(version=="") return
     if(!entries) error("empty section " version)
     if(version=="Unreleased") {
-        pending=pending "<details class=\"release-pending\"><summary>Unreleased · current source, not a download</summary><div class=\"release-body\"><p>Development notes since the latest native release. Unreleased compiler/runtime features are not in published downloads or the pinned playground; installation-tooling updates are identified separately.</p>" body "<p><a href=\"https://github.com/sproates/panackelty/blob/main/CHANGELOG.md\">Full current-source notes</a></p></div></details>\n"
+        pending=pending "<details class=\"release-pending\"><summary>Unreleased · recorded source snapshot, not a download</summary><div class=\"release-body\"><p>Development notes recorded with this website snapshot. Unreleased compiler/runtime features are not in published downloads or the pinned playground; installation-tooling updates are identified separately.</p>" body "<p><a href=\"https://github.com/sproates/panackelty/blob/" source_commit "/CHANGELOG.md\">Recorded source notes</a></p></div></details>\n"
     } else {
         if(version==published) available=1
         label=available ? "Published native preview" : "Prepared notes · not yet available"
@@ -58,7 +58,7 @@ END {
     if(failed) exit 1
     finish()
     if(!seen["Unreleased"] || !seen[published]) error("missing Unreleased or published version")
-    print "<p class=\"release-availability\">Latest published native preview: <a href=\"#v" published "\">" published "</a>. Browser playground: <a href=\"https://github.com/sproates/panackelty-browser/releases/tag/" browser "\">" browser "</a>, a separately pinned WebAssembly package with fewer host capabilities. Native release notes do not promise browser support.</p>"
+    print "<p class=\"release-availability\">Website-selected native preview: <a href=\"#v" published "\">" published "</a>. Browser playground: <a href=\"https://github.com/sproates/panackelty-browser/releases/tag/" browser "\">" browser "</a>, a separately pinned WebAssembly package with fewer host capabilities. Native release notes do not promise browser support.</p>"
     print pending
     print releases
 }

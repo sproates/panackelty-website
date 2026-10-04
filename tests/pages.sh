@@ -1,5 +1,5 @@
 #!/bin/sh
-# Canonical harness regression coverage; requires no Node or network access.
+# Assembly regression coverage; requires Node for snapshot metadata, no network.
 set -eu
 root=$(pwd -P)
 work=$(mktemp -d "${TMPDIR:-/tmp}/panack-pages.XXXXXX")

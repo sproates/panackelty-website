@@ -40,7 +40,7 @@
           <p class="availability">Developer preview 0.1.0-alpha.11 is available for Linux x86-64 and Apple silicon.</p>
         </div>
         <div class="code-card" aria-label="An exact arithmetic example">
-          <div class="code-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>exact.panack</span><span class="code-status">current source</span></div>
+          <div class="code-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>exact.panack</span><span class="code-status">alpha.11</span></div>
           <pre id="exact-source"><code>
 main(): Void {
   third = 1/3
@@ -66,7 +66,7 @@ main(): Void {
 
       <section class="content-section" id="capabilities" aria-labelledby="capabilities-title">
         <div class="section-heading"><p class="eyebrow">What you can use today</p><h2 id="capabilities-title">Small syntax.<br>Substantial semantics.</h2></div>
-        <p class="section-intro">These capabilities describe the current source toolchain. For the downloadable preview’s exact contract, use the <a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/SPEC.md">alpha.11 specification</a>. Panackelty is ready for exploration and feedback; interfaces and compatibility are still evolving.</p>
+        <p class="section-intro">These capabilities describe the <a href="https://github.com/sproates/panackelty/tree/5f92782aad468f242fc8edbc56434d618d495904">recorded source snapshot</a>. For the downloadable preview’s exact contract, use the <a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/SPEC.md">alpha.11 specification</a>. Panackelty is ready for exploration and feedback; interfaces and compatibility are still evolving.</p>
         <div class="capability-grid">
           <article><span class="feature-number">01 / Values</span><h3>Numbers that stay exact</h3><p>Arbitrary-precision <code>Nat</code> and <code>Int</code>, exact base-10 <code>Dec</code> and rational <code>Rat</code> values let you work without silently substituting floating-point approximations. Conversions make representability explicit.</p><a href="capabilities/#exact-values">Explore numeric semantics →</a></article>
           <article><span class="feature-number">02 / Domain modelling</span><h3>Rules belong with the type</h3><p>Guarded types attach constraints to values: a positive count, a bounded port, a valid domain value. Records, enums, generics, <code>Option</code> and <code>Result</code> help describe both successful values and failure cases.</p><a href="capabilities/#guarded-types">See a guarded type →</a></article>
@@ -81,7 +81,7 @@ main(): Void {
       <section class="content-section" id="examples" aria-labelledby="examples-title">
         <div class="section-heading"><p class="eyebrow">Read a little. Try a little.</p><h2 id="examples-title">Ideas you can run.</h2></div>
         <div class="example-grid">
-          <article id="hello-example"><span class="badge">Works with alpha.11 and current source</span><h3>A pure calculation, an effectful entry point</h3><p>The greeting produces a value. <code>main</code> prints it. String interpolation keeps the result readable.</p>
+          <article id="hello-example"><span class="badge">Works with alpha.11</span><h3>A pure calculation, an effectful entry point</h3><p>The greeting produces a value. <code>main</code> prints it. String interpolation keeps the result readable.</p>
             <div class="copy-command"><pre id="hello-source"><code>
 pure greeting(name: Str, answer: Nat): Str {
   "Hello, ${name}. The answer is ${answer}."
@@ -95,7 +95,7 @@ main(): Void {
 Hello, Ada. The answer is 42.
 </samp></pre><button class="copy-command-button" type="button" data-copy-target="hello-output" aria-label="Copy greeting output" aria-describedby="hello-output-copy-status" title="Copy greeting output" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></div><p id="hello-output-copy-status" class="copy-command-status" role="status" aria-live="polite" aria-atomic="true"></p>
           </article>
-          <article id="guard-example"><span class="badge">Current source example</span><h3>Give a business rule a name</h3><p><code>Positive</code> expresses a constraint on an integer. Code receiving this type can state its expectation directly.</p>
+          <article id="guard-example"><span class="badge">Alpha.11 example</span><h3>Give a business rule a name</h3><p><code>Positive</code> expresses a constraint on an integer. Code receiving this type can state its expectation directly.</p>
             <pre id="guards-source"><code>
 type Positive = Int where value &gt; 0
 

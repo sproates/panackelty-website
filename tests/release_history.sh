@@ -1,5 +1,5 @@
 #!/bin/sh
-# Native-tool regression: generated notes must follow canonical source and pins.
+# Generated notes must follow the recorded source snapshot and release pins.
 set -eu
 root=$(pwd -P)
 work=$(mktemp -d "${TMPDIR:-/tmp}/panack-history.XXXXXX")
@@ -8,8 +8,13 @@ trap 'exit 1' HUP INT TERM
 mkdir "$work/site"
 cp site/index.html site/native-release.txt site/playground.json "$work/site/"
 cp CHANGELOG.md "$work/CHANGELOG.md"
+cp release-source.json "$work/release-source.json"
 render() { sh "$root/scripts/release_history.sh" "$work"; }
 render > "$work/first"
+! grep -q 'Latest published\|current source\|blob/main/CHANGELOG' "$work/first"
+source_commit=$(node -p "require('./release-source.json').commit")
+grep -q "blob/$source_commit/CHANGELOG.md" "$work/first"
+grep -q 'Website-selected native preview:' "$work/first"
 grep -q '<details class="release-pending">' "$work/first"
 grep -q 'releases/tag/v0.1.0-alpha.11' "$work/first"
 grep -q '0.1.0-alpha.1</h2>' "$work/first"
@@ -37,4 +42,8 @@ for problem in duplicate empty heading inline markdown date missing; do
     esac
     if render > "$work/bad" 2>/dev/null; then echo "Accepted $problem changelog" >&2; exit 1; fi
 done
+# Snapshot provenance is mandatory and must be an immutable core commit.
+cp site/native-release.txt "$work/site/native-release.txt"
+printf '{"repository":"sproates/panackelty","commit":"main"}\n' > "$work/release-source.json"
+if render > "$work/bad" 2>/dev/null; then echo 'Accepted moving source reference' >&2; exit 1; fi
 echo 'PASS release history: canonical changes, availability, escaping and malformed inputs'

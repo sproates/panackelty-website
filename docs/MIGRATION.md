@@ -11,8 +11,8 @@ comparison before cutover.
 
 Compare the recorded source commit with the selected current core commit for
 `site/`, `CHANGELOG.md`, assembly/chrome/history helpers and their relevant tests.
-Bring forward all accepted source changes. Reapply only the immutable installer
-URL and explicit-version change in `site/index.html`; preserve any concurrent
+Bring forward all accepted source changes. Reapply the immutable installer URL, explicit version, released-example labels
+and recorded-source capability link in `site/index.html`; preserve concurrent
 site edits. Update the source commit separately from the installer source pin,
 which stays immutable until deliberately reviewed. Repeat the standalone checks,
 release acceptance, browser suite and visual preview after the refresh.
@@ -42,3 +42,15 @@ example harness executes downloaded releases rather than a core checkout.
 
 The migration issue remains open until production checks and retirement finish.
 No production CNAME or domain transfer belongs in this first slice.
+
+## Initial hosted evidence
+
+The first [PR validation run](https://github.com/sproates/panackelty-website/actions/runs/37242306414)
+for website commit `35524b4` passed assembly, published-release integrity, all
+browser integration checks and the required aggregate check. On 2026-10-04 UTC,
+creation/start was 23:02:54 and completion was 23:04:34: 100 seconds end to end,
+including two seconds before the first job began. Reported job durations were
+assembly 8s, release integrity 11s, browser integration 83s and aggregate 2s;
+parallel durations are not additive. No action caches were declared in this
+initial run. This is one initial-run observation, not a warm-run or merge-to-live
+guarantee. Subsequent changes require fresh validation.

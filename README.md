@@ -37,7 +37,8 @@ PR artifacts contain review previews with source identity and no-index metadata.
 ## Publish and promote releases
 
 A successful main-branch run publishes its tested artifact to the repository's
-GitHub Pages staging URL. `publication.json` identifies the website source
+GitHub Pages staging URL. Immediately before deployment, an authenticated main
+lookup rejects stale reruns and fails closed on API errors. `publication.json` identifies the website source
 commit and validation run. It must not contain a production CNAME during this
 preparation phase. Coverage remains independently published; compatibility
 landing pages preserve the existing `/coverage/` and `/coverage/html/` paths.
@@ -54,7 +55,9 @@ A separate website PR promotes a release deliberately:
    and passes an explicit `--version`; it never follows core main's default.
 3. Copy the intended release notes into `CHANGELOG.md` and record the source
    commit in `release-source.json`. These are a reviewed snapshot, not notes
-   fetched from core during builds. Review pending/unreleased claims explicitly.
+   fetched from core during builds. The rendered notes link to that exact source
+   commit and label the website-selected release without claiming it is latest.
+   Review pending/unreleased claims explicitly.
 4. If promoting the browser runtime, update `site/playground.json` with its
    released tag, archive digest and asset identity. Native and browser versions
    may differ; explain the differences on the site.

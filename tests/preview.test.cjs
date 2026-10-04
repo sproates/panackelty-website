@@ -14,6 +14,7 @@ function fixture(t) {
   t.after(() => fs.rmSync(root, {recursive:true, force:true}));
   fs.cpSync(path.join(__dirname, '../site'), path.join(root, 'site'), {recursive:true});
   fs.copyFileSync(path.join(__dirname, '../CHANGELOG.md'), path.join(root, 'CHANGELOG.md'));
+  fs.copyFileSync(path.join(__dirname, '../release-source.json'), path.join(root, 'release-source.json'));
   const version = 'a'.repeat(64);
   const browser = path.join(root, 'browser');
   fs.mkdirSync(path.join(browser, `assets/${version}/vendor`), {recursive:true});
@@ -33,6 +34,11 @@ test('portable build preserves assets, records identity, and separates coverage'
   await build(f.root,f.output,{...f.metadata,headCommit:'2'.repeat(40),baseCommit:'3'.repeat(40)},f.archive);
   const read = p => fs.readFileSync(path.join(f.output,p),'utf8');
   assert.equal(JSON.parse(read('preview.json')).commit, f.metadata.commit);
+  for (const page of ['index.html', 'releases.html', 'playground/index.html', 'capabilities/index.html']) {
+    const identity = read(page).match(/href="([^"]+)">Build identity/)[1];
+    assert.equal(new URL(identity, `https://example.test/project/${page}`).pathname,
+      '/project/preview.json', `identity escapes the project mount on ${page}`);
+  }
   assert.equal(JSON.parse(read('preview.json')).headCommit, '2'.repeat(40));
   assert.match(read('index.html'), /Review preview: 222222/);
   assert.match(read('releases.html'), /Review preview: 222222/);

@@ -98,6 +98,10 @@ jobs:
         with:
           name: pages-candidate
           path: build/website
+      - uses: actions/checkout@v6
+        with:
+          path: validation-source
+          persist-credentials: false
       - name: Record exact validated source
         env:
           SOURCE_SHA: ${{ github.sha }}
@@ -108,12 +112,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: build/website
+      - name: Require current main immediately before deployment
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await require('./validation-source/scripts/require_current_main.cjs')(github, context);
       - uses: actions/deploy-pages@v5
         id: deploy
-      - uses: actions/checkout@v6
-        with:
-          path: validation-source
-          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
