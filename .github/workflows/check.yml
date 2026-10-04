@@ -1,0 +1,130 @@
+name: Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  prepare:
+    name: Website assembly
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: make check
+      - run: make build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pages-candidate
+          path: build/website
+          if-no-files-found: error
+          retention-days: 7
+      - name: Prepare review preview
+        if: github.event_name == 'pull_request'
+        env:
+          PREVIEW_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PREVIEW_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node scripts/preview.cjs build build/preview
+      - uses: actions/upload-artifact@v7
+        if: github.event_name == 'pull_request'
+        with:
+          name: website-preview-${{ github.run_id }}
+          path: build/preview
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Published release integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: make release-check
+
+  browser:
+    needs: prepare
+    uses: ./.github/workflows/browser-validation.yml
+    permissions:
+      contents: read
+      actions: read
+
+  checks:
+    name: Website checks
+    if: always()
+    needs: [prepare, release, browser]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all website validation
+        env:
+          ASSEMBLY: ${{ needs.prepare.result }}
+          RELEASE: ${{ needs.release.result }}
+          BROWSER: ${{ needs.browser.result }}
+        run: test "$ASSEMBLY" = success && test "$RELEASE" = success && test "$BROWSER" = success
+
+  publish:
+    name: Publish staging website
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: checks
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: pages-candidate
+          path: build/website
+      - name: Record exact validated source
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          CHECK_RUN: ${{ github.run_id }}
+        run: |
+          node -e 'require("node:fs").writeFileSync("build/website/publication.json",JSON.stringify({schema:1,site_sha:process.env.SOURCE_SHA,check_run:Number(process.env.CHECK_RUN)},null,2)+"\n")'
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build/website
+      - uses: actions/deploy-pages@v5
+        id: deploy
+      - uses: actions/checkout@v6
+        with:
+          path: validation-source
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Verify deployed staging bytes and provenance
+        env:
+          STAGING_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if node validation-source/scripts/check_pages.cjs build/website "$STAGING_URL"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1

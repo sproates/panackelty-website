@@ -1,0 +1,67 @@
+# Panackelty website
+
+Independent source and validation for the Panackelty website. Builds consume
+reviewed released artifacts; they do not check out or compile the core project.
+The initial extraction is preparation for migration. The existing publisher
+continues to own `https://panackelty.com/` until a separately reviewed cutover.
+
+## Develop and preview
+
+Use Node 24, Git, Make, a POSIX shell, awk and tar. No npm packages are needed
+for local assembly and automation tests.
+
+```sh
+make check
+make build
+make preview
+```
+
+`make check` runs offline automation, assembly and portable-preview tests.
+`make build` downloads the checksummed browser release and writes a fresh
+`build/website`; remove your previous generated build before rebuilding.
+`make preview` prints a loopback URL and removes its temporary output when stopped.
+Stop and restart after edits. A saved review artifact can be built with
+`node scripts/preview.cjs build build/preview` and served with
+`node scripts/preview.cjs serve build/preview 4173`.
+
+`make release-check` verifies both advertised native archives against committed
+checksums and the published checksum files, then checks, runs and compiles the
+website examples using the matching released native toolchain. It supports
+Linux x86-64 and macOS arm64 and requires network access.
+
+Every PR runs these checks plus the reviewed browser integration suite from an
+immutable browser-repository commit. The required `Website checks` job fails
+if any dependency fails or is skipped. No core build or core CI run is required.
+PR artifacts contain review previews with source identity and no-index metadata.
+
+## Publish and promote releases
+
+A successful main-branch run publishes its tested artifact to the repository's
+GitHub Pages staging URL. `publication.json` identifies the website source
+commit and validation run. It must not contain a production CNAME during this
+preparation phase. Coverage remains independently published; compatibility
+landing pages preserve the existing `/coverage/` and `/coverage/html/` paths.
+
+Creating a core or browser release does **not** update this repository or website.
+A separate website PR promotes a release deliberately:
+
+1. Choose an existing native release and record its version in
+   `site/native-release.txt` and `site/native-release.json`. Obtain and review
+   both published archive SHA-256 values; never derive a pin from an unchecked
+   downloaded archive alone.
+2. Update download commands, installer version and versioned claims together.
+   The installer URL uses the immutable `installerCommit` in `release-source.json`
+   and passes an explicit `--version`; it never follows core main's default.
+3. Copy the intended release notes into `CHANGELOG.md` and record the source
+   commit in `release-source.json`. These are a reviewed snapshot, not notes
+   fetched from core during builds. Review pending/unreleased claims explicitly.
+4. If promoting the browser runtime, update `site/playground.json` with its
+   released tag, archive digest and asset identity. Native and browser versions
+   may differ; explain the differences on the site.
+5. Run checks, native release acceptance and browser integration, review the
+   preview, then obtain explicit merge approval. A website merge is the promotion;
+   the core release alone cannot cause it.
+
+Rollback is a reviewed revert of website source/pins followed by the same checks
+and publication. Do not introduce a second writer for the production domain.
+See [migration acceptance](docs/MIGRATION.md) for remaining cutover gates.

@@ -1,0 +1,7 @@
+{
+  "version": "0.1.0-alpha.11",
+  "sha256": {
+    "linux-x86_64": "c5ae51425a443b8554bfc5e15601650abcae142a305c0512e98949fa0ce0d9e3",
+    "macos-arm64": "96e98b5021c641252402a594b4551f6eb046a11fd235841e8e34fb1b8a5ad6d8"
+  }
+}
