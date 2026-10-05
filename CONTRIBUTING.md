@@ -16,3 +16,8 @@ Website source is independent of the core compiler and browser repositories.
 Follow the release promotion procedure in README.md instead of following new
 releases automatically. Never update production-domain settings as a side
 effect of routine content work.
+
+For an approved hosting cutover or rollback, follow [the migration procedure](docs/MIGRATION.md).
+Publish freshly after assigning the domain, then verify the root and www in a
+browser, playground execution and exact deployed bytes. Do not mark production
+accepted from a domain setting, command-line check or deployment result alone.

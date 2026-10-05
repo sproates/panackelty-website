@@ -18,3 +18,11 @@ test('main currency gate is immediately before the Pages deployment',()=>{
   const workflow=fs.readFileSync('.github/workflows/check.yml','utf8');
   assert.match(workflow,/await require\('\.\/validation-source\/scripts\/require_current_main.cjs'\)\(github, context\);\n      - uses: actions\/deploy-pages@v5/);
 });
+
+test('Pages attempts upload and deploy an unambiguous matching artifact',()=>{
+  const workflow=fs.readFileSync('.github/workflows/check.yml','utf8');
+  const upload=workflow.match(/uses: actions\/upload-pages-artifact@v5\n        with:\n          name: ([^\n]+)/);
+  const deploy=workflow.match(/uses: actions\/deploy-pages@v5\n        id: deploy\n        with:\n          artifact_name: ([^\n]+)/);
+  assert.equal(upload?.[1],'github-pages-${{ github.run_attempt }}');
+  assert.equal(deploy?.[1],upload[1]);
+});

@@ -2,8 +2,9 @@
 
 Independent source and validation for the Panackelty website. Builds consume
 reviewed released artifacts; they do not check out or compile the core project.
-The initial extraction is preparation for migration. The existing publisher
-continues to own `https://panackelty.com/` until a separately reviewed cutover.
+Website development and release promotion are independent of core. Production
+migration acceptance remains pending; see the [cutover record](docs/MIGRATION.md)
+for verified hosting state and recovery requirements.
 
 ## Backlog
 
@@ -46,11 +47,11 @@ PR artifacts contain review previews with source identity and no-index metadata.
 
 ## Publish and promote releases
 
-A successful main-branch run publishes its tested artifact to the repository's
-GitHub Pages staging URL. Immediately before deployment, an authenticated main
+A successful main-branch run publishes its tested artifact to this repository's
+configured GitHub Pages target. Immediately before deployment, an authenticated main
 lookup rejects stale reruns and fails closed on API errors. `publication.json` identifies the website source
-commit and validation run. It must not contain a production CNAME during this
-preparation phase. Coverage remains independently published; compatibility
+commit and validation run. Domain ownership is configured in Pages settings;
+no production CNAME file is committed. Coverage remains independently published; compatibility
 landing pages preserve the existing `/coverage/` and `/coverage/html/` paths.
 
 Creating a core or browser release does **not** update this repository or website.
@@ -77,4 +78,6 @@ A separate website PR promotes a release deliberately:
 
 Rollback is a reviewed revert of website source/pins followed by the same checks
 and publication. Do not introduce a second writer for the production domain.
-See [migration acceptance](docs/MIGRATION.md) for remaining cutover gates.
+Domain reassignment, including rollback, requires a fresh deployment afterwards
+and browser/live-byte verification. A settings change alone is not acceptance.
+See [migration acceptance](docs/MIGRATION.md) for the procedure and current evidence.
