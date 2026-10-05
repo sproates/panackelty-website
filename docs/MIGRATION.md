@@ -1,14 +1,23 @@
 # Migration acceptance
 
-Independent website development, staging and backlog ownership are delivered.
-**Production migration acceptance is pending.** The initial cutover was rolled
-back after browser requests to the root returned 404 despite successful
-command-line verification. Republishing the exact original artifact recovered
-root/www browser access and playground execution; the owner confirmed phone
-recovery. This observation does not establish the cause of the routing failure.
-Production remains assigned to the core Pages site until a fresh cutover is
-verified. Core's ordinary website publisher is retired; only the bounded
-manual recovery mechanism remains.
+Independent website development, publication and backlog ownership are delivered.
+This repository now owns and serves `panackelty.com`, with HTTPS enforcement
+and successful technical production checks. Final owner-phone confirmation is
+unobserved additional evidence, not a separate approval gate; the previously
+affected browser and exact deployed files have been verified.
+
+The initial cutover was rolled back after browser root requests returned 404
+despite command-line verification. Republishing the exact original artifact
+recovered root/www access and playground execution; the owner confirmed phone
+recovery. A subsequent domain assignment followed immediately by fresh website
+publication passed in the previously affected browser. These observations do
+not establish the underlying cause of the original routing failure.
+
+Core's ordinary website publisher is retired. Its bounded manual recovery
+workflow is retained for rollback and requires first restoring the core domain
+assignment. The historical core rerun still has inconsistent queued/completed
+status; it cannot change domain ownership, and its unresolved state is not
+reported as a successful cancellation. Do not retry it.
 
 The accepted source snapshot is core `5f92782`, recorded in `release-source.json`.
 Core source retirement is complete, so future website edits belong here. Native
@@ -30,7 +39,7 @@ The copied assembly dependencies are `site/`, `CHANGELOG.md`,
 suite and image are immutable pins in `browser-validation.yml`. The native
 example harness executes downloaded releases rather than a core checkout.
 
-## Before production cutover
+## Production acceptance checklist
 
 - Confirm the accepted source snapshot and compare old/new assembled bytes;
   explain intended installer/provenance differences.
@@ -46,8 +55,8 @@ example harness executes downloaded releases rather than a core checkout.
   deployed bytes, then record final acceptance in both repositories. Core source/workflow
   retirement is already merged; retain tested rollback until acceptance.
 
-The migration issue remains open until production checks finish. No production
-CNAME file is needed; use the explicitly approved Pages domain-setting change.
+The coordinating issue records final routine production timing and completion
+after the acceptance documentation is merged. No production CNAME file is needed; use the explicitly approved Pages domain-setting change.
 
 ## Initial hosted evidence
 
@@ -132,3 +141,34 @@ examples through homepage navigation, across all configured engines. HTML,
 release/runtime pins, workflows, assembly code, unknown changes and unavailable
 comparison history retain full integration. Each route keeps assembly/link and
 native released-example checks. No native core build is introduced.
+
+## Final cutover and timing evidence
+
+[Website publication run 37245940764, attempt 3](https://github.com/sproates/panackelty-website/actions/runs/37245940764/attempts/3)
+deployed website commit `7fa4ef8498f2147c15f44ad477ed7156f79b5534` after assigning
+the domain to this repository. Publication ran from 00:06:50 to 00:07:08 UTC on
+2026-10-05 and passed. Pages reports verified domain ownership and HTTPS
+enforcement. Root and www loaded in the previously affected browser. Exact
+website and playground asset bytes, Wasm MIME and publication provenance matched
+the tested artifact. Owner-phone confirmation is pending.
+
+Observed timings remain bounded measurements rather than guarantees:
+
+| Observation | Elapsed | Queue/dispatch evidence |
+| --- | --- | --- |
+| Initial PR validation | 100s | 2s before first job; no action caches declared |
+| Repeated full PR#5 validation | 98s, 00:00:31–00:02:09 UTC | 3s before first job |
+| First main merge to verified staging | 118s | 3s from merge to run creation |
+| PR#5 merge to required validation complete | 104s, 00:02:54–00:04:38 UTC | First job 00:02:59, 5s after merge |
+| PR#5 merge to verified staging | 130s, ending 00:05:04 UTC | Includes dispatch, validation and publication |
+| First documentation-only PR smoke validation | 92s, 00:09:57–00:11:29 UTC | 2s before first job; browser job 67s, nine tests 15.5s |
+| Repeated documentation-only PR smoke validation | 70s, 00:12:53–00:14:03 UTC | Independent repeat on hosted runners; no configured action cache |
+| Post-assignment production publication | 18s, 00:06:50–00:07:08 UTC | Publication phase only, not merge-to-live latency |
+
+The repeated PR#5 timing evidence does not establish warm cache use. No action caches are configured. Initial and repeated full-route
+observations are below the proposed three-minute validation and five-minute
+merge-to-verified-site budgets where comparable; the production recovery phase
+is not a comparable merge-to-live measurement. [Documentation-only run 37246410415](https://github.com/sproates/panackelty-website/actions/runs/37246410415)
+used `mode: smoke` and passed all nine selected browser scenarios across three
+engines, plus assembly and native release integrity. Final routine production
+publication timing is recorded in the coordinating migration issue after merge.
