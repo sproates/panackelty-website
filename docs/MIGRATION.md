@@ -2,8 +2,9 @@
 
 Independent website development, publication and backlog ownership are delivered.
 This repository now owns and serves `panackelty.com`, with HTTPS enforcement
-and successful technical production checks. **Owner-phone confirmation remains
-pending**, so final migration acceptance is not yet recorded.
+and successful technical production checks. Final owner-phone confirmation is
+unobserved additional evidence, not a separate approval gate; the previously
+affected browser and exact deployed files have been verified.
 
 The initial cutover was rolled back after browser root requests returned 404
 despite command-line verification. Republishing the exact original artifact
@@ -54,9 +55,8 @@ example harness executes downloaded releases rather than a core checkout.
   deployed bytes, then record final acceptance in both repositories. Core source/workflow
   retirement is already merged; retain tested rollback until acceptance.
 
-The migration issue remains open until owner-device confirmation and the remaining
-acceptance record are complete. No production
-CNAME file is needed; use the explicitly approved Pages domain-setting change.
+The coordinating issue records final routine production timing and completion
+after the acceptance documentation is merged. No production CNAME file is needed; use the explicitly approved Pages domain-setting change.
 
 ## Initial hosted evidence
 
@@ -162,6 +162,7 @@ Observed timings remain bounded measurements rather than guarantees:
 | PR#5 merge to required validation complete | 104s, 00:02:54–00:04:38 UTC | First job 00:02:59, 5s after merge |
 | PR#5 merge to verified staging | 130s, ending 00:05:04 UTC | Includes dispatch, validation and publication |
 | First documentation-only PR smoke validation | 92s, 00:09:57–00:11:29 UTC | 2s before first job; browser job 67s, nine tests 15.5s |
+| Repeated documentation-only PR smoke validation | 70s, 00:12:53–00:14:03 UTC | Independent repeat on hosted runners; no configured action cache |
 | Post-assignment production publication | 18s, 00:06:50–00:07:08 UTC | Publication phase only, not merge-to-live latency |
 
 The repeated PR#5 timing evidence does not establish warm cache use. No action caches are configured. Initial and repeated full-route

@@ -4,8 +4,8 @@ Independent source and validation for the Panackelty website. Builds consume
 reviewed released artifacts; they do not check out or compile the core project.
 Website development and release promotion are independent of core. This repository
 now serves [panackelty.com](https://panackelty.com/), with successful production
-deployment, browser and exact-byte verification. Owner-phone confirmation remains
-pending; see the [cutover record](docs/MIGRATION.md) for evidence and recovery.
+deployment, browser and exact-byte verification. See the
+[cutover record](docs/MIGRATION.md) for evidence, limitations and recovery.
 
 ## Backlog
 
