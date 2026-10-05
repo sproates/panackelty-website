@@ -122,6 +122,7 @@ jobs:
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
+          name: github-pages-${{ github.run_attempt }}
           path: build/website
       - name: Require current main immediately before deployment
         uses: actions/github-script@v8
@@ -130,15 +131,17 @@ jobs:
             await require('./validation-source/scripts/require_current_main.cjs')(github, context);
       - uses: actions/deploy-pages@v5
         id: deploy
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
-      - name: Verify deployed staging bytes and provenance
+      - name: Verify deployed website bytes and provenance
         env:
-          STAGING_URL: ${{ steps.deploy.outputs.page_url }}
+          WEBSITE_URL: ${{ steps.deploy.outputs.page_url }}
         run: |
           for attempt in 1 2 3 4 5; do
-            if node validation-source/scripts/check_pages.cjs build/website "$STAGING_URL"; then
+            if node validation-source/scripts/check_pages.cjs build/website "$WEBSITE_URL"; then
               exit 0
             fi
             sleep 10
