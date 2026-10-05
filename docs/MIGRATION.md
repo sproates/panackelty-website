@@ -161,10 +161,13 @@ Observed timings remain bounded measurements rather than guarantees:
 | First main merge to verified staging | 118s | 3s from merge to run creation |
 | PR#5 merge to required validation complete | 104s, 00:02:54–00:04:38 UTC | First job 00:02:59, 5s after merge |
 | PR#5 merge to verified staging | 130s, ending 00:05:04 UTC | Includes dispatch, validation and publication |
+| First documentation-only PR smoke validation | 92s, 00:09:57–00:11:29 UTC | 2s before first job; browser job 67s, nine tests 15.5s |
 | Post-assignment production publication | 18s, 00:06:50–00:07:08 UTC | Publication phase only, not merge-to-live latency |
 
 The repeated PR#5 timing evidence does not establish warm cache use. No action caches are configured. Initial and repeated full-route
 observations are below the proposed three-minute validation and five-minute
 merge-to-verified-site budgets where comparable; the production recovery phase
-is not a comparable merge-to-live measurement. Hosted documentation-only smoke
-route timing remains to be measured on this acceptance update.
+is not a comparable merge-to-live measurement. [Documentation-only run 37246410415](https://github.com/sproates/panackelty-website/actions/runs/37246410415)
+used `mode: smoke` and passed all nine selected browser scenarios across three
+engines, plus assembly and native release integrity. Final routine production
+publication timing is recorded in the coordinating migration issue after merge.
