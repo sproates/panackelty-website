@@ -25,8 +25,8 @@ trap 'exit 1' HUP INT TERM
 sh "$(dirname "$0")/release_history.sh" "$site/.." > "$temporary/releases"
 node "$(dirname "$0")/site_chrome.cjs" "$site/index.html" "$playground/index.html" playground > "$temporary/playground"
 node "$(dirname "$0")/site_chrome.cjs" "$site/index.html" "$site/index.html" home > "$temporary/home"
-for page in capabilities get-started examples under-the-hood roadmap about; do
-    node "$(dirname "$0")/site_chrome.cjs" "$site/index.html" "$site/$page/index.html" "$page" > "$temporary/$page"
+for page in capabilities get-started examples under-the-hood roadmap about coverage coverage/html; do
+    node "$(dirname "$0")/site_chrome.cjs" "$site/index.html" "$site/$page/index.html" "$page" > "$temporary/$(printf %s "$page" | tr / _)"
 done
 mkdir -p "$destination"
 cp -R "$site/." "$destination/"
@@ -35,6 +35,6 @@ cp -R "$playground/." "$destination/playground/"
 cp "$temporary/releases" "$destination/releases/index.html"
 cp "$temporary/playground" "$destination/playground/index.html"
 cp "$temporary/home" "$destination/index.html"
-for page in capabilities get-started examples under-the-hood roadmap about; do
-    cp "$temporary/$page" "$destination/$page/index.html"
+for page in capabilities get-started examples under-the-hood roadmap about coverage coverage/html; do
+    cp "$temporary/$(printf %s "$page" | tr / _)" "$destination/$page/index.html"
 done

@@ -6,47 +6,30 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="chrome.css">
   <title>Exact values, clear intent — Panackelty</title>
-</head><body>
+</head><body class="home-page">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <a class="brand" href="./" aria-label="Panackelty home"><span class="brand-mark" aria-hidden="true">P</span><span>Panackelty</span></a>
-  <a class="nav-try" href="playground/">Try it online</a>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" hidden>Menu</button>
   <nav id="primary-navigation" aria-label="Primary navigation">
     <a href="capabilities/">Capabilities</a>
     <a href="get-started/">Get started</a>
     <a href="examples/">Examples</a>
     <a href="roadmap/">Releases &amp; roadmap</a>
+    <a href="playground/">Try it online</a>
   </nav>
 </header>
 <main id="main"><section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="eyebrow"><span></span> An experimental programming language</p>
           <h1 id="hero-title">Exact values.<br><em>Clear intent.</em></h1>
-          <p class="lede">Small programs should be easy to write. Growing programs should remain easy to reason about. Panackelty brings exact numbers, checked domain types and explicit effects to a compact compiled language.</p>
+          <p class="lede">Exact numbers, checked domain types and explicit effects. A compact compiled language for programs that stay understandable as they grow.</p>
           <div class="actions">
             <a class="button primary" href="playground/">Try it in your browser <span aria-hidden="true">→</span></a>
             <a class="button secondary" href="get-started/">Get started</a>
           </div>
           <p class="availability">Developer preview 0.1.0-alpha.11 is available for Linux x86-64 and Apple silicon.</p>
         </div>
-        <div class="code-card" aria-label="An exact arithmetic example">
-          <div class="code-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>exact.panack</span><span class="code-status">alpha.11</span></div>
-          <pre id="exact-source"><code>
-main(): Void {
-  third = 1/3
-  print((third * 30).nat())
-  print((1/8).dec())
-}
-</code></pre>
-          <div class="terminal-line"><span>$</span> panack run exact.panack</div>
-          <pre class="example-output" id="exact-output"><samp>
-10
-0.125
-</samp></pre>
-          <p class="code-caption">Exact fractions, exact conversions. An unrepresentable exact conversion fails instead of silently rounding.</p>
-        </div>
-      </section><section class="content-section" aria-labelledby="benefits-title"><div class="section-heading"><p class="eyebrow">What makes it different</p><h2 id="benefits-title">Small syntax.<br>Substantial semantics.</h2></div><div class="capability-grid"><article><span class="feature-number">01 / Values</span><h3>Numbers that stay exact</h3><p>Arbitrary-precision <code>Nat</code> and <code>Int</code>, exact base-10 <code>Dec</code> and rational <code>Rat</code> values let you work without silently substituting floating-point approximations. Conversions make representability explicit.</p><a href="capabilities/#exact-values">Explore numeric semantics →</a></article><article><span class="feature-number">02 / Domain modelling</span><h3>Rules belong with the type</h3><p>Guarded types attach constraints to values: a positive count, a bounded port, a valid domain value. Records, enums, generics, <code>Option</code> and <code>Result</code> help describe both successful values and failure cases.</p><a href="capabilities/#guarded-types">See a guarded type →</a></article><article><span class="feature-number">03 / Effects</span><h3>Make side effects visible</h3><p>A <code>pure</code> function cannot perform I/O or call effectful code. Keep calculations separate from interactions with the outside world, with the compiler enforcing that boundary.</p><a href="capabilities/#purity">Read about effects →</a></article></div><p><a href="capabilities/">Explore all capabilities →</a></p></section><section class="content-section" aria-labelledby="outlook-title"><div class="section-heading"><p class="eyebrow">Available and ahead</p><h2 id="outlook-title">Now. Next.<br>Further ahead.</h2></div><div class="direction-grid"><article><span class="badge">Available now</span><h3>Native alpha.11</h3><p>Exact values, checked types, explicit effects and bounded native TCP. An experimental developer preview.</p><a href="get-started/">Start with the released version →</a></article><article><span class="badge">Planned · not released</span><h3>Alpha 12</h3><p>Repeated else-if chains, Panackelty source-code coverage and namespaces. Development is underway; no release date is set.</p><a href="roadmap/#next-release">See the next-release plan →</a></article><article><span class="badge">Target · not released</span><h3>First non-alpha</h3><p>Reusable packages, HTTP, richer libraries and tools, documentation and measured performance. Detailed scope is still being defined.</p><a href="roadmap/#first-non-alpha">Explore the target →</a></article></div><p class="section-intro">After alpha 12: <a href="roadmap/#alpha-13">alpha 13 is planned for HTTP and expanded explanations</a>. Not released; no date is set.</p></section><section class="closing"><div><p class="eyebrow">Keep exploring</p><h2>Read. Run.<br>Ask questions.</h2></div><div class="closing-links"><a href="examples/">Examples <span aria-hidden="true">→</span></a><a href="under-the-hood/">Under the hood <span aria-hidden="true">→</span></a><a href="about/">The project and its vision <span aria-hidden="true">→</span></a><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/SPEC.md">Language specification <span aria-hidden="true">→</span></a></div></section></main>
+</section><section class="content-section" aria-labelledby="outlook-title"><p class="eyebrow">Available and ahead</p><h2 id="outlook-title">Now and next.</h2><div class="release-overview"><a href="get-started/"><span>Available now</span><strong>Alpha.11</strong><span>Explore the released developer preview.</span><span aria-hidden="true">→</span></a><a href="roadmap/#next-release"><span>Planned · unreleased</span><strong>Alpha 12</strong><span>Else if, source coverage and namespaces.</span><span aria-hidden="true">→</span></a><a href="roadmap/#alpha-13"><span>Planned · unreleased</span><strong>Alpha 13</strong><span>HTTP and expanded explanations.</span><span aria-hidden="true">→</span></a><a href="roadmap/#first-non-alpha"><span>Target · unreleased</span><strong>First non-alpha</strong><span>A fuller foundation for real applications.</span><span aria-hidden="true">→</span></a></div></section><section class="closing"><div><p class="eyebrow">Keep exploring</p><h2>Explore Panackelty.</h2></div><div class="closing-links"><a href="capabilities/">Capabilities <span aria-hidden="true">→</span></a><a href="examples/">Examples <span aria-hidden="true">→</span></a><a href="under-the-hood/">Under the hood <span aria-hidden="true">→</span></a><a href="about/">The project and its vision <span aria-hidden="true">→</span></a></div></section></main>
 <footer><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">P</span><span>Panackelty</span></a><p>Experimental. Open source. Still evolving.</p><nav aria-label="Further reading"><a href="under-the-hood/">Under the hood</a><a href="about/">About</a><a href="releases/">Release history</a><a href="https://coverage.panackelty.com/">Test coverage</a><a href="https://github.com/sproates/panackelty">GitHub</a><a href="https://github.com/sproates/panackelty/blob/main/LICENSE">MIT</a><a href="#main">Back to top</a></nav></footer>
 <script src="site.js" defer></script>
 </body></html>

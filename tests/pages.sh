@@ -52,7 +52,7 @@ cp "$work/original-index" "$work/playground/index.html"
 
 cmp "$assets/vm.wasm" "$work/pages/playground/assets/$version/vm.wasm"
 for landing in coverage/index.html coverage/html/index.html; do
-    cmp "site/$landing" "$work/pages/$landing"
+    grep -q 'Releases &amp; roadmap' "$work/pages/$landing"
     grep -q 'https://coverage.panackelty.com/' "$work/pages/$landing"
 done
 test ! -e "$work/pages/coverage/summary.txt"

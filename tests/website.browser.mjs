@@ -9,14 +9,9 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       await expect(page.locator('[aria-current="page"]')).toHaveCount(1);
       await expect(page.getByRole('link',{name:'Try it online',exact:true})).toBeVisible();
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-      if(width===390){
-        const menu=page.getByRole('button',{name:'Menu',exact:true});
-        await expect(menu).toHaveAttribute('aria-expanded','false');
-        await menu.click();
-        await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
-        await page.keyboard.press('Escape');
-        await expect(menu).toHaveAttribute('aria-expanded','false');
-      }
+      await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
+      await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
+      await expect(page.locator('.closing-links')).toHaveCount(1);
       const links=await page.locator('a[href]').evaluateAll(anchors=>anchors.map(a=>a.getAttribute('href')));
       for(const href of links) if(!/^https?:/.test(href)) expect(href).not.toMatch(/\.html(?:[?#]|$)/);
     }

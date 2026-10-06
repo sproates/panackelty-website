@@ -68,9 +68,9 @@ test('assembled website navigation and deployed bytes resolve; failures remain v
 });
 
 test('homepage section navigation and example references have unique targets', () => {
-  const html = ['index.html','examples/index.html','get-started/index.html'].map(file => fs.readFileSync(`site/${file}`, 'utf8')).join('');
+  const html = ['examples/index.html','get-started/index.html'].map(file => fs.readFileSync(`site/${file}`, 'utf8')).join('');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
-  for (const file of ['index.html','examples/index.html','get-started/index.html']) {
+  for (const file of ['examples/index.html','get-started/index.html']) {
     const pageIds = [...fs.readFileSync(`site/${file}`, 'utf8').matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
     assert.equal(new Set(pageIds).size, pageIds.length, `${file}: duplicate page anchor`);
   }

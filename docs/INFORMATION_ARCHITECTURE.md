@@ -18,9 +18,8 @@ or old-anchor compatibility is required for this refactor.
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
 
 Primary navigation includes Capabilities, Get started, Examples, Releases and
-roadmap. Try it online stays visible on phones while the remaining primary links
-use a progressively enhanced menu. Without JavaScript all primary links remain
-available. Under the hood, About and release history live in the shared footer,
+roadmap. All primary links, including Try it online, are always visible and aligned
+in one navigation group; they wrap naturally on phones. No expanding menu. Under the hood, About and release history live in the shared footer,
 alongside coverage, GitHub and the licence.
 
 The homepage owns shared chrome; `scripts/site_chrome.cjs` renders page-relative
@@ -48,8 +47,13 @@ renderer remains based on the immutable reviewed changelog snapshot.
   next-release outlook. Dates and performance claims need supporting evidence.
 
 Validate clean links, anchors, shared chrome, release pins, runnable examples,
-mobile menu and clipboard fallback. The full existing browser runtime suite is
+always-visible mobile navigation and clipboard fallback. The full existing browser runtime suite is
 retained; additional editorial tests cover all routes at desktop and phone widths.
 Provide an iPhone-accessible preview before merge approval.
 
 Tracking: [website GI#8](https://github.com/sproates/panackelty-website/issues/8).
+
+Owner preview feedback: Home uses a compact introduction and four release rows;
+all editorial pages share the same closing link component. Coverage entry pages
+use the same assembled chrome. The external report publisher also needs matching
+chrome, delivered separately without changing coverage data.
