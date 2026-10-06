@@ -28,3 +28,19 @@ footer nav a { font-size: .75rem; }
 }
 /* Explicitly hide nested open panels when the manual route is collapsed. */
 #manual-installation:not([open]) > :not(summary) { display: none; }
+@media (min-width: 901px) {
+  footer {
+    grid-template-columns: minmax(10rem, max-content) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: .75rem 2rem;
+    padding-block: 2rem;
+  }
+  footer > p { grid-column: 2; grid-row: 1; justify-self: end; }
+  footer nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    justify-content: flex-start;
+  }
+}
