@@ -12,7 +12,7 @@ or old-anchor compatibility is required for this refactor.
 | Get started | `/get-started/` | Browser/native choice, greeting, optional installer, manual download and check/run/compile |
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
-| Releases and roadmap | `/roadmap/` | Available now, next release and first non-alpha target, separately labelled |
+| Releases and roadmap | `/roadmap/` | Available now, alpha 12, alpha 13 and first non-alpha target, separately labelled |
 | About | `/about/` | Vision, experimental status, contributor credit and feedback |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
@@ -35,6 +35,11 @@ renderer remains based on the immutable reviewed changelog snapshot.
 - Alpha 12 is the owner's intended next release. Else-if and source coverage are
   integrated into next; executable namespaces remain unfinished. None of these
   development states imply inclusion in the current native download.
+- Alpha 13 is planned for native HTTP client/server and expanded checker and
+  compilation explanations, backed by core GI#236/GI#237/GI#134/GI#173. Package
+  prerequisites and the paused explanation programme remain explicit; recording
+  the plan does not restart implementation. Exact explanation cases are defined
+  during slice planning.
 - The first non-alpha section is a target, with scope/version/date still under
   definition. Future features must not appear as current capabilities.
 - A release promotion updates Get started's commands and example validation,

@@ -26,6 +26,8 @@ test('release availability and copy controls remain explicit',async({page,contex
   await page.goto('/roadmap/');
   await expect(page.locator('#next-release')).toContainText('not released');
   await expect(page.locator('#first-non-alpha')).toContainText('not released');
+  await expect(page.locator('#alpha-13')).toContainText('not released');
+  await expect(page.locator('#alpha-13')).toContainText('HTTP client and server');
   await page.goto('/get-started/');
   const command=page.locator('#optional-install-command');
   await expect(command).toContainText('--version 0.1.0-alpha.11');
