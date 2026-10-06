@@ -2,9 +2,9 @@
 # Execute the programs printed on the website, including their saved bytecode.
 set -eu
 command=${PANACK_SITE_COMMAND:-./panack}
-html=${PANACK_SITE_HTML:-site/index.html}
+html=${PANACK_SITE_HTML:-site/examples/index.html}
 case "${1:-all}" in
-    all) examples='hello guards exact' ;;
+    all) examples='hello guards exact result collections records filenames fibonacci explain' ;;
     release) examples=hello ;;
     capabilities) examples='cap-exact cap-types cap-pure cap-result'; html=site/capabilities/index.html ;;
     *) echo 'expected all, release or capabilities' >&2; exit 2 ;;
@@ -20,6 +20,7 @@ extract() {
     ' "$html" | sed 's/&gt;/>/g;s/&lt;/</g;s/&amp;/\&/g'
 }
 for example in $examples; do
+    if [ "$example" = hello ]; then html=site/get-started/index.html; elif [ "$example" = explain ]; then html=site/explain/index.html; elif [ "${1:-all}" != capabilities ]; then html=${PANACK_SITE_HTML:-site/examples/index.html}; fi
     extract "$example-source" > "$work/$example.panack"
     extract "$example-output" > "$work/expected"
     case "$example" in
@@ -41,5 +42,24 @@ for example in $examples; do
     "$command" compile "$work/$example.panack" -o "$work/$example.bc" > "$work/compile"
     "$command" run "$work/$example.bc" > "$work/actual"
     cmp "$work/expected" "$work/actual"
+    if [ "$example" = explain ]; then
+      "$command" explain "$work/$example.panack" --function remaining > "$work/explanation"
+      grep -q '^program: accepted$' "$work/explanation"
+      grep -q '^subtraction: proved$' "$work/explanation"
+      grep -q '^left lower bound: 2$' "$work/explanation"
+      sed 's/n - 2/n - 3/' "$work/$example.panack" > "$work/unproved.panack"
+      if "$command" explain "$work/unproved.panack" --function remaining > "$work/unproved" 2> "$work/diagnostic"; then
+        echo 'Accepted insufficient subtraction bound' >&2; exit 1
+      fi
+      grep -q '^program: rejected$' "$work/unproved"
+      grep -q '^subtraction: unproved$' "$work/unproved"
+      extract explain-effect-source > "$work/report.panack"
+      if "$command" explain "$work/report.panack" --function report > "$work/effect" 2> "$work/diagnostic"; then
+        echo 'Accepted printing from a pure function' >&2; exit 1
+      fi
+      grep -q '^effect boundary: rejected$' "$work/effect"
+      grep -q '^context: pure$' "$work/effect"
+      grep -q 'pure function cannot call impure function print' "$work/diagnostic"
+    fi
 done
 echo 'PASS website examples through source and bytecode'

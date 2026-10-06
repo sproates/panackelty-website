@@ -16,7 +16,7 @@ function validate(root = '.') {
   if (source.repository !== 'sproates/panackelty' || !/^[a-f0-9]{40}$/.test(source.installerCommit)) {
     throw new Error('Invalid installer source pin');
   }
-  const html = fs.readFileSync(path.join(root, 'site/index.html'), 'utf8');
+  const html = fs.readFileSync(path.join(root, 'site/get-started/index.html'), 'utf8');
   const command = html.match(/<code id="optional-install-command">([^<]+)<\/code>/)?.[1];
   if (!command?.includes(`/panackelty/${source.installerCommit}/scripts/install.sh | sh -s -- --version ${pin.version}`)) {
     throw new Error('Installer must pin its source and selected release');

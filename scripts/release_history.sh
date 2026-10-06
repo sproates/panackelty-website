@@ -25,4 +25,4 @@ awk -v fragment="$fragment" '
   { print }
   END { if(count!=1) exit 1 }
 ' "$script/release_history.html" > "$fragment.page"
-awk -v page=history -f "$script/site_chrome.awk" "$root/site/index.html" "$fragment.page"
+node "$script/site_chrome.cjs" "$root/site/index.html" "$fragment.page" releases

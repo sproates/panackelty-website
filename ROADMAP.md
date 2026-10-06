@@ -14,6 +14,19 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Website information architecture
+
+**In progress.** [GI#8: Refactor the information structure](https://github.com/sproates/panackelty-website/issues/8)
+was selected by the owner on 2026-10-06. Shorten Home and organise the existing
+content into Capabilities, Get started, Examples, Under the hood, Releases and
+roadmap, and About. Keep the current styling and feel, provide clean directory
+URLs and distinguish Available now, planned alpha 12 and the first non-alpha
+target. No old URL or anchor compatibility is required. The
+[page map](docs/INFORMATION_ARCHITECTURE.md) owns the detailed structure.
+Acceptance requires the assembled site and native/browser checks plus a working
+iPhone preview and explicit merge approval. Implementation does not publish a
+new language release or change runtime pins.
+
 ## Website-owned backlog
 
 <a id="rm-119"></a>

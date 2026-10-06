@@ -11,17 +11,17 @@ test('installer and advertised native downloads remain on the reviewed release',
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.cpSync('site',path.join(root,'site'),{recursive:true});
   fs.copyFileSync('release-source.json',path.join(root,'release-source.json'));
-  const original=fs.readFileSync(path.join(root,'site/index.html'),'utf8');
+  const original=fs.readFileSync(path.join(root,'site/get-started/index.html'),'utf8');
   const pin=validate(root);
   const source=JSON.parse(fs.readFileSync('release-source.json'));
   assert.equal(pin.version,fs.readFileSync('site/native-release.txt','utf8').trim());
   for (const html of [original.replaceAll(source.installerCommit,'main'),
     original.replace(`| sh -s -- --version ${pin.version}`,'| sh'),
     original.replace(`releases/download/v${pin.version}`,'releases/download/v999.0.0-alpha.1')]) {
-    fs.writeFileSync(path.join(root,'site/index.html'),html);
+    fs.writeFileSync(path.join(root,'site/get-started/index.html'),html);
     assert.throws(()=>validate(root),/Installer|download targets/);
   }
-  fs.writeFileSync(path.join(root,'site/index.html'),original);
+  fs.writeFileSync(path.join(root,'site/get-started/index.html'),original);
   fs.writeFileSync(path.join(root,'site/native-release.txt'),'999.0.0-alpha.1\n');
   assert.throws(()=>validate(root),/inconsistent/);
 });

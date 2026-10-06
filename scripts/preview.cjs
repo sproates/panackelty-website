@@ -27,7 +27,7 @@ async function build(root, destination, metadata, archive) {
     const provenance = {...metadata, browser: pin};
     fs.writeFileSync(path.join(output, 'preview.json'), JSON.stringify(provenance, null, 2) + '\n');
     const notice = identity => `<aside style="padding:1rem;background:#fff3cd;color:#222;overflow-wrap:anywhere;min-width:0;box-sizing:border-box">Review preview: ${metadata.headCommit || metadata.commit}${metadata.headCommit ? ' (merged with PR base)' : ''}${metadata.dirty ? ' (local changes)' : ''}. <a href="${identity}">Build identity</a></aside>`;
-    for (const file of ['index.html', 'releases.html', 'playground/index.html', 'capabilities/index.html']) {
+    for (const file of ['index.html', 'releases/index.html', 'playground/index.html', ...['capabilities','get-started','examples','explain','under-the-hood','roadmap','about'].map(page => `${page}/index.html`)]) {
       const target = path.join(output, file);
       const html = fs.readFileSync(target, 'utf8');
       if (!/<body\b[^>]*>/i.test(html)) throw new Error('Preview page has no body');
