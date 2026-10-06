@@ -33,7 +33,7 @@ website files. Future release-note snapshots update the recorded source commit
 separately from the installer pin and require the promotion checks in README.md.
 
 The copied assembly dependencies are `site/`, `CHANGELOG.md`,
-`scripts/assemble_site.sh`, `scripts/site_chrome.awk`, the three
+`scripts/assemble_site.sh`, `scripts/site_chrome.cjs`, the three
 `scripts/release_history.*` files, `scripts/fetch_playground.cjs`,
 `scripts/check_pages.cjs` and `scripts/preview.cjs`. The external browser test
 suite and image are immutable pins in `browser-validation.yml`. The native

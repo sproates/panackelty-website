@@ -36,6 +36,12 @@ jobs:
           path: build/browser-tests
           persist-credentials: false
 
+      - name: Check out website navigation tests
+        uses: actions/checkout@v6
+        with:
+          path: build/website-tests
+          persist-credentials: false
+
       - name: Install locked test package and verify prepared browsers
         run: |
           cd build/browser-tests
@@ -69,3 +75,12 @@ jobs:
             full) npm run test:browser -- --workers=3 ;;
             *) echo 'Invalid browser coverage mode' >&2; exit 1 ;;
           esac
+
+      - name: Test editorial pages and mobile navigation
+        run: |
+          cp build/website-tests/tests/website.browser.mjs build/browser-tests/tests/
+          cp build/website-tests/tests/website.playwright.config.mjs build/browser-tests/website.playwright.config.mjs
+          export PLAYGROUND_SITE_DIR="$GITHUB_WORKSPACE/build/website"
+          export PLAYGROUND_BUILD_DIR="$GITHUB_WORKSPACE/build/website/playground"
+          cd build/browser-tests
+          npx playwright test --config website.playwright.config.mjs --workers=3

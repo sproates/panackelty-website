@@ -2,7 +2,7 @@
 # Execute the programs printed on the website, including their saved bytecode.
 set -eu
 command=${PANACK_SITE_COMMAND:-./panack}
-html=${PANACK_SITE_HTML:-site/index.html}
+html=${PANACK_SITE_HTML:-site/examples/index.html}
 case "${1:-all}" in
     all) examples='hello guards exact' ;;
     release) examples=hello ;;
@@ -20,6 +20,7 @@ extract() {
     ' "$html" | sed 's/&gt;/>/g;s/&lt;/</g;s/&amp;/\&/g'
 }
 for example in $examples; do
+    if [ "$example" = hello ]; then html=site/get-started/index.html; elif [ "${1:-all}" != capabilities ]; then html=${PANACK_SITE_HTML:-site/examples/index.html}; fi
     extract "$example-source" > "$work/$example.panack"
     extract "$example-output" > "$work/expected"
     case "$example" in

@@ -13,6 +13,13 @@ deployment, browser and exact-byte verification. See the
 dependencies. Use this repository's issues for website changes; core language
 and release programmes remain in core.
 
+## Website structure
+
+[Information architecture](docs/INFORMATION_ARCHITECTURE.md) records page ownership,
+clean routes and release-content maintenance. Installation lives on Get started,
+examples have their own catalogue and release history is generated at `/releases/`.
+All pages use the homepage-owned shared navigation and footer.
+
 ## Develop and preview
 
 Use Node 24, Git, Make, a POSIX shell, awk and tar. No npm packages are needed
@@ -37,7 +44,8 @@ checksums and the published checksum files, then checks, runs and compiles the
 website examples using the matching released native toolchain. It supports
 Linux x86-64 and macOS arm64 and requires network access.
 
-Every PR runs these checks plus browser tests from an immutable reviewed
+Every PR also runs editorial navigation, release-status and clipboard checks
+at desktop and phone widths. It runs these checks plus browser tests from an immutable reviewed
 browser-repository commit. Documentation and explicit presentation-only paths
 use smoke coverage across all three browsers: responsive resources, worker
 compilation/errors and homepage navigation with every example. HTML, pins,
@@ -52,8 +60,8 @@ A successful main-branch run publishes its tested artifact to this repository's
 configured GitHub Pages target. Immediately before deployment, an authenticated main
 lookup rejects stale reruns and fails closed on API errors. `publication.json` identifies the website source
 commit and validation run. Domain ownership is configured in Pages settings;
-no production CNAME file is committed. Coverage remains independently published; compatibility
-landing pages preserve the existing `/coverage/` and `/coverage/html/` paths.
+no production CNAME file is committed. Coverage remains independently published; coverage
+entry pages link to the independently published report from `/coverage/` and `/coverage/html/` paths.
 
 Creating a core or browser release does **not** update this repository or website.
 A separate website PR promotes a release deliberately:
@@ -62,7 +70,7 @@ A separate website PR promotes a release deliberately:
    `site/native-release.txt` and `site/native-release.json`. Obtain and review
    both published archive SHA-256 values; never derive a pin from an unchecked
    downloaded archive alone.
-2. Update download commands, installer version and versioned claims together.
+2. Update Get started download commands, installer version and versioned claims together.
    The installer URL uses the immutable `installerCommit` in `release-source.json`
    and passes an explicit `--version`; it never follows core main's default.
 3. Copy the intended release notes into `CHANGELOG.md` and record the source

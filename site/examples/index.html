@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15130f"><meta name="description" content="Readable Panackelty programs: exact arithmetic, domain rules, collections, algorithms and bounded native networking.">
+  <link rel="canonical" href="https://panackelty.com/examples/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="../chrome.css">
+  <title>Examples — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main"><section class="capabilities-hero"><p class="eyebrow">Read a little. Try a little.</p><h1>Ideas you<br><em>can run.</em></h1><p class="lede">Start with a complete program and its result. These examples use released alpha.11 syntax; the bundled example folder matches your native toolchain.</p></section><section class="content-section"><div class="capability-grid"><article><span class="badge">Begin with the basics</span><h3>greeting</h3><p>Strings, pure functions and an effectful entry point.</p><a href="../get-started/#hello-example">Read the greeting →</a></article><article><span class="badge">Model a rule</span><h3>guarded types</h3><p>Name a domain constraint and let the compiler check its use.</p><a href="#guard-example">Read the example →</a></article><article><span class="badge">Calculate exactly</span><h3>fractions and decimals</h3><p>Preserve exact values and make representability explicit.</p><a href="#exact-example">Read the example →</a></article><article><span class="badge">Handle success and failure</span><h3>Option and Result</h3><p>Use tagged values and exhaustive matching instead of hidden failure conventions.</p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/examples/option_result.panack">Read the source →</a></article><article><span class="badge">Transform data</span><h3>collections and bytes</h3><p>Work with persistent arrays, maps, sets and byte values.</p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/examples/collections_and_bytes.panack">Read the source →</a></article><article><span class="badge">Explore algorithms</span><h3>Fibonacci and Project Euler</h3><p>Study memoization, iteration, arithmetic and conditional branches.</p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples">Browse the algorithms →</a></article><article><span class="badge">Native networking</span><h3>bounded TCP</h3><p>Explore finite request/response and server programs with explicit limits. These need the native toolchain and a peer.</p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples/network">Read the networking examples →</a></article></div></section><section class="content-section"><div class="example-grid"><article id="guard-example"><span class="badge">Alpha.11 example</span><h3>Give a business rule a name</h3><p><code>Positive</code> expresses a constraint on an integer. Code receiving this type can state its expectation directly.</p>
+            <pre id="guards-source"><code>
+type Positive = Int where value &gt; 0
+
+pure triple(n: Positive): Int {
+  n * 3
+}
+
+main(): Void {
+  answer: Positive = 14
+  print(triple(answer))
+}
+</code></pre>
+            <p class="output-label">Output</p><pre class="example-output" id="guards-output"><samp>
+42
+</samp></pre>
+          </article><article id="exact-example"><span class="badge">Works with alpha.11</span><h3>Exact fractions, explicit conversions</h3><div class="code-card" aria-label="An exact arithmetic example">
+          <div class="code-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>exact.panack</span><span class="code-status">alpha.11</span></div>
+          <pre id="exact-source"><code>
+main(): Void {
+  third = 1/3
+  print((third * 30).nat())
+  print((1/8).dec())
+}
+</code></pre>
+          <div class="terminal-line"><span>$</span> panack run exact.panack</div>
+          <pre class="example-output" id="exact-output"><samp>
+10
+0.125
+</samp></pre>
+          <p class="code-caption">Exact fractions, exact conversions. An unrepresentable exact conversion fails instead of silently rounding.</p>
+        </div>
+      </article></div></section><section class="closing"><div><p class="eyebrow">Keep exploring</p><h2>Make it<br>your own.</h2></div><div class="closing-links"><a href="../playground/">Run browser-supported examples <span aria-hidden="true">→</span></a><a href="../get-started/">Install and run locally <span aria-hidden="true">→</span></a><a href="../capabilities/">Explore the language <span aria-hidden="true">→</span></a></div></section></main>
+<!-- SITE_FOOTER -->
+<script src="../site.js" defer></script>
+</body></html>

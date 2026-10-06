@@ -17,21 +17,21 @@ assemble() {
     sh "$root/scripts/assemble_site.sh" "$root/site" "$work/playground" "$work/pages"
 }
 assemble
-grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases.html"
-awk -v page=home -f scripts/site_chrome.awk site/index.html site/index.html > "$work/home"
+grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases/index.html"
+node scripts/site_chrome.cjs site/index.html site/index.html home > "$work/home"
 cmp "$work/home" "$work/pages/index.html"
-for page in index.html releases.html playground/index.html capabilities/index.html; do
+for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html under-the-hood/index.html roadmap/index.html about/index.html; do
     test "$(grep -c 'aria-current="page"' "$work/pages/$page")" = 1
-    grep -q 'What’s changed' "$work/pages/$page"
+    grep -q 'Releases &amp; roadmap' "$work/pages/$page"
     grep -q 'Under the hood' "$work/pages/$page"
 done
-grep -q 'href="../#engineering"' "$work/pages/playground/index.html"
-grep -q 'href="./releases.html" aria-current="page"' "$work/pages/releases.html"
+grep -q 'href="../under-the-hood/"' "$work/pages/playground/index.html"
+grep -q 'href="../releases/" aria-current="page"' "$work/pages/releases/index.html"
 grep -q 'href="../capabilities/" aria-current="page"' "$work/pages/capabilities/index.html"
-grep -q 'href="../#start"' "$work/pages/capabilities/index.html"
+grep -q 'href="../get-started/"' "$work/pages/capabilities/index.html"
 grep -q 'href="../capabilities/"' "$work/pages/playground/index.html"
 # Shared footer includes branding, licence and valid page-relative navigation.
-for page in releases.html playground/index.html capabilities/index.html; do
+for page in releases/index.html playground/index.html capabilities/index.html; do
     grep -q 'Experimental. Open source. Still evolving.' "$work/pages/$page"
     grep -q 'LICENSE">MIT</a>' "$work/pages/$page"
     grep -q 'href="#main">Back to top</a>' "$work/pages/$page"

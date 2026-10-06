@@ -28,7 +28,7 @@ async function checkPages(root, base) {
       throw new Error(`Unexpected bundled coverage report: ${file}`);
     }
   }
-  const targets = new Set(['index.html', 'releases.html', 'playground/index.html', ...landing]);
+  const targets = new Set(['index.html', 'releases/index.html', 'playground/index.html', ...landing, ...['capabilities','get-started','examples','under-the-hood','roadmap','about'].map(page => `${page}/index.html`)]);
   for (const file of targets) {
     if (!fs.statSync(path.join(root, file)).isFile()) throw new Error(`Missing entry point: ${file}`);
   }
@@ -48,7 +48,7 @@ async function checkPages(root, base) {
   }
   if (base) {
     for (const file of targets) {
-      const response = await fetch(new URL(file, base), {signal: AbortSignal.timeout(15000)});
+      const response = await fetch(new URL(file.replace(/(^|\/)index\.html$/, '$1'), base), {signal: AbortSignal.timeout(15000)});
       if (!response.ok) throw new Error(`Published URL failed (${response.status}): ${file}`);
       if (await response.text() !== fs.readFileSync(path.join(root, file), 'utf8')) {
         throw new Error(`Published content does not match: ${file}`);
@@ -58,7 +58,7 @@ async function checkPages(root, base) {
     // A successful HTML response alone does not establish a usable playground.
     for (const absolute of files.filter(file => path.relative(root, file).startsWith('playground/'))) {
       const file = path.relative(root, absolute);
-      const response = await fetch(new URL(file, base), {signal: AbortSignal.timeout(15000)});
+      const response = await fetch(new URL(file.replace(/(^|\/)index\.html$/, '$1'), base), {signal: AbortSignal.timeout(15000)});
       if (!response.ok) throw new Error(`Published playground failed (${response.status}): ${file}`);
       if (file.endsWith('.wasm') && !response.headers.get('content-type')?.startsWith('application/wasm')) {
         throw new Error('Published Wasm MIME type is incorrect');

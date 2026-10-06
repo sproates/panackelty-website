@@ -9,7 +9,8 @@ test('assembled website navigation and deployed bytes resolve; failures remain v
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pages-links-'));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   fs.cpSync('site', root, {recursive: true});
-  fs.writeFileSync(path.join(root, 'releases.html'), execFileSync('sh', ['scripts/release_history.sh', '.']));
+  fs.mkdirSync(path.join(root, 'releases'));
+  fs.writeFileSync(path.join(root, 'releases/index.html'), execFileSync('sh', ['scripts/release_history.sh', '.']));
   fs.mkdirSync(path.join(root, 'playground'));
   fs.writeFileSync(path.join(root, 'playground/index.html'), '<a href="../">home</a>');
   const version = 'a'.repeat(64);
@@ -33,7 +34,7 @@ test('assembled website navigation and deployed bytes resolve; failures remain v
   let staleWasm = false;
   t.mock.method(global, 'fetch', async url => {
     assert.equal(url.origin, 'https://example.test', 'must not depend on external coverage host');
-    const file = url.pathname.slice(1);
+    const file = url.pathname.endsWith('/') ? url.pathname.slice(1) + 'index.html' : url.pathname.slice(1);
     visited.push(file);
     if (broken) return {ok: false, status: 404};
     return {ok: true,
@@ -67,9 +68,12 @@ test('assembled website navigation and deployed bytes resolve; failures remain v
 });
 
 test('homepage section navigation and example references have unique targets', () => {
-  const html = fs.readFileSync('site/index.html', 'utf8');
+  const html = ['index.html','examples/index.html','get-started/index.html'].map(file => fs.readFileSync(`site/${file}`, 'utf8')).join('');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
-  assert.equal(new Set(ids).size, ids.length, 'duplicate page anchor');
+  for (const file of ['index.html','examples/index.html','get-started/index.html']) {
+    const pageIds = [...fs.readFileSync(`site/${file}`, 'utf8').matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+    assert.equal(new Set(pageIds).size, pageIds.length, `${file}: duplicate page anchor`);
+  }
   for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) {
     assert(ids.includes(target), `missing anchor: ${target}`);
   }

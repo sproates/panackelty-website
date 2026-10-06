@@ -5,3 +5,24 @@
 @media (max-width: 760px) {
   .site-header nav { width: 100%; gap: .75rem 1rem; }
 }
+
+.site-header .nav-try { color: var(--accent, #9aa7ff); }
+.menu-toggle { display: none; background: transparent; color: inherit; border: 1px solid var(--line, #373127); border-radius: .3rem; padding: .6rem .9rem; font: inherit; }
+footer nav { display: flex; flex-wrap: wrap; gap: .5rem 1rem; max-width: 34rem; }
+footer nav a { font-size: .75rem; }
+@media (max-width: 760px) {
+  .has-menu .menu-toggle:not([hidden]) { display: inline-block; }
+  .has-menu .menu-toggle[aria-expanded="false"] + nav { display: none; }
+  .has-menu .menu-toggle[aria-expanded="true"] + nav { display: flex; }
+  .site-header nav { padding-bottom: 1.25rem; }
+  .site-header { min-height: 88px; }
+}
+
+.site-header > .nav-try { order: 2; color: var(--accent, #9aa7ff); text-decoration: none; font-size: .9rem; }
+.site-header nav { order: 1; }
+@media (max-width: 760px) {
+  .site-header { gap: .75rem; }
+  .site-header > .nav-try { order: 1; margin-left: auto; }
+  .menu-toggle { order: 2; }
+  .site-header nav { order: 3; }
+}

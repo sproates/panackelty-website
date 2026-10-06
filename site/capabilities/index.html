@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#15130f">
-    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, and upcoming work: exact arithmetic, guarded types, effects, async/await and more.">
+    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.11: exact arithmetic, guarded types, effects, async/await and more.">
     <link rel="canonical" href="https://panackelty.com/capabilities/">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
@@ -46,15 +46,7 @@
 <li><a href="#tooling">Check, run, compile and inspect</a></li>
 <li><a href="#self-hosting">Written in the language it compiles</a></li>
 </ul>
-<a class="toc-group" href="#coming-next">What’s coming next</a>
-<ul>
-<li><a href="#namespaces">Namespaces that let projects grow</a></li>
-<li><a href="#packages">Reusable modules and packages</a></li>
-<li><a href="#http">HTTP built on the networking foundation</a></li>
-<li><a href="#compiler-insight">More insight from the compiler</a></li>
-<li><a href="#source-coverage">Better evidence about what our tests exercise</a></li>
-<li><a href="#performance">Faster development feedback</a></li>
-</ul>
+
 </nav>
 <div class="capabilities-content">
 <section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.11 · experimental</p><h2 id="language-features">Language features</h2>
@@ -175,47 +167,13 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>Testing includes compiler, runtime and complete-program checks. Published native coverage measures the C VM; measured <code>.panack</code> source coverage remains an explicit development priority.</p>
 </article>
 </section>
-<section class="capabilities-group" aria-labelledby="coming-next"><p class="eyebrow">Upcoming · roadmap</p><h2 id="coming-next">What’s coming next</h2>
-<p>Panackelty’s next steps aim to make larger programs easier to organise, networked applications easier to build, and compiler decisions easier to understand.</p>
-<p>These are roadmap items, not promises about the current download. Scope and sequencing may change; no release dates are implied.</p>
-<article class="capability-detail" aria-labelledby="namespaces"><h3 id="namespaces">Namespaces that let projects grow</h3>
-<p>Namespaces will give declarations an explicit home, making it easier to organise APIs and use code from different modules without name collisions.</p>
-<p>The work includes checked naming and visibility boundaries, so a module can expose its intended interface while keeping implementation details internal.</p>
-<p>Namespace implementation is progressing in development. Executable namespace support is not included in alpha.11.</p>
-</article>
-<article class="capability-detail" aria-labelledby="packages"><h3 id="packages">Reusable modules and packages</h3>
-<p>The module and package programme extends code organisation beyond importing files into one application.</p>
-<p>The goal is a clear structure for reusable libraries, explicit package relationships and reproducible builds. Programs should be able to depend on well-defined interfaces without depending on an author’s checkout layout.</p>
-<p>The work covers package structure, dependency handling, installation and acceptance through real applications.</p>
-</article>
-<article class="capability-detail" aria-labelledby="http"><h3 id="http">HTTP built on the networking foundation</h3>
-<p>TCP supplies the transport. HTTP adds the request, response and protocol behaviour that many applications need.</p>
-<p>Planned HTTP client and server packages will build on the language’s typed results and asynchronous execution, with explicit limits and failure handling.</p>
-<p>This should open a more practical path towards service clients and small networked applications. The exact supported protocol scope belongs to the package design; HTTP, HTTPS and production-server capabilities should not be assumed from today’s TCP support.</p>
-</article>
-<article class="capability-detail" aria-labelledby="compiler-insight"><h3 id="compiler-insight">More insight from the compiler</h3>
-<p>The current explanations are a starting point.</p>
-<p>Planned work explores richer explanations of checked types, effects and proof obligations, alongside clearer connections between source code and generated instructions.</p>
-<p>The aim is to help answer practical questions:</p>
-<ul><li>Why was this operation rejected?</li><li>Which fact allowed the compiler to accept it?</li><li>Where did an effect enter this calculation?</li><li>Which source expression corresponds to this instruction?</li></ul>
-<p>Broader explanations and source-aware runtime diagnostics remain separate pieces of work, each with its own limits and acceptance evidence.</p>
-</article>
-<article class="capability-detail" aria-labelledby="source-coverage"><h3 id="source-coverage">Better evidence about what our tests exercise</h3>
-<p>Measured <code>.panack</code> source coverage is a high-urgency roadmap item.</p>
-<p>The goal is to show which compiler, library and tooling lines, functions and branches execute during testing—including eligible code that is never reached.</p>
-<p>That evidence will help target missing tests. Coverage numbers will support testing decisions; they will not substitute for meaningful assertions.</p>
-</article>
-<article class="capability-detail" aria-labelledby="performance"><h3 id="performance">Faster development feedback</h3>
-<p>Compiler and build performance are ongoing engineering priorities.</p>
-<p>The work starts with reproducible measurements, then targets the costs that matter during editing, checking, testing and packaging. Improvements must preserve correctness, bootstrap guarantees and required validation.</p>
-<p>We will publish measured results with their workload and limitations rather than promise a speedup for every program.</p>
-</article>
-</section>
-<section class="capabilities-explore" aria-labelledby="explore"><h2 id="explore">Explore what works today. Follow what comes next.</h2>
+
+<section class="capabilities-explore" aria-labelledby="explore"><h2 id="explore">Explore what works today.</h2>
 <p>Try the language in your browser, install the native preview, or follow the roadmap and help shape the next stage.</p>
-<div class="actions"><a class="button primary" href="../playground/">Try Panackelty →</a><a class="button secondary" href="../#start">Install the native preview →</a></div>
+<div class="actions"><a class="button primary" href="../playground/">Try Panackelty →</a><a class="button secondary" href="../get-started/">Install the native preview →</a></div>
 <p class="release-links"><a href="https://github.com/sproates/panackelty/blob/main/ROADMAP.md">Explore the roadmap →</a><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/SPEC.md">Read the specification →</a></p></section>
-</div></div></main>
+</div></div><p class="section-intro">Looking ahead? <a href="../roadmap/">See planned and target releases →</a></p></main>
 <!-- SITE_FOOTER -->
+<script src="../site.js" defer></script>
 </body>
 </html>
