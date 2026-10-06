@@ -11,7 +11,7 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
       await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
       await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
-      await expect(page.locator('.closing-links')).toHaveCount(1);
+      await expect(page.locator('.closing .closing-links')).toHaveCount(1);
       const links=await page.locator('a[href]').evaluateAll(anchors=>anchors.map(a=>a.getAttribute('href')));
       for(const href of links) if(!/^https?:/.test(href)) expect(href).not.toMatch(/\.html(?:[?#]|$)/);
     }
