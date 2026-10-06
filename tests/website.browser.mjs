@@ -12,6 +12,13 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
       await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
       await expect(page.locator('.closing .closing-links')).toHaveCount(1);
+      if (width >= 901) {
+        const footer = await page.locator('footer').boundingBox();
+        const footerLinks = await page.getByRole('navigation', {name:'Further reading'}).boundingBox();
+        expect(footerLinks.x).toBeGreaterThanOrEqual(footer.x - 1);
+        expect(footerLinks.x).toBeLessThanOrEqual(footer.x + 1);
+        expect(footerLinks.width).toBeGreaterThan(footer.width * .8);
+      }
       const links=await page.locator('a[href]').evaluateAll(anchors=>anchors.map(a=>a.getAttribute('href')));
       for(const href of links) if(!/^https?:/.test(href)) expect(href).not.toMatch(/\.html(?:[?#]|$)/);
     }
