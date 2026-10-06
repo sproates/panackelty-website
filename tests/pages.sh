@@ -20,7 +20,7 @@ assemble
 grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases/index.html"
 node scripts/site_chrome.cjs site/index.html site/index.html home > "$work/home"
 cmp "$work/home" "$work/pages/index.html"
-for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html under-the-hood/index.html roadmap/index.html about/index.html; do
+for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html about/index.html; do
     test "$(grep -c 'aria-current="page"' "$work/pages/$page")" = 1
     grep -q 'Releases &amp; roadmap' "$work/pages/$page"
     grep -q 'Under the hood' "$work/pages/$page"

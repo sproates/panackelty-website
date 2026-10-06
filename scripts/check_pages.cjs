@@ -28,7 +28,7 @@ async function checkPages(root, base) {
       throw new Error(`Unexpected bundled coverage report: ${file}`);
     }
   }
-  const targets = new Set(['index.html', 'releases/index.html', 'playground/index.html', ...landing, ...['capabilities','get-started','examples','under-the-hood','roadmap','about'].map(page => `${page}/index.html`)]);
+  const targets = new Set(['index.html', 'releases/index.html', 'playground/index.html', ...landing, ...['capabilities','get-started','examples','explain','under-the-hood','roadmap','about'].map(page => `${page}/index.html`)]);
   for (const file of targets) {
     if (!fs.statSync(path.join(root, file)).isFile()) throw new Error(`Missing entry point: ${file}`);
   }

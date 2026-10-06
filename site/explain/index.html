@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15130f"><meta name="description" content="Use panack explain to understand natural-number subtraction proofs and local effect checks, with runnable alpha.11 examples.">
+  <link rel="canonical" href="https://panackelty.com/explain/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="../chrome.css">
+  <title>Compiler explanations — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main"><section class="capabilities-hero"><p class="eyebrow">Available in native alpha.11</p><h1>Understand why<br><em>the compiler agrees.</em></h1><p class="lede"><code>panack explain</code> shows the facts behind a natural-number subtraction check and the decisions behind local call and await effect boundaries. Read the compiler’s evidence alongside its ordinary diagnostics.</p></section><section class="content-section"><h2>Ask about one function.</h2><p>Save this program as <code>remaining.panack</code>, then run the command below with the native alpha.11 toolchain. The command checks the whole project and reports evidence for the named function. It does not execute your program or emit bytecode.</p><article id="explain-example"><span class="badge">Works with alpha.11</span><h3>Why can n − 2 stay a natural number?</h3><p>The true branch establishes that n is at least 2. The compiler uses that lower bound to prove the subtraction cannot go below zero.</p>
+<pre id="explain-source"><code>
+pure remaining(n: Nat): Nat {
+  if n &gt;= 2 {
+    n - 2
+  } else {
+    0
+  }
+}
+
+main(): Void {
+  print(remaining(5))
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="explain-output"><samp>
+3
+</samp></pre>
+</article><div class="copy-command"><pre id="explain-command"><code>panack explain remaining.panack --function remaining</code></pre><button class="copy-command-button" type="button" data-copy-target="explain-command" aria-label="Copy explanation command" aria-describedby="explain-command-copy-status" hidden>Copy</button></div><p id="explain-command-copy-status" class="copy-command-status" role="status" aria-live="polite"></p><p>The <code>3</code> above is the program’s output when run. The explanation command instead reports this excerpt:</p><pre id="explain-proof-output"><samp>program: accepted
+function: remaining
+scope: Nat subtraction; generic definitions, not call-site specialisations
+
+subtraction: proved
+source: project/remaining.panack:3:5-3:10
+expression: n - 2
+operand types: Nat, Nat
+obligation: left &gt;= right
+right constant: 2
+left lower bound: 2
+guard branch: true
+source: project/remaining.panack:2:6-2:12
+expression: n &gt;= 2
+reason: retained lower bound is at least the right constant</samp></pre><p>Read <code>program: accepted</code> as whole-project acceptance. <code>subtraction: proved</code> describes this one obligation. The source positions connect the decision to the subtraction and its guard.</p></section><section class="content-section"><h2>Change the assumption.</h2><p>Change <code>n - 2</code> to <code>n - 3</code>, keeping the guard <code>n &gt;= 2</code>. Run the same explanation command again. The lower bound is no longer sufficient, so the program is rejected and the subtraction is <code>unproved</code>. That means the checker could not establish safety; it is not a claim that the program was executed and failed.</p></section><section class="content-section"><h2>See an effect boundary.</h2><p>Save this deliberately invalid program as <code>report.panack</code>. A pure function cannot call the effectful <code>print</code> builtin.</p><pre id="explain-effect-source"><code>
+pure report(): Void {
+  print(1)
+}
+
+main(): Void {}
+</code></pre><pre><code>panack explain report.panack --function report</code></pre><p>The command exits with status 1, preserves the ordinary diagnostic on stderr, and includes this local explanation:</p><pre id="explain-effect-output"><samp>program: rejected
+
+effect scope: local call and await boundaries; declarations and callable types, not transitive/runtime effects
+
+effect boundary: rejected
+source: project/report.panack:2:3-2:11
+expression: print(1)
+boundary: call
+context: pure
+callee: print
+classification basis: builtin or constructor contract
+callee effect: ordinary
+awaited: no
+reason: pure function cannot call impure function print</samp></pre><p>An ordinary function may print. Changing <code>pure report</code> to <code>report</code> makes this call boundary allowed. Allowed describes that local boundary; consult the separate program result for whole-project validity.</p></section><section class="content-section"><h2>Read the result accurately.</h2><div class="capability-grid"><article><h3>Proved or unproved</h3><p>Subtraction evidence comes from the checker’s existing constants and lower-bound facts. The query adds visibility to those decisions; it does not add proof rules.</p></article><article><h3>Allowed or rejected</h3><p>Effect evidence describes local calls and await boundaries, including pure, ordinary and async contexts. It does not follow callee bodies to infer transitive or runtime effects.</p></article><article><h3>Unavailable</h3><p>Unsupported cases and missing evidence are explicit. A function with no relevant subtraction or call may be accepted and still have nothing supported to explain.</p></article></div><p>Accepted projects exit 0. Rejected projects and invalid queries exit 1. A local proof does not override other errors. General type explanations, source-to-bytecode explanations and runtime value histories are outside this released command’s current scope.</p><p>This guide applies to native alpha.11. The pinned browser playground does not provide this CLI command. <a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/docs/COMPILER_EXPLANATIONS.md">Read the full query contract →</a> · <a href="../roadmap/#alpha-13">See the planned alpha 13 expansion →</a></p></section><!-- SITE_CLOSING --></main>
+<!-- SITE_FOOTER -->
+<script src="../site.js" defer></script>
+</body></html>

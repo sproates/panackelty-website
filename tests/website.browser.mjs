@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test';
-const routes=['/','/capabilities/','/get-started/','/examples/','/under-the-hood/','/roadmap/','/about/','/releases/'];
+const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/about/','/releases/'];
 test('editorial pages have consistent clean navigation at desktop and phone widths',async({page})=>{
   for(const width of [1280,390]){
     await page.setViewportSize({width,height:844});
@@ -36,4 +36,21 @@ test('release availability and copy controls remain explicit',async({page,contex
     await page.getByRole('button',{name:'Copy installer command',exact:true}).click();
     await expect(page.locator('#optional-install-command-copy-status')).toContainText('Select and copy this text manually');
   }
+});
+
+test('manual installation is an optional alternative and explanations are discoverable',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/get-started/');
+  await expect(page.locator('#optional-install-command')).toBeVisible();
+  await expect(page.locator('#quick-run-commands')).toBeVisible();
+  await expect(page.locator('#install-linux-commands')).not.toBeVisible();
+  await page.locator('#manual-installation > summary').click();
+  await expect(page.locator('#install-linux-commands')).toBeVisible();
+  await page.locator('#manual-installation > summary').click();
+  await expect(page.locator('#install-linux-commands')).not.toBeVisible();
+  await page.getByRole('link',{name:'Compiler explanations',exact:true}).click();
+  await expect(page).toHaveURL(/\/explain\/$/);
+  await expect(page.locator('#explain-command')).toContainText('--function remaining');
+  await expect(page.locator('#explain-proof-output')).toContainText('subtraction: proved');
+  await expect(page.locator('#explain-effect-output')).toContainText('effect boundary: rejected');
 });

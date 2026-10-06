@@ -9,7 +9,7 @@
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <!-- SITE_HEADER -->
-<main id="main"><section class="capabilities-hero"><p class="eyebrow">Read a little. Try a little.</p><h1>Ideas you<br><em>can run.</em></h1><p class="lede">Start with a complete program and its result. These examples use released alpha.11 syntax; the bundled example folder matches your native toolchain.</p></section><section class="content-section"><div class="capability-grid"><article><span class="badge">Begin with the basics</span><h3>greeting</h3><p>Strings, pure functions and an effectful entry point.</p><a href="../get-started/#hello-example">Read the greeting →</a></article><article><span class="badge">Model a rule</span><h3>guarded types</h3><p>Name a domain constraint and let the compiler check its use.</p><a href="#guard-example">Read the example →</a></article><article><span class="badge">Calculate exactly</span><h3>fractions and decimals</h3><p>Preserve exact values and make representability explicit.</p><a href="#exact-example">Read the example →</a></article><article><span class="badge">Handle success and failure</span><h3>Option and Result</h3><p>Use tagged values and exhaustive matching instead of hidden failure conventions.</p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/examples/option_result.panack">Read the source →</a></article><article><span class="badge">Transform data</span><h3>collections and bytes</h3><p>Work with persistent arrays, maps, sets and byte values.</p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.11/examples/collections_and_bytes.panack">Read the source →</a></article><article><span class="badge">Explore algorithms</span><h3>Fibonacci and Project Euler</h3><p>Study memoization, iteration, arithmetic and conditional branches.</p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples">Browse the algorithms →</a></article><article><span class="badge">Native networking</span><h3>bounded TCP</h3><p>Explore finite request/response and server programs with explicit limits. These need the native toolchain and a peer.</p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples/network">Read the networking examples →</a></article></div></section><section class="content-section"><div class="example-grid"><article id="guard-example"><span class="badge">Alpha.11 example</span><h3>Give a business rule a name</h3><p><code>Positive</code> expresses a constraint on an integer. Code receiving this type can state its expectation directly.</p>
+<main id="main"><section class="capabilities-hero"><p class="eyebrow">Read a little. Try a little.</p><h1>Ideas you<br><em>can run.</em></h1><p class="lede">Start with a complete program and its result. These examples use released alpha.11 syntax; the bundled example folder matches your native toolchain.</p></section><section class="content-section"><div class="capability-grid"><article><span class="badge">Begin with the basics</span><h3>greeting</h3><p>Strings, pure functions and an effectful entry point.</p><a href="../get-started/#hello-example">Read the greeting →</a></article><article><span class="badge">Model a rule</span><h3>guarded types</h3><p>Name a domain constraint and let the compiler check its use.</p><a href="#guard-example">Read the example →</a></article><article><span class="badge">Calculate exactly</span><h3>fractions and decimals</h3><p>Preserve exact values and make representability explicit.</p><a href="#exact-example">Read the example →</a></article><article><span class="badge">Handle success and failure</span><h3>Option and Result</h3><p>Use tagged values and exhaustive matching instead of hidden failure conventions.</p><a href="#result-example">Run the example →</a></article><article><span class="badge">Transform data</span><h3>collections and bytes</h3><p>Work with persistent arrays, maps, sets and byte values.</p><a href="#collections-example">Run the example →</a></article><article><span class="badge">Explore algorithms</span><h3>Fibonacci and Project Euler</h3><p>Study memoization, iteration, arithmetic and conditional branches.</p><a href="#fibonacci-example">Run Fibonacci →</a></article><article><span class="badge">Describe related values</span><h3>records</h3><p>Give a task named fields and turn its state into a readable message.</p><a href="#records-example">Run the example →</a></article><article><span class="badge">Work with text</span><h3>sorting filenames</h3><p>Sort names with a pure comparison function, then select a suffix.</p><a href="#filenames-example">Run the example →</a></article><article><span class="badge">Native networking</span><h3>bounded TCP</h3><p>Explore finite request/response and server programs with explicit limits. These need the native toolchain and a peer.</p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples/network">Read the networking examples →</a></article></div></section><section class="content-section"><div class="example-grid"><article id="guard-example"><span class="badge">Alpha.11 example</span><h3>Give a business rule a name</h3><p><code>Positive</code> expresses a constraint on an integer. Code receiving this type can state its expectation directly.</p>
             <pre id="guards-source"><code>
 type Positive = Int where value &gt; 0
 
@@ -41,7 +41,121 @@ main(): Void {
 </samp></pre>
           <p class="code-caption">Exact fractions, exact conversions. An unrepresentable exact conversion fails instead of silently rounding.</p>
         </div>
-      </article></div></section><!-- SITE_CLOSING --></main>
+      </article></div></section><section class="content-section"><div class="section-heading"><p class="eyebrow">Build on the basics</p><h2>Values, data<br>and decisions.</h2></div><div class="example-grid"><article id="result-example"><span class="badge">Works with alpha.11</span><h3>Handle a failure explicitly</h3><p>A Result carries either a value or an error. Exhaustive matching makes both paths visible.</p>
+<pre id="result-source"><code>
+pure safe_divide(numerator: Nat, denominator: Nat): Result[Nat,Str] {
+  if denominator == 0 {
+    Error("division by zero")
+  } else {
+    Ok(quotient(numerator, denominator))
+  }
+}
+
+pure describe(result: Result[Nat,Str]): Str {
+  match result {
+    Ok(value) =&gt; "value ${value}",
+    Error(message) =&gt; message
+  }
+}
+
+main(): Void {
+  print(describe(safe_divide(84, 2)))
+  print(describe(safe_divide(1, 0)))
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="result-output"><samp>
+value 42
+division by zero
+</samp></pre>
+</article><article id="collections-example"><span class="badge">Works with alpha.11</span><h3>Keep the original collection</h3><p>Appending returns a new array. Updating a persistent map also returns a new value; assign it when you want to keep the change.</p>
+<pre id="collections-source"><code>
+main(): Void {
+  original: [Nat] = [1, 2]
+  extended: [Nat] = original.append(3)
+
+  print(original)
+  print(extended)
+
+  mut scores: Map[Str,Nat] = map()
+  scores = scores.put("Ada", 42)
+  print(scores.get("Ada"))
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="collections-output"><samp>
+[1, 2]
+[1, 2, 3]
+42
+</samp></pre>
+</article><article id="records-example"><span class="badge">Works with alpha.11</span><h3>Describe a task with a record</h3><p>Give related values named fields, then keep presentation in a pure function.</p>
+<pre id="records-source"><code>
+record Task {
+  title: Str,
+  done: Bool
+}
+
+pure describe_task(task: Task): Str {
+  title = task.title
+
+  if task.done {
+    "Done: ${title}"
+  } else {
+    "To do: ${title}"
+  }
+}
+
+main(): Void {
+  task = Task("Try Panackelty", false)
+  print(describe_task(task))
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="records-output"><samp>
+To do: Try Panackelty
+</samp></pre>
+</article><article id="filenames-example"><span class="badge">Works with alpha.11</span><h3>Sort and select filenames</h3><p>Pass a named pure comparison function to sort_by, then use a string predicate to select matching names. This processes names; it does not read the filesystem.</p>
+<pre id="filenames-source"><code>
+import stdlib/prelude
+
+pure name_before(left: Str, right: Str): Bool {
+  left &lt; right
+}
+
+main(): Void {
+  files = ["z.txt", "b.panack", "a.panack"].sort_by(@name_before)
+
+  for file in files {
+    if file.ends_with(".panack") {
+      print(file)
+    }
+  }
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="filenames-output"><samp>
+a.panack
+b.panack
+</samp></pre>
+</article><article id="fibonacci-example"><span class="badge">Works with alpha.11</span><h3>Build a result one step at a time</h3><p>Local mutation can be useful inside a pure calculation. Each iteration advances the two values in the sequence.</p>
+<pre id="fibonacci-source"><code>
+pure fibonacci(n: Nat): Nat {
+  mut previous: Nat = 0
+  mut current: Nat = 1
+
+  for ignored in 0..n {
+    next: Nat = previous + current
+    previous = current
+    current = next
+  }
+
+  previous
+}
+
+main(): Void {
+  print(fibonacci(10))
+}
+</code></pre>
+<p class="output-label">Output</p><pre class="example-output" id="fibonacci-output"><samp>
+55
+</samp></pre>
+</article></div></section><section class="content-section"><h2>What did the compiler check?</h2><p>See why a subtraction is safe or why a pure function cannot print. <a href="../explain/">Explore panack explain →</a></p><p>For larger programs, explore the <a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.11/examples">release-specific example folder</a>, including Project Euler, enums, higher-order functions and native networking.</p></section><!-- SITE_CLOSING --></main>
 <!-- SITE_FOOTER -->
 <script src="../site.js" defer></script>
 </body></html>

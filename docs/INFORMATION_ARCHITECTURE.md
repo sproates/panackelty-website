@@ -7,10 +7,11 @@ or old-anchor compatibility is required for this refactor.
 
 | Page | Route | Content |
 | --- | --- | --- |
-| Home | `/` | Introduction, one exact-value program, three benefits, compact release outlook and next steps |
+| Home | `/` | Compact introduction, release outline and links onward |
 | Capabilities | `/capabilities/` | Features of the promoted native release, with browser limits and examples |
-| Get started | `/get-started/` | Browser/native choice, greeting, optional installer, manual download and check/run/compile |
+| Get started | `/get-started/` | Browser/native choice, greeting, one-command installer and optional manual-download reveal |
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
+| Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
 | Releases and roadmap | `/roadmap/` | Available now, alpha 12, alpha 13 and first non-alpha target, separately labelled |
 | About | `/about/` | Vision, experimental status, contributor credit and feedback |
@@ -20,11 +21,11 @@ or old-anchor compatibility is required for this refactor.
 Primary navigation includes Capabilities, Get started, Examples, Releases and
 roadmap. All primary links, including Try it online, are always visible and aligned
 in one navigation group; they wrap naturally on phones. No expanding menu. Under the hood, About and release history live in the shared footer,
-alongside coverage, GitHub and the licence.
+alongside compiler explanations, coverage, GitHub and the licence.
 
 The homepage owns shared chrome; `scripts/site_chrome.cjs` renders page-relative
 links and one current-page marker on every editorial page and the playground.
-`site/site.js` owns clipboard feedback and the mobile menu. The release history
+`site/site.js` owns clipboard feedback. The release history
 renderer remains based on the immutable reviewed changelog snapshot.
 
 ## Release content maintenance
@@ -57,3 +58,5 @@ Owner preview feedback: Home uses a compact introduction and four release rows;
 all editorial pages share the same closing link component. Coverage entry pages
 use the same assembled chrome. The external report publisher also needs matching
 chrome, delivered separately without changing coverage data.
+
+The Examples page includes complete released programs for Result handling, persistent collections, records, sorting names and Fibonacci. Release integrity executes displayed source and saved bytecode, plus the guide’s explanation query. Alpha 13 describes new capabilities; the first non-alpha section describes integration, breadth and readiness.
