@@ -17,6 +17,11 @@ assemble() {
     sh "$root/scripts/assemble_site.sh" "$root/site" "$work/playground" "$work/pages"
 }
 assemble
+cmp site/robots.txt "$work/pages/robots.txt"
+cmp site/sitemap.xml "$work/pages/sitemap.xml"
+for page in index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html about/index.html playground/index.html releases/index.html; do
+    test -s "$work/pages/$page"
+done
 grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases/index.html"
 node scripts/site_chrome.cjs site/index.html site/index.html home > "$work/home"
 cmp "$work/home" "$work/pages/index.html"
