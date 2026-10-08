@@ -31,14 +31,13 @@ new language release or change runtime pins.
 
 ### Articles publishing and archive
 
-**Unscheduled.** [GI#15: Articles publishing and archive](https://github.com/sproates/panackelty-website/issues/15)
-records the planned Markdown-based authoring and publishing workflow. Articles
-have stable individual URLs, title/body/date/tag metadata, sharing links and
+**In progress.** [GI#15: Articles publishing and archive](https://github.com/sproates/panackelty-website/issues/15)
+records the Markdown-based authoring and publishing workflow. Articles have
+stable individual URLs, title/body/date/tag metadata, a **Copy link** action and
 author attribution. The `/articles/` archive lists newest first with Older/Newer
-pagination; 10 previews per page is the current recommendation, to confirm in
-the implementation preview. Shared tags link to generated topic pages. Editing
-an article keeps its URL and original publication date stable and regenerates
-the article/tag listings and sitemap. Implementation remains unscheduled.
+pagination, with up to five previews per page. Shared tags link to generated
+topic pages. Editing an article keeps its URL and original publication date
+stable and regenerates the article/tag listings and sitemap.
 
 <a id="rm-119"></a>
 ### RM#119: Cookie-free website analytics

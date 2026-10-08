@@ -9,6 +9,7 @@ test('assembled website navigation and deployed bytes resolve; failures remain v
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pages-links-'));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   fs.cpSync('site', root, {recursive: true});
+  execFileSync('node', ['scripts/articles.cjs', '.', root]);
   fs.mkdirSync(path.join(root, 'releases'));
   fs.writeFileSync(path.join(root, 'releases/index.html'), execFileSync('sh', ['scripts/release_history.sh', '.']));
   fs.mkdirSync(path.join(root, 'playground'));
