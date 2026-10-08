@@ -38,8 +38,10 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     assert.match(latest, /← Older/); assert.match(older, /← Older/); assert.match(older, /Newer →/);
     assert.doesNotMatch(oldest, /← Older/); assert.match(oldest, /Newer →/);
     assert.match(detail, /Posted by Ian Sproates on/); assert.match(detail, /data-copy-link="\/articles\/article-11\/"/);
-    assert.match(detail, /<a class="permalink-link" href="\.\/">Permalink<\/a>/);
-    assert.match(detail, /<button class="icon-copy"[^>]+aria-label="Copy article link"/);
+    assert.equal((detail.match(/class="article-permalink article-permalink-(?:top|bottom)"/g) || []).length, 2);
+    assert.match(detail, /class="article-permalink article-permalink-top"[\s\S]*?<a class="permalink-link" href="\.\/">Permalink<\/a>/);
+    assert.match(detail, /class="article-permalink article-permalink-bottom"[\s\S]*?<a class="permalink-link" href="\.\/">Permalink<\/a>/);
+    assert.equal((detail.match(/aria-label="Copy article link"/g) || []).length, 2);
     assert.match(detail, /exact arithmetic/); assert.match(topic, /Article 11/);
     assert.match(sitemap, /articles\/page\/2/); assert.match(sitemap, /articles\/article-11/);
     assert.doesNotMatch(sitemap, /unpublished-draft/);

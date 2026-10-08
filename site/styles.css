@@ -205,6 +205,7 @@ footer { color: var(--muted); }
 .article-detail h1 { max-width: 17ch; font-size: clamp(3rem, 7vw, 5.7rem); }
 .article-byline { margin-top: 1.4rem; color: var(--muted); }
 .article-permalink { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-top: 0; font-size: .84rem; }
+.article-permalink-top { margin-top: 1rem; }
 .permalink-link { color: var(--muted); text-underline-offset: .2em; }
 .permalink-link:hover { color: var(--ink); }
 .icon-copy { display: grid; width: 2rem; height: 2rem; place-items: center; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; }
