@@ -18,7 +18,11 @@ assemble() {
 }
 assemble
 cmp site/robots.txt "$work/pages/robots.txt"
-cmp site/sitemap.xml "$work/pages/sitemap.xml"
+# Published article routes are added at assembly time; all static canonical
+# routes should still match the source sitemap exactly.
+sed '/<loc>https:\/\/panackelty\.com\/articles\//d' "$work/pages/sitemap.xml" > "$work/static-sitemap.xml"
+cmp site/sitemap.xml "$work/static-sitemap.xml"
+grep -q 'https://panackelty.com/articles/panackelty-alpha-12-release/' "$work/pages/sitemap.xml"
 for page in index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html about/index.html playground/index.html releases/index.html; do
     test -s "$work/pages/$page"
 done
