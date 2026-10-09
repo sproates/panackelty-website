@@ -23,7 +23,7 @@ async function build(root, destination, metadata, archive) {
     const playground = path.join(temporary, 'playground');
     unpack(archive || await download(pin), pin, playground);
     const output = path.join(temporary, 'site');
-    execFileSync('sh', [path.join(__dirname, 'assemble_site.sh'), path.join(root, 'site'), playground, output]);
+    execFileSync('sh', [path.join(__dirname, 'assemble_site.sh'), path.join(root, 'site'), playground, output], {env:{...process.env, PANACKELTY_PREVIEW_DRAFTS:'1'}});
     const provenance = {...metadata, browser: pin};
     fs.writeFileSync(path.join(output, 'preview.json'), JSON.stringify(provenance, null, 2) + '\n');
     const notice = identity => `<aside style="padding:1rem;background:#fff3cd;color:#222;overflow-wrap:anywhere;min-width:0;box-sizing:border-box">Review preview: ${metadata.headCommit || metadata.commit}${metadata.headCommit ? ' (merged with PR base)' : ''}${metadata.dirty ? ' (local changes)' : ''}. <a href="${identity}">Build identity</a></aside>`;

@@ -38,3 +38,4 @@ cp "$temporary/home" "$destination/index.html"
 for page in capabilities get-started examples explain under-the-hood roadmap about coverage coverage/html; do
     cp "$temporary/$(printf %s "$page" | tr / _)" "$destination/$page/index.html"
 done
+node "$(dirname "$0")/articles.cjs" "$(dirname "$site")" "$destination"

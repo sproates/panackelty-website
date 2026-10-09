@@ -44,6 +44,9 @@ checksums and the published checksum files, then checks, runs and compiles the
 website examples using the matching released native toolchain. It supports
 Linux x86-64 and macOS arm64 and requires network access.
 
+Article authoring, draft previews and publication metadata are described in
+[Writing and publishing articles](docs/ARTICLES.md).
+
 Every PR also runs editorial navigation, release-status and clipboard checks
 at desktop and phone widths. It runs these checks plus browser tests from an immutable reviewed
 browser-repository commit. Documentation and explicit presentation-only paths
