@@ -22,7 +22,7 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     const content = path.join(root, 'content/articles'), drafts = path.join(root, 'drafts');
     const output = path.join(root, 'output');
     fs.mkdirSync(content, {recursive:true}); fs.mkdirSync(drafts);
-    for (let i = 1; i <= 11; i++) fs.writeFileSync(path.join(content, `article-${String(i).padStart(2, '0')}.md`), article(`Article ${i}`, 'published', `2026-01-${String(i).padStart(2,'0')}`, ['exact arithmetic']));
+    for (let i = 1; i <= 11; i++) fs.writeFileSync(path.join(content, `article-${String(i).padStart(2, '0')}.md`), article(`Article ${i}`, 'published', `2026-01-${String(i).padStart(2,'0')}`, i === 11 ? ['exact arithmetic', 'LLM'] : ['exact arithmetic']));
     fs.writeFileSync(path.join(drafts, 'unpublished-draft.md'), article('Unpublished', 'draft', null));
     fs.mkdirSync(output); fs.writeFileSync(path.join(output, 'sitemap.xml'), '<?xml version="1.0"?><urlset></urlset>');
     const repoSite = path.join(root, 'site'); fs.mkdirSync(repoSite);
@@ -33,6 +33,7 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     const oldest = fs.readFileSync(path.join(output, 'articles/page/3/index.html'), 'utf8');
     const detail = fs.readFileSync(path.join(output, 'articles/article-11/index.html'), 'utf8');
     const topic = fs.readFileSync(path.join(output, 'articles/tag/exact-arithmetic/index.html'), 'utf8');
+    const llmTopic = fs.readFileSync(path.join(output, 'articles/tag/llm/index.html'), 'utf8');
     const sitemap = fs.readFileSync(path.join(output, 'sitemap.xml'), 'utf8');
     assert.equal((latest.match(/class="article-card"/g) || []).length, 5);
     assert.match(latest, /← Older/); assert.match(older, /← Older/); assert.match(older, /Newer →/);
@@ -42,8 +43,10 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     assert.match(detail, /class="article-permalink article-permalink-top"[\s\S]*?<a class="permalink-link" href="\.\/">Permalink<\/a>/);
     assert.match(detail, /class="article-permalink article-permalink-bottom"[\s\S]*?<a class="permalink-link" href="\.\/">Permalink<\/a>/);
     assert.equal((detail.match(/aria-label="Copy article link"/g) || []).length, 2);
+    assert.match(detail, /class="article-tag" href="\.\.\/tag\/llm\/">LLM<\/a>/);
+    assert.match(llmTopic, /<h1 class="topic-title">LLM<\/h1>/); assert.match(llmTopic, /Article 11/);
     assert.match(detail, /exact arithmetic/); assert.match(topic, /Article 11/);
-    assert.match(sitemap, /articles\/page\/2/); assert.match(sitemap, /articles\/article-11/);
+    assert.match(sitemap, /articles\/page\/2/); assert.match(sitemap, /articles\/article-11/); assert.match(sitemap, /articles\/tag\/llm/);
     assert.doesNotMatch(sitemap, /unpublished-draft/);
     assert.ok(fs.existsSync(path.join(output, 'articles/unpublished-draft/index.html')));
     assert.throws(() => parseArticle(path.join(content, 'absent.md')));

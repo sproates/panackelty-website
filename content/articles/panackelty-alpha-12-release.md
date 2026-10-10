@@ -6,6 +6,7 @@ tags:
   - releases
   - language
   - compiler
+  - LLM
 ---
 
 The next planned release of Panackelty is called alpha.12.
@@ -77,3 +78,11 @@ I tackle changes like this in stages. I use the seed to build a new compiler tha
 Then I check that each new build of the compiler produces the same bytecode as the previous build.
 
 The last step is to move the compiler, its build and test tooling, and libraries over to namespaces. I then repeat that rebuild check using the migrated source.
+
+## Beyond LLM capabilities
+
+You might think you can just prompt “implement namespaces” in your favourite LLM. In the first instance, that would leave key topics open and undecided: how imports identify modules, how the compiler keeps names distinct, what saved bytecode needs to preserve, and how to rebuild a compiler whose seed predates namespaces. An LLM could make changes that look right in one part of the compiler while missing what those changes mean elsewhere. And that assumes it achieves meaningful results at all.
+
+An LLM can definitely expedite some of the more menial parts of the work, especially checking. But it needs to be given a clear design, a sequence of manageable steps, and checks at each stage.
+
+The challenge is making the compiler, its tools and its rebuild process agree on what a namespace means.
