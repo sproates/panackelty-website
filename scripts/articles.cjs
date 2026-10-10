@@ -63,7 +63,6 @@ function parseArticle(file) {
       throw new Error(`${file}: published articles need a valid YYYY-MM-DD date`);
     }
   }
-  values.tags = values.tags.map(tag => tag.toLowerCase());
   const bodyLines = body.split('\n');
   if (bodyLines[0] === `# ${values.title}`) bodyLines.splice(0, 1);
   return {...values, slug, file, body:bodyLines.join('\n').replace(/^\n+/, '')};
@@ -71,6 +70,14 @@ function parseArticle(file) {
 const dateLabel = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'});
 const urlFor = slug => `/articles/${slug}/`;
 const tagSlug = tag => tag.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function uniqueTags(articles) {
+  const tags = new Map();
+  for (const article of articles) for (const tag of article.tags) {
+    const key = tag.toLowerCase();
+    if (!tags.has(key)) tags.set(key, tag);
+  }
+  return [...tags.values()].sort((a,b) => a.localeCompare(b));
+}
 function metadataHead(title, description, canonical, root) {
   return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#15130f"><meta name="description" content="${escape(description)}"><link rel="canonical" href="https://panackelty.com${canonical}"><link rel="icon" href="${root}favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="${root}styles.css"><link rel="stylesheet" href="${root}chrome.css"><title>${escape(title)} — Panackelty</title></head><body>\n<a class="skip-link" href="#main">Skip to content</a>\n<!-- SITE_HEADER -->\n`;
 }
@@ -105,8 +112,9 @@ function renderDetail(article, isPreview) {
   return renderChrome(fs.readFileSync(path.join(__dirname, '../site/index.html'), 'utf8'), html, 'article');
 }
 function renderTag(tag, articles, previewDrafts = []) {
-  const published = articles.filter(a => a.status === 'published' && a.tags.includes(tag)).sort((a,b) => b.date.localeCompare(a.date));
-  const drafts = previewDrafts.filter(a => a.tags.includes(tag)).map(a => ({...a, previewDraft:true}));
+  const matchesTag = article => article.tags.some(candidate => candidate.toLowerCase() === tag.toLowerCase());
+  const published = articles.filter(a => a.status === 'published' && matchesTag(a)).sort((a,b) => b.date.localeCompare(a.date));
+  const drafts = previewDrafts.filter(matchesTag).map(a => ({...a, previewDraft:true}));
   const shown = [...drafts, ...published];
   const cards = shown.map(a => renderCard({...a, excerpt: excerpt(a.body)}, Boolean(a.previewDraft), '../../')).join('\n');
   const route = `/articles/tag/${tagSlug(tag)}/`;
@@ -136,8 +144,8 @@ function build(repository, destination, includeDrafts = false) {
   }
   for (const article of published) write(destination, `articles/${article.slug}/index.html`, renderDetail(article, false));
   if (includeDrafts) for (const article of previews) write(destination, `articles/${article.slug}/index.html`, renderDetail(article, true));
-  const tags = [...new Set(published.flatMap(a => a.tags))].sort();
-  const previewTags = [...new Set([...tags, ...previews.flatMap(a => a.tags)])].sort();
+  const tags = uniqueTags(published);
+  const previewTags = uniqueTags([...published, ...previews]);
   for (const tag of previewTags) write(destination, `articles/tag/${tagSlug(tag)}/index.html`, renderTag(tag, articles, previews));
   const sitemap = path.join(destination, 'sitemap.xml');
   let xml = fs.readFileSync(sitemap, 'utf8');
