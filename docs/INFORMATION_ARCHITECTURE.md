@@ -13,7 +13,7 @@ or old-anchor compatibility is required for this refactor.
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
-| Releases and roadmap | `/roadmap/` | Available now, alpha 12, alpha 13 and first non-alpha target, separately labelled |
+| Releases and roadmap | `/roadmap/` | Available now, next alpha 13 and first non-alpha target, separately labelled |
 | About | `/about/` | Vision, experimental status, contributor credit and feedback |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
@@ -32,9 +32,9 @@ renderer remains based on the immutable reviewed changelog snapshot.
 
 - Available now means the deliberately promoted native release, not core main
   or next. Browser capabilities follow their separately promoted artifact.
-- Alpha 12 is the owner's intended next release. Else-if and source coverage are
-  integrated into next; executable namespaces remain unfinished. None of these
-  development states imply inclusion in the current native download.
+- Alpha 12 is the current native release. The website promotion records its
+  else-if, source-coverage and executable-namespace features alongside the
+  release pins. The next planned native release is alpha 13.
 - Alpha 13 is planned for native HTTP client/server and expanded checker and
   compilation explanations, backed by core GI#236/GI#237/GI#134/GI#173. Package
   prerequisites and the paused explanation programme remain explicit; recording

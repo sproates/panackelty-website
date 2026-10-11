@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#15130f">
-    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.11: exact arithmetic, guarded types, effects, async/await and more.">
+    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.12: exact arithmetic, guarded types, effects, async/await and more.">
     <link rel="canonical" href="https://panackelty.com/capabilities/">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
@@ -20,7 +20,7 @@
         <h1 id="page-title">Small language.<br><em>Serious capabilities.</em></h1>
 <p class="lede">Exact arithmetic. Types that express your rules. Compiler-checked effects. Generic functions, exhaustive pattern matching and async/await.</p>
 <p class="section-intro">Panackelty brings these together in a language for building terminal tools, processing data and exploring algorithms. Its compiler is written in Panackelty itself—and the toolchain can explain selected parts of its reasoning.</p>
-<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.11</strong> for Linux x86-64 and Apple silicon. The browser playground runs a separately pinned version with different host capabilities.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.11">Native alpha.11</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.1.1">Browser v0.1.1</a></p></div>
+<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.12</strong> for Linux x86-64 and Apple silicon. The browser playground runs a separately pinned version with different host capabilities.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.12">Native alpha.12</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.1.1">Browser v0.1.1</a></p></div>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p>
@@ -49,7 +49,7 @@
 
 </nav>
 <div class="capabilities-content">
-<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.11 · experimental</p><h2 id="language-features">Language features</h2>
+<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.12 · experimental</p><h2 id="language-features">Language features</h2>
 <article class="capability-detail" aria-labelledby="exact-values"><h3 id="exact-values">Exact answers, without hidden rounding</h3>
 <p>A third should stay a third until your program decides otherwise.</p>
 <p>Panackelty supports arbitrary-precision whole numbers, exact base-10 decimals and exact fractions. Calculations preserve their meaning without silently substituting floating-point approximations.</p>
@@ -78,6 +78,10 @@ type Port = Nat where value &gt;= 1 &amp;&amp; value &lt;= 65535
 <p>Records give related values named fields. Tagged unions describe alternatives explicitly. Exhaustive pattern matching makes you account for every variant.</p>
 <p>Represent a result, a state or a command as the data it actually is, then handle its possibilities with <code>match</code>.</p>
 <p>When a type describes several cases, the compiler checks that your match covers them. Missing a case becomes something you fix while writing the program.</p>
+</article>
+<article class="capability-detail" aria-labelledby="conditional-chains"><h3 id="conditional-chains">Write longer conditional chains</h3>
+<p>Repeated <code>else if</code> arms let a function express an ordered set of alternatives directly. Each condition is checked in order, and only the selected branch runs; a final <code>else</code> is optional when the result does not need to exist on every path.</p>
+<p><a href="../examples/#else-if-example">Try the alpha.12 conditional example →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="generics"><h3 id="generics">Reusable code, checked across types</h3>
 <p>Generic functions and data types let one implementation work with different value types.</p>
@@ -132,7 +136,7 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>That distinction matters for file formats, command output and network protocols. Code points are not always the same as the visible characters a reader perceives.</p>
 </article>
 </section>
-<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.11 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
+<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.12 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
 <article class="capability-detail" aria-labelledby="host"><h3 id="host">Practical access to the host</h3>
 <p>The native toolchain provides typed paths, filesystem operations, process execution and elapsed-time measurement.</p>
 <p>Read and write files, inspect directories and work with temporary resources. Run commands with explicit arguments, working directories, environment overrides, output limits and timeouts.</p>
@@ -147,7 +151,9 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <article class="capability-detail" aria-labelledby="imports"><h3 id="imports">Build programs across files</h3>
 <p>Imports let you organise code into separate source files and use the standard library.</p>
 <p>Logical paths such as <code>stdlib/path</code> and <code>project/shared/module</code> keep imports independent of where the toolchain is installed.</p>
-<p>Alpha.11 combines ordinary imported declarations into a program-wide namespace. The richer namespace and package model described below is upcoming work.</p>
+<p>Alpha.12 adds executable file-based namespaces. Import modules explicitly from <code>project/</code> or <code>stdlib/</code>, use aliases or selected imports, qualify names, and expose public declarations or re-exports. The compiler keeps declarations from different modules distinct through checking and code generation; source and saved-v9 bytecode run only the selected entry module.</p>
+<p>Imports are limited to the entry module’s tree and active toolchain. Packages, remote dependencies and unsupported or deferred body checks are not included; the compiler rejects incomplete namespace checks instead of emitting an unchecked program.</p>
+<p><a href="../examples/#namespace-examples">Run the namespace examples →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="explain"><h3 id="explain">A compiler you can question</h3>
 <p>Checking a program is useful. Understanding the reason behind a decision is useful too.</p>
@@ -164,7 +170,8 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <article class="capability-detail" aria-labelledby="self-hosting"><h3 id="self-hosting">Written in the language it compiles</h3>
 <p>Panackelty’s compiler is written in Panackelty.</p>
 <p>The project uses its own language to implement a substantial compiler, alongside bootstrap and reproducibility checks. The language is exercised by the toolchain that develops it, not only by demonstration programs.</p>
-<p>Testing includes compiler, runtime and complete-program checks. The coverage site reports the native C VM and measured <code>.panack</code> development source separately, with explicit revisions and test scope.</p>
+<p>Testing includes compiler, runtime and complete-program checks. The coverage site reports the native C VM and measured <code>.panack</code> source separately, with explicit revisions and test scope. The alpha.12 source-coverage baseline inventories 43 tracked compiler, bytecode and standard-library files across its declared roots; it is not whole-suite coverage.</p>
+<p><a href="../coverage/">Read the coverage scope and reports →</a></p>
 </article>
 </section>
 
