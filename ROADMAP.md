@@ -75,16 +75,13 @@ examples stay unchanged until separately supported and verified.
 <a id="rm-103"></a>
 ### RM#103: Corrective compiler release adoption
 
-**Browser prerequisite pending; adoption unscheduled.** Follow-up to
+**Browser correction released; website adoption in review.** Follow-up to
 [core GI#182: Guard-fact correctness repair](https://github.com/sproates/panackelty/issues/182).
-Alpha.11 contains the native correction. The pinned browser v0.1.1 compiler has
-the affected core seed digest; a corrective browser release is still required
-and its implementation owner remains unassigned. The website maintainer owns
-explicit pin/claim promotion once a supporting browser release exists. Review
-static-safety and guarded-type claims against the actual artifacts; the literal
-homepage example does not reproduce the mutation defect. Acceptance includes
-public verification that unsafe examples reject and valid examples still run.
-This entry neither implements the browser repair nor claims adoption is complete.
+Browser v0.1.2 pins the published alpha.12 core commit, which includes the
+corrected compiler seed. Runtime acceptance covers valid and rejected guarded
+values in native and WASI execution. The website maintainer owns the v0.1.2
+pin/claim promotion in the browser promotion below; verify it live before
+closing website adoption.
 
 <a id="rm-104"></a>
 ### RM#104: Explanation website adoption
@@ -131,15 +128,28 @@ integration workflow and remains gated by release and migration acceptance.
 
 ### Native alpha.12 website promotion
 
-**In review.** Promote published native `v0.1.0-alpha.12` from core commit
+**Completed 2026-10-11.** Promoted published native `v0.1.0-alpha.12` from core commit
 [`0c2b9a0`](https://github.com/sproates/panackelty/commit/0c2b9a0b15b6948e322ac10cc2e61a6dcec00e9e).
 The release and both platform archives were published and their SHA-256 values
 verified before this website change. This promotion updates native download and
 installer pins, the release-history snapshot, get-started instructions, current
-capability/roadmap claims, the alpha.12 article and examples. The browser remains
-pinned to v0.1.1. Owner: website maintainer. Acceptance: Website checks pass, an
-accessible preview is reviewed, merge is explicitly approved, and the deployed
-pages/downloads are verified live.
+capability/roadmap claims, the alpha.12 article and examples. The original
+promotion selected browser v0.1.1; the separate v0.1.2 promotion is tracked
+below. PR #20 merged as `5aeb6af`; the main workflow passed release integrity,
+assembly, browser integration and deployed-byte verification, and the live
+home, release history and getting-started pages serve alpha.12.
+
+### Browser v0.1.2 website promotion
+
+**In review.** Promote browser v0.1.2, built and tested against native alpha.12
+core commit `0c2b9a0b15b6948e322ac10cc2e61a6dcec00e9e`. The immutable archive
+SHA-256 is `b7913d78f98de2b85ae08485e0bd7344ec7353a3065a40475fb2f2d5ab447f84`;
+its asset version is `9c63dea4bb3e3fa832a3b3f78be6f802f10dbdc6a708f26ab6ba595b00b4580c`.
+This promotion updates the playground pin, its visible compiler-version note,
+and the capabilities and roadmap claims. Owner: website maintainer. Acceptance:
+Website checks and release integrity pass, the accessible preview is reviewed,
+merge is explicitly approved, and deployment verifies the exact archive-backed
+playground bytes and namespace example live.
 
 Core release authors record affected website claims and hand over concrete
 promotion work here, with source issue/PR, affected pages, current version,

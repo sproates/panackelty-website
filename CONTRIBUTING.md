@@ -1,9 +1,10 @@
 # Contributing
 
 Use a dedicated descriptive branch and a pull request targeting `main`.
-Substantive changes require independent review, passing `Website checks`, a
-current branch and explicit owner approval before merge. Do not push directly
-to main. Use the project GitHub noreply identity for commits.
+Substantive changes require a pull request to `main`, passing `Website checks`,
+a current branch and explicit owner approval before merge. The owner may record
+approval on the pull request or in the associated project conversation. Do not
+push directly to main. Use the project GitHub noreply identity for commits.
 
 Run `make check` after your final edit. Run `make release-check` for release pins,
 examples and download changes; hosted CI runs it for every change. Explicit
