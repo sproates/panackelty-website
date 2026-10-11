@@ -49,7 +49,7 @@ function parseArticle(file) {
   const header = raw.slice(4, end), body = raw.slice(end + 5);
   const values = {};
   for (const line of header.split('\n')) {
-    const match = line.match(/^(title|date|publishedAt|status):\s*(.*)$/);
+    const match = line.match(/^(title|date|publishedAt|status|previewOrder):\s*(.*)$/);
     if (match) values[match[1]] = match[2].trim().replace(/^['"]|['"]$/g, '');
     else if (/^tags:\s*$/.test(line)) values.tags = [];
     else if (/^\s+-\s+/.test(line) && Array.isArray(values.tags)) values.tags.push(line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, ''));
@@ -59,6 +59,7 @@ function parseArticle(file) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`${file}: filename must be a stable lowercase slug`);
   if (!values.title || !Array.isArray(values.tags) || !values.tags.length) throw new Error(`${file}: title and one or more tags are required`);
   if (!['draft', 'published'].includes(values.status)) throw new Error(`${file}: status must be draft or published`);
+  if (values.previewOrder !== undefined && !/^\d+$/.test(values.previewOrder)) throw new Error(`${file}: previewOrder must be a non-negative integer`);
   if (values.status === 'published') {
     const date = new Date(`${values.date || ''}T00:00:00Z`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(values.date || '') || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== values.date) {
@@ -96,7 +97,17 @@ function renderCard(article, preview = false, prefix = '') {
   const href = `${prefix}${article.slug}/`;
   return `<article class="article-card"><p class="eyebrow">${preview ? 'Draft preview' : dateLabel(article.date)}</p><h2><a href="${href}">${escape(article.title)}</a></h2><p>${escape(article.excerpt)}</p><a class="article-read" href="${href}">Read article <span aria-hidden="true">→</span></a></article>`;
 }
-function excerpt(body) { return body.replace(/```[\s\S]*?```/g, ' ').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 220); }
+function excerpt(body) {
+  const text = body.replace(/```[\s\S]*?```/g, ' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim();
+  if (text.length <= 220) return text;
+  const bounded = text.slice(0, 220);
+  const sentences = [...bounded.matchAll(/[.!?](?=\s|$)/g)];
+  if (sentences.length) return text.slice(0, sentences.at(-1).index + 1).trim();
+  const lastSpace = bounded.lastIndexOf(' ');
+  const nextSpace = text.indexOf(' ', 220);
+  const end = lastSpace > 0 ? lastSpace : nextSpace > 0 ? nextSpace : text.length;
+  return `${text.slice(0, end).trim()}…`;
+}
 const PAGE_SIZE = 5;
 function renderArchive(articles, previewDrafts, pageNumber = 1) {
   const published = articles.filter(a => a.status === 'published').sort(newestFirst);
@@ -141,7 +152,7 @@ function build(repository, destination, includeDrafts = false) {
   const draftFiles = fs.existsSync(draftDirectory) ? fs.readdirSync(draftDirectory).filter(f => f.endsWith('.md')) : [];
   const drafts = draftFiles.map(f => parseArticle(path.join(draftDirectory, f))).filter(a => a.status === 'draft');
   const published = articles.filter(a => a.status === 'published').sort(newestFirst);
-  const previews = includeDrafts ? drafts : [];
+  const previews = includeDrafts ? drafts.sort((a, b) => Number(b.previewOrder || 0) - Number(a.previewOrder || 0) || a.slug.localeCompare(b.slug)) : [];
   const slugs = new Set();
   for (const article of [...published, ...previews]) {
     if (slugs.has(article.slug)) throw new Error(`Duplicate article slug: ${article.slug}`);
