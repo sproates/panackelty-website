@@ -47,7 +47,7 @@ function parseArticle(file) {
   const header = raw.slice(4, end), body = raw.slice(end + 5);
   const values = {};
   for (const line of header.split('\n')) {
-    const match = line.match(/^(title|date|status):\s*(.*)$/);
+    const match = line.match(/^(title|date|publishedAt|status):\s*(.*)$/);
     if (match) values[match[1]] = match[2].trim().replace(/^['"]|['"]$/g, '');
     else if (/^tags:\s*$/.test(line)) values.tags = [];
     else if (/^\s+-\s+/.test(line) && Array.isArray(values.tags)) values.tags.push(line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, ''));
@@ -62,12 +62,21 @@ function parseArticle(file) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(values.date || '') || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== values.date) {
       throw new Error(`${file}: published articles need a valid YYYY-MM-DD date`);
     }
+    if (values.publishedAt) {
+      const match = values.publishedAt.match(/^(\d{4}-\d{2}-\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(Z|([+-])(\d{2}):(\d{2}))$/);
+      const offsetIsValid = !match || match[2] === 'Z' || (+match[4] < 14 || (+match[4] === 14 && +match[5] === 0)) && +match[5] <= 59;
+      if (!match || match[1] !== values.date || !offsetIsValid || Number.isNaN(Date.parse(values.publishedAt))) {
+        throw new Error(`${file}: publishedAt must be a valid ISO 8601 timestamp on the published date`);
+      }
+    }
   }
   const bodyLines = body.split('\n');
   if (bodyLines[0] === `# ${values.title}`) bodyLines.splice(0, 1);
   return {...values, slug, file, body:bodyLines.join('\n').replace(/^\n+/, '')};
 }
 const dateLabel = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'});
+const publicationTime = article => Date.parse(article.publishedAt || `${article.date}T00:00:00Z`);
+const newestFirst = (a, b) => publicationTime(b) - publicationTime(a) || a.slug.localeCompare(b.slug);
 const urlFor = slug => `/articles/${slug}/`;
 const tagSlug = tag => tag.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function uniqueTags(articles) {
@@ -88,7 +97,7 @@ function renderCard(article, preview = false, prefix = '') {
 function excerpt(body) { return body.replace(/```[\s\S]*?```/g, ' ').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 220); }
 const PAGE_SIZE = 5;
 function renderArchive(articles, previewDrafts, pageNumber = 1) {
-  const published = articles.filter(a => a.status === 'published').sort((a,b) => b.date.localeCompare(a.date));
+  const published = articles.filter(a => a.status === 'published').sort(newestFirst);
   const ordered = [...previewDrafts.map(a => ({...a, previewDraft:true})), ...published];
   const pageCount = Math.ceil(ordered.length / PAGE_SIZE);
   const shown = ordered.slice((pageNumber - 1) * PAGE_SIZE, pageNumber * PAGE_SIZE);
@@ -104,7 +113,7 @@ function renderArchive(articles, previewDrafts, pageNumber = 1) {
 }
 function renderDetail(article, isPreview) {
   const tags = article.tags.map(tag => `<a class="article-tag" href="../tag/${tagSlug(tag)}/">${escape(tag)}</a>`).join(' ');
-  const date = article.date ? ` on <time datetime="${escape(article.date)}">${dateLabel(article.date)}</time>` : '';
+  const date = article.date ? ` on <time datetime="${escape(article.publishedAt || article.date)}">${dateLabel(article.date)}</time>` : '';
   const notice = isPreview ? '<p class="preview-notice">Draft preview. This article is not published.</p>' : '';
   const body = markdown(article.body, '../../');
   const permalink = position => `<div class="article-permalink article-permalink-${position}"><a class="permalink-link" href="./">Permalink</a><button class="icon-copy" type="button" data-copy-link="${escape(urlFor(article.slug))}" aria-label="Copy article link" title="Copy article link"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg></button><span class="copy-status" aria-live="polite"></span></div>`;
@@ -113,7 +122,7 @@ function renderDetail(article, isPreview) {
 }
 function renderTag(tag, articles, previewDrafts = []) {
   const matchesTag = article => article.tags.some(candidate => candidate.toLowerCase() === tag.toLowerCase());
-  const published = articles.filter(a => a.status === 'published' && matchesTag(a)).sort((a,b) => b.date.localeCompare(a.date));
+  const published = articles.filter(a => a.status === 'published' && matchesTag(a)).sort(newestFirst);
   const drafts = previewDrafts.filter(matchesTag).map(a => ({...a, previewDraft:true}));
   const shown = [...drafts, ...published];
   const cards = shown.map(a => renderCard({...a, excerpt: excerpt(a.body)}, Boolean(a.previewDraft), '../../')).join('\n');
@@ -129,7 +138,7 @@ function build(repository, destination, includeDrafts = false) {
   const draftDirectory = process.env.PANACKELTY_PREVIEW_DRAFT_DIR || path.join(repository, 'drafts');
   const draftFiles = fs.existsSync(draftDirectory) ? fs.readdirSync(draftDirectory).filter(f => f.endsWith('.md')) : [];
   const drafts = draftFiles.map(f => parseArticle(path.join(draftDirectory, f))).filter(a => a.status === 'draft');
-  const published = articles.filter(a => a.status === 'published').sort((a,b) => b.date.localeCompare(a.date));
+  const published = articles.filter(a => a.status === 'published').sort(newestFirst);
   const previews = includeDrafts ? drafts : [];
   const slugs = new Set();
   for (const article of [...published, ...previews]) {
