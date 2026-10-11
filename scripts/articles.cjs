@@ -96,7 +96,17 @@ function renderCard(article, preview = false, prefix = '') {
   const href = `${prefix}${article.slug}/`;
   return `<article class="article-card"><p class="eyebrow">${preview ? 'Draft preview' : dateLabel(article.date)}</p><h2><a href="${href}">${escape(article.title)}</a></h2><p>${escape(article.excerpt)}</p><a class="article-read" href="${href}">Read article <span aria-hidden="true">→</span></a></article>`;
 }
-function excerpt(body) { return body.replace(/```[\s\S]*?```/g, ' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 220); }
+function excerpt(body) {
+  const text = body.replace(/```[\s\S]*?```/g, ' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim();
+  if (text.length <= 220) return text;
+  const bounded = text.slice(0, 220);
+  const sentences = [...bounded.matchAll(/[.!?](?=\s|$)/g)];
+  if (sentences.length) return text.slice(0, sentences.at(-1).index + 1).trim();
+  const lastSpace = bounded.lastIndexOf(' ');
+  const nextSpace = text.indexOf(' ', 220);
+  const end = lastSpace > 0 ? lastSpace : nextSpace > 0 ? nextSpace : text.length;
+  return `${text.slice(0, end).trim()}…`;
+}
 const PAGE_SIZE = 5;
 function renderArchive(articles, previewDrafts, pageNumber = 1) {
   const published = articles.filter(a => a.status === 'published').sort(newestFirst);
