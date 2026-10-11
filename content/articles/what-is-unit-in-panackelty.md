@@ -6,6 +6,8 @@ tags:
   - types
 ---
 
+Let’s start by looking at an example of `Unit`.
+
 Writing a file gives the caller no file contents back, but the write can still succeed or fail. Panackelty represents both outcomes with a `Result`. The `fs_write` function returns `Result[Unit,HostError]`.
 
 ## A `Result` describes both outcomes
