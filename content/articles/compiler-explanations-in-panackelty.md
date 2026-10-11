@@ -1,6 +1,8 @@
 ---
 title: What does panack explain actually explain?
-status: draft
+status: published
+date: 2026-10-11
+publishedAt: 2026-10-11T22:07:47+02:00
 tags:
   - compiler
   - tooling
