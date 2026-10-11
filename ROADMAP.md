@@ -20,8 +20,8 @@ not start its individual features or change their agreed priorities.
 was selected by the owner on 2026-10-06. Shorten Home and organise the existing
 content into Capabilities, Get started, Examples, Under the hood, Releases and
 roadmap, and About. Keep the current styling and feel, provide clean directory
-URLs and distinguish Available now, planned alpha 12 and the first non-alpha
-target. No old URL or anchor compatibility is required. The
+URLs and distinguish Available now, the next planned release and the first
+non-alpha target. No old URL or anchor compatibility is required. The
 [page map](docs/INFORMATION_ARCHITECTURE.md) owns the detailed structure.
 Acceptance requires the assembled site and native/browser checks plus a working
 iPhone preview and explicit merge approval. Implementation does not publish a
@@ -128,6 +128,18 @@ adoption can be recorded here when selected. Core GI#287 owns the future `next`
 integration workflow and remains gated by release and migration acceptance.
 
 ## Release follow-ups and completed history
+
+### Native alpha.12 website promotion
+
+**In review.** Promote published native `v0.1.0-alpha.12` from core commit
+[`0c2b9a0`](https://github.com/sproates/panackelty/commit/0c2b9a0b15b6948e322ac10cc2e61a6dcec00e9e).
+The release and both platform archives were published and their SHA-256 values
+verified before this website change. This promotion updates native download and
+installer pins, the release-history snapshot, get-started instructions, current
+capability/roadmap claims, the alpha.12 article and examples. The browser remains
+pinned to v0.1.1. Owner: website maintainer. Acceptance: Website checks pass, an
+accessible preview is reviewed, merge is explicitly approved, and the deployed
+pages/downloads are verified live.
 
 Core release authors record affected website claims and hand over concrete
 promotion work here, with source issue/PR, affected pages, current version,

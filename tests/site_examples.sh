@@ -4,7 +4,7 @@ set -eu
 command=${PANACK_SITE_COMMAND:-./panack}
 html=${PANACK_SITE_HTML:-site/examples/index.html}
 case "${1:-all}" in
-    all) examples='hello guards exact result collections records filenames fibonacci explain' ;;
+    all) examples='hello guards exact result collections records filenames fibonacci explain else-if' ;;
     release) examples=hello ;;
     capabilities) examples='cap-exact cap-types cap-pure cap-result'; html=site/capabilities/index.html ;;
     *) echo 'expected all, release or capabilities' >&2; exit 2 ;;
@@ -20,7 +20,7 @@ extract() {
     ' "$html" | sed 's/&gt;/>/g;s/&lt;/</g;s/&amp;/\&/g'
 }
 for example in $examples; do
-    if [ "$example" = hello ]; then html=site/get-started/index.html; elif [ "$example" = explain ]; then html=site/explain/index.html; elif [ "${1:-all}" != capabilities ]; then html=${PANACK_SITE_HTML:-site/examples/index.html}; fi
+    if [ "$example" = hello ]; then html=site/get-started/index.html; elif [ "$example" = explain ]; then html=site/explain/index.html; elif [ "$example" = else-if ]; then html=site/examples/index.html; elif [ "${1:-all}" != capabilities ]; then html=${PANACK_SITE_HTML:-site/examples/index.html}; fi
     extract "$example-source" > "$work/$example.panack"
     extract "$example-output" > "$work/expected"
     case "$example" in

@@ -1,4 +1,10 @@
 import {test, expect} from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const siteRoot=process.env.PLAYGROUND_SITE_DIR;
+if(!siteRoot) throw new Error('PLAYGROUND_SITE_DIR must point at the assembled website');
+const nativeVersion=fs.readFileSync(path.join(siteRoot,'native-release.txt'),'utf8').trim();
 const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/about/','/releases/'];
 test('editorial pages have consistent clean navigation at desktop and phone widths',async({page})=>{
   for(const width of [1280,390]){
@@ -32,7 +38,7 @@ test('release availability and copy controls remain explicit',async({page,contex
   await expect(page.locator('#alpha-13')).toContainText('HTTP client and server');
   await page.goto('/get-started/');
   const command=page.locator('#optional-install-command');
-  await expect(command).toContainText('--version 0.1.0-alpha.11');
+  await expect(command).toContainText(`--version ${nativeVersion}`);
   if(browserName==='chromium'){
     await context.grantPermissions(['clipboard-read','clipboard-write']);
     await page.getByRole('button',{name:'Copy installer command',exact:true}).click();
