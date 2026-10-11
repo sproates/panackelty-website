@@ -75,13 +75,13 @@ examples stay unchanged until separately supported and verified.
 <a id="rm-103"></a>
 ### RM#103: Corrective compiler release adoption
 
-**Browser correction released; website adoption in review.** Follow-up to
+**Browser correction adopted; website acceptance complete.** Follow-up to
 [core GI#182: Guard-fact correctness repair](https://github.com/sproates/panackelty/issues/182).
 Browser v0.1.2 pins the published alpha.12 core commit, which includes the
 corrected compiler seed. Runtime acceptance covers valid and rejected guarded
-values in native and WASI execution. The website maintainer owns the v0.1.2
-pin/claim promotion in the browser promotion below; verify it live before
-closing website adoption.
+values in native and WASI execution. The website now pins and serves v0.1.2;
+its deployed playground archive identity and namespace example were verified
+against the immutable release. See the completed promotion record below.
 
 <a id="rm-104"></a>
 ### RM#104: Explanation website adoption
@@ -141,15 +141,20 @@ home, release history and getting-started pages serve alpha.12.
 
 ### Browser v0.1.2 website promotion
 
-**In review.** Promote browser v0.1.2, built and tested against native alpha.12
-core commit `0c2b9a0b15b6948e322ac10cc2e61a6dcec00e9e`. The immutable archive
-SHA-256 is `b7913d78f98de2b85ae08485e0bd7344ec7353a3065a40475fb2f2d5ab447f84`;
-its asset version is `9c63dea4bb3e3fa832a3b3f78be6f802f10dbdc6a708f26ab6ba595b00b4580c`.
-This promotion updates the playground pin, its visible compiler-version note,
-and the capabilities and roadmap claims. Owner: website maintainer. Acceptance:
-Website checks and release integrity pass, the accessible preview is reviewed,
-merge is explicitly approved, and deployment verifies the exact archive-backed
-playground bytes and namespace example live.
+**Completed 2026-10-11.** Promoted browser v0.1.2, built and tested against
+native alpha.12 core commit `0c2b9a0b15b6948e322ac10cc2e61a6dcec00e9e`. The
+immutable archive SHA-256 is
+`b7913d78f98de2b85ae08485e0bd7344ec7353a3065a40475fb2f2d5ab447f84`; its asset
+version is `9c63dea4bb3e3fa832a3b3f78be6f802f10dbdc6a708f26ab6ba595b00b4580c`.
+PR [#21](https://github.com/sproates/panackelty-website/pull/21) merged as
+[`8a23fa5`](https://github.com/sproates/panackelty-website/commit/8a23fa5cbbce815f9e7f2edcb77eb2ed201e395a).
+Main workflow [#38124638084](https://github.com/sproates/panackelty-website/actions/runs/38124638084)
+passed Website checks, release integrity, site assembly, browser integration,
+and deployed-byte/provenance verification. Live `/publication.json` identifies
+that exact commit and run; `/playground/release.json` matches the immutable
+archive and asset identity, and the deployed examples include “Namespace imports.”
+The owner reviewed and approved the preview before merge. Website acceptance is
+complete. Owner: website maintainer.
 
 Core release authors record affected website claims and hand over concrete
 promotion work here, with source issue/PR, affected pages, current version,
