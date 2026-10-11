@@ -8,12 +8,15 @@ const {build, markdown, parseArticle} = require('../scripts/articles.cjs');
 const article = (slug, status, date, tags = ['compiler']) => `---\ntitle: ${slug}\nstatus: ${status}\n${date ? `date: ${date}\n` : ''}tags:\n${tags.map(tag => `  - ${tag}`).join('\n')}\n---\n\nAn article about **${slug}**.\n`;
 
 test('article Markdown renders common prose, links, headings and code safely', () => {
-  const html = markdown('# Heading\n\nA `value` and [link](https://example.com/?a=1&b=2).\n\n```panackelty\npure main(): Unit {}\n```\n\n<script>alert(1)</script>');
+  const html = markdown('# Heading\n\nA `value`, [link](https://example.com/?a=1&b=2), and ![source to output diagram](/images/flow.svg).\n\n```panackelty\npure main(): Unit {}\n```\n\n<script>alert(1)</script>', '../../');
   assert.match(html, /<h1 id="heading">Heading<\/h1>/);
   assert.match(html, /<code>value<\/code>/);
   assert.match(html, /href="https:\/\/example\.com\/\?a=1&amp;b=2"/);
+  assert.match(html, /<figure class="article-figure"><img src="\.\.\/\.\.\/images\/flow\.svg" alt="source to output diagram" loading="lazy" decoding="async"><\/figure>/);
   assert.match(html, /language-panackelty/);
   assert.match(html, /&lt;script/);
+  assert.doesNotMatch(markdown('![remote diagram](https://example.com/flow.svg)'), /<img/);
+  assert.doesNotMatch(markdown('![outside path](/../flow.svg)'), /<img/);
 });
 
 test('build publishes stable article, topic and paginated archive URLs, while keeping drafts preview-only', () => {

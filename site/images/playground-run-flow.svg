@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1090" role="img" aria-labelledby="diagram-title diagram-description">
+  <title id="diagram-title">How the browser playground runs a program</title>
+  <desc id="diagram-description">The editor sends source code to a background worker. A WebAssembly build of the Panackelty virtual machine runs the compiler bytecode and produces Panackelty bytecode. A fresh VM instance verifies and executes it, then returns output and diagnostics to the page as text.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#65d7d0"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="718" height="1088" rx="12" fill="#1d1a15" stroke="#373127" stroke-width="2"/>
+  <text x="42" y="53" fill="#9aa7ff" font-family="Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2.2">INSIDE YOUR BROWSER</text>
+  <text x="42" y="96" fill="#f7f1e5" font-family="Georgia, serif" font-size="34">From source to output</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="48" y="130" width="624" height="112" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <text x="76" y="162" fill="#9aa7ff" font-size="14" font-weight="700" letter-spacing="1.5">PAGE</text>
+    <text x="76" y="194" fill="#f7f1e5" font-size="23" font-weight="700">Editor and Run program</text>
+    <text x="76" y="222" fill="#b8b0a1" font-size="16">Your source stays in this browser.</text>
+
+    <line x1="360" y1="243" x2="360" y2="278" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="382" y="266" fill="#b8b0a1" font-size="14">source + Run</text>
+
+    <rect x="48" y="288" width="624" height="112" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <text x="76" y="320" fill="#9aa7ff" font-size="14" font-weight="700" letter-spacing="1.5">WORKER</text>
+    <text x="76" y="352" fill="#f7f1e5" font-size="23" font-weight="700">Background task</text>
+    <text x="76" y="380" fill="#b8b0a1" font-size="16">Loads the pinned compiler, standard library and VM.</text>
+
+    <line x1="360" y1="401" x2="360" y2="436" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="382" y="424" fill="#b8b0a1" font-size="14">compile</text>
+
+    <rect x="48" y="446" width="624" height="190" rx="8" fill="#252119" stroke="#65d7d0" stroke-width="2"/>
+    <text x="76" y="479" fill="#65d7d0" font-size="14" font-weight="700" letter-spacing="1.3">PANACKELTY VM · WEBASSEMBLY</text>
+    <text x="76" y="516" fill="#f7f1e5" font-size="23" font-weight="700">Run the compiler</text>
+    <text x="76" y="555" fill="#b8b0a1" font-size="16">Compiler bytecode reads your source and the standard</text>
+    <text x="76" y="580" fill="#b8b0a1" font-size="16">library, then produces Panackelty bytecode.</text>
+    <rect x="76" y="597" width="145" height="25" rx="12" fill="#373127"/>
+    <text x="91" y="615" fill="#f7f1e5" font-size="13">VM instance 1</text>
+
+    <line x1="360" y1="637" x2="360" y2="672" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="382" y="660" fill="#b8b0a1" font-size="14">fresh VM instance</text>
+
+    <rect x="48" y="682" width="624" height="160" rx="8" fill="#252119" stroke="#65d7d0" stroke-width="2"/>
+    <text x="76" y="715" fill="#65d7d0" font-size="14" font-weight="700" letter-spacing="1.3">PANACKELTY VM · WEBASSEMBLY</text>
+    <text x="76" y="752" fill="#f7f1e5" font-size="23" font-weight="700">Verify and run</text>
+    <text x="76" y="789" fill="#b8b0a1" font-size="16">A new VM instance checks and executes the bytecode.</text>
+    <rect x="76" y="803" width="145" height="25" rx="12" fill="#373127"/>
+    <text x="91" y="821" fill="#f7f1e5" font-size="13">VM instance 2</text>
+
+    <line x1="360" y1="843" x2="360" y2="878" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="382" y="866" fill="#b8b0a1" font-size="14">output + diagnostics</text>
+
+    <rect x="48" y="888" width="624" height="112" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <text x="76" y="920" fill="#9aa7ff" font-size="14" font-weight="700" letter-spacing="1.5">PAGE</text>
+    <text x="76" y="952" fill="#f7f1e5" font-size="23" font-weight="700">Output and diagnostics</text>
+    <text x="76" y="980" fill="#b8b0a1" font-size="16">Displayed as text in the browser.</text>
+  </g>
+</svg>
