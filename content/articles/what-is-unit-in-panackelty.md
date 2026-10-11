@@ -6,24 +6,18 @@ tags:
   - types
 ---
 
-Some functions do useful work without producing information for their caller. Writing a file is one example: the caller may need to know whether the operation succeeded, but there is no file contents value to return.
+Writing a file gives the caller no file contents back, but the write can still succeed or fail. Panackelty represents both outcomes with a `Result`. The `fs_write` function returns `Result[Unit,HostError]`.
 
-Panackelty has a type for that successful “no data” value: `Unit`. It has exactly one value, written `()`.
+## A `Result` describes both outcomes
 
-## `Unit` is a value
+`Result` has two type parameters: the first is the value carried by success, and the second is the value carried by failure. The function returns a `Result` value, and that value is always one of two cases: `Ok(success_value)` or `Error(error_value)`.
 
-Because `Unit` is an ordinary type, a function can return it, store it, pass it to another function or use it as part of a larger type. Its value carries no detail, but its presence still has meaning:
+- `Ok(())` means the write succeeded. `()` is a `Unit` value, so there is no extra data to return.
+- `Error(problem)` means the write failed. `problem` has type `HostError`.
 
-```panackelty
-success: Unit = ()
-print(success) // ()
-```
+So `Result[Unit,HostError]` does not mean “a result that contains an error”. It describes both alternatives. `Result[HostError]` would leave out the success type; Panackelty's `Result` needs both.
 
-There is only one possible `Unit` value, so two `Unit` values are equal. Arithmetic and ordering do not apply to it. `Unit` is for representing a value whose meaning is “there is no further result to provide”.
-
-## No data can still be a successful result
-
-The value becomes especially useful when an operation can either succeed without returning data or fail with an explanation. Panackelty can express that as `Result[Unit,E]`:
+For a smaller example, this function returns the same shape with `Str` as its error type:
 
 ```panackelty
 pure finish_step(completed: Bool): Result[Unit,Str] {
@@ -35,9 +29,13 @@ pure finish_step(completed: Bool): Result[Unit,Str] {
 }
 ```
 
-The two cases have different meanings. `Ok(())` says the step succeeded and has no result data. `Error("step failed")` carries the failure. A real filesystem operation uses this shape too: `fs_write` returns `Result[Unit,HostError]`.
+Here, `Ok(())` is success and `Error("step failed")` is failure. The caller can handle either case explicitly.
 
-If the function returned only `Unit`, the caller would have no result value through which to distinguish success from a reported failure. If it returned only an error type, success would need another convention. `Result` makes both outcomes explicit in one type.
+## Why is the success type `Unit`?
+
+The success case still needs a value type, even when success has no data to return. `Unit` has one value, written `()`. That gives `Result` a real value for `Ok(())` without inventing a dummy answer.
+
+By comparison, `fs_read` returns `Result[Bytes,HostError]` because a successful read does have data: the bytes it read. Both functions report errors in the same way; the first type parameter records what success carries.
 
 ## `Unit` is not `Void`
 
@@ -46,7 +44,7 @@ If the function returned only `Unit`, the caller would have no result value thro
 - `Unit` is a first-class value. It can be stored, passed, returned and used inside `Result`, records, enums and collections.
 - `Void` is a function return marker. It is not a value that can be stored or passed around.
 
-That means `Void` cannot be used as the success type in `Result`: `Result[Void,E]` is not a valid Panackelty type. `Result` needs a success value to put inside `Ok(...)`. `Unit` supplies that value, so `Result[Unit,E]` can represent both outcomes: `Ok(())` for success with no data, or `Error(problem)` for failure.
+That means `Void` cannot be used as the success type in `Result`: `Result[Void,E]` is not a valid Panackelty type. `Ok(...)` carries a value, and `Void` is not a value. `Unit` supplies the value for a successful operation with no data: `Ok(())`.
 
 A `Void` function may reach the end of its body without producing a value. A function declared to return `Unit` must explicitly produce `()`:
 
@@ -62,16 +60,6 @@ pure finish(): Unit {
 
 The empty parentheses on the last line are the result. They are not an omitted result.
 
-## It is not a missing value
-
-`Unit` also differs from `None()`. `None()` is one variant of `Option[T]`, used when a value may be absent. `Unit` is a present value with one possible form. A function can return `Option[Unit]` if it needs to represent either “no event” or “an event happened, with no extra data”, though in many APIs `Result[Unit,E]` is the more useful choice when failure details matter.
-
-That distinction keeps the type informative. `Unit` says a value exists but carries no payload; `None()` says the optional value is absent; `Void` says the function has no value result at all.
-
-## Where it fits
-
-The difference is useful when two operations follow the same success-or-failure pattern, but only one has data to return. For example, `fs_read` returns `Result[Bytes,HostError]`, while `fs_write` returns `Result[Unit,HostError]`. A successful read contains bytes; a successful write contains `()`. Both use `Result` to report an error in the same way, without inventing a dummy value for the write or giving it a separate convention.
-
-Use `Void` when a function has no value result. Use `Unit` when an API needs a result value even though success carries no extra information.
+`Unit` is also different from `None()`. `None()` means an optional value is absent; `Unit` is a present success value with nothing more to carry. Use `Void` when a function returns no value at all. Use `Unit` when the result needs to say that an operation succeeded, even though there is no data to return.
 
 For the exact rules and more examples, see [First-class Unit in the specification](https://github.com/sproates/panackelty/blob/main/SPEC.md#first-class-unit), [Exact fractions and Unit in the README](https://github.com/sproates/panackelty/blob/main/README.md#exact-fractions-and-unit), and [typed filesystem operations](https://github.com/sproates/panackelty/blob/main/SPEC.md#typed-filesystem-process-and-sleep-apis).
