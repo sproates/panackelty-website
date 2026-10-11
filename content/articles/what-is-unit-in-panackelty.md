@@ -66,4 +66,4 @@ The empty parentheses on the last line are the result. They are not an omitted r
 
 For the exact rules and more examples, see [First-class Unit in the specification](https://github.com/sproates/panackelty/blob/main/SPEC.md#first-class-unit), [Exact fractions and Unit in the README](https://github.com/sproates/panackelty/blob/main/README.md#exact-fractions-and-unit), and [typed filesystem operations](https://github.com/sproates/panackelty/blob/main/SPEC.md#typed-filesystem-process-and-sleep-apis).
 
-I could have chosen another way to represent a successful operation with no data, but `Unit` feels like the technically right fit for Panackelty.
+Is this hugely useful? Necessary? Your mileage may vary, and that’s fine. I think it’s a perfect fit for Panackelty.
