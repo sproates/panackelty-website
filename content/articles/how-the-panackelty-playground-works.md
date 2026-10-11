@@ -1,6 +1,8 @@
 ---
 title: How the Panackelty browser playground works
-status: draft
+status: published
+date: 2026-10-11
+publishedAt: 2026-10-11T23:01:00+02:00
 tags:
   - playground
   - compiler
