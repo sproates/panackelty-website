@@ -1,6 +1,7 @@
 ---
 title: Why there is no null in Panackelty
 status: draft
+previewOrder: 2
 tags:
   - types
   - errors
