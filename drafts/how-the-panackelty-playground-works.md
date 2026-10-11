@@ -25,10 +25,7 @@ compiled to WebAssembly, a format browsers can run.
 
 ![Flow from source to output: the page sends source to a worker; a Panackelty VM compiled to WebAssembly runs the compiler bytecode and produces Panackelty bytecode; a fresh VM verifies and runs it; the page displays the output and diagnostics as text.](/images/playground-run-flow.svg)
 
-The compiler is itself a Panackelty bytecode program. One VM instance runs it
-with your source and the standard library to produce Panackelty bytecode. A
-fresh VM instance verifies and runs that bytecode. The page displays output and
-diagnostics as text.
+The compiler itself is written in Panackelty and runs in the VM.
 
 JavaScript connects the editor, worker and WebAssembly module. It doesn't
 reimplement Panackelty's compiler or language rules.
