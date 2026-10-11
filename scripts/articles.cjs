@@ -96,7 +96,7 @@ function renderCard(article, preview = false, prefix = '') {
   const href = `${prefix}${article.slug}/`;
   return `<article class="article-card"><p class="eyebrow">${preview ? 'Draft preview' : dateLabel(article.date)}</p><h2><a href="${href}">${escape(article.title)}</a></h2><p>${escape(article.excerpt)}</p><a class="article-read" href="${href}">Read article <span aria-hidden="true">→</span></a></article>`;
 }
-function excerpt(body) { return body.replace(/```[\s\S]*?```/g, ' ').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 220); }
+function excerpt(body) { return body.replace(/```[\s\S]*?```/g, ' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[#>*`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 220); }
 const PAGE_SIZE = 5;
 function renderArchive(articles, previewDrafts, pageNumber = 1) {
   const published = articles.filter(a => a.status === 'published').sort(newestFirst);
