@@ -26,6 +26,11 @@ When ready to publish, move the Markdown file to `content/articles/`, change
 rename it after publication. Editing an existing article leaves its URL and
 original date unchanged.
 
+For two articles published on the same day, add `publishedAt` with the full
+ISO 8601 publication time and its timezone offset, for example
+`publishedAt: 2026-10-12T09:30:00+02:00`. The archive uses it to put the later
+article first; article pages continue to display the calendar date from `date`.
+
 The build creates the newest-first `/articles/` archive, article pages and
 tag-topic pages. It adds published routes to `sitemap.xml`. The archive shows
 up to five articles per page, with Older and Newer links when needed.
