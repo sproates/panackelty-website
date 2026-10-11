@@ -10,12 +10,12 @@ Writing a file gives the caller no file contents back, but the write can still s
 
 ## A `Result` describes both outcomes
 
-`Result` has two type parameters: the first is the value carried by success, and the second is the value carried by failure. The function returns a `Result` value, and that value is always one of two cases: `Ok(success_value)` or `Error(error_value)`.
+`Result` has two type parameters: the first describes the value inside `Ok(...)`, and the second describes the value inside `Error(...)`. A function returning `Result` produces one value, which is always one of those cases:
 
 - `Ok(())` means the write succeeded. `()` is a `Unit` value, so there is no extra data to return.
 - `Error(problem)` means the write failed. `problem` has type `HostError`.
 
-So `Result[Unit,HostError]` does not mean “a result that contains an error”. It describes both alternatives. `Result[HostError]` would leave out the success type; Panackelty's `Result` needs both.
+`Result[HostError]` is not a form Panackelty uses. It would name only the error value and leave the success value unspecified. For `fs_write`, success carries `Unit` and failure carries `HostError`.
 
 For a smaller example, this function returns the same shape with `Str` as its error type:
 
