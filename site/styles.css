@@ -218,6 +218,8 @@ footer { color: var(--muted); }
 .article-body p, .article-body li { max-width: 72ch; }
 .article-body li + li { margin-top: .5rem; }
 .article-body blockquote { margin: 2rem 0; padding-left: 1.3rem; border-left: 2px solid var(--signal); color: var(--muted); }
+.article-figure { margin: 2.5rem 0; overflow: hidden; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); }
+.article-figure img { display: block; width: 100%; height: auto; }
 .article-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; margin-top: 4rem; padding-block: 1.5rem; border-top: 1px solid var(--line); }
 .article-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
 .article-tag { padding: .25rem .65rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .82rem; text-decoration: none; }

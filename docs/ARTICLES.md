@@ -39,3 +39,10 @@ Every article page has an Ian Sproates byline, its publication date, linked
 topic tags and a **Copy link** button. The button copies the current preview or
 production URL. Drafts have no publication date until one is set as part of
 publishing.
+
+Article Markdown supports local SVG illustrations. Store them under
+`site/images/` and refer to them with a site-root path and descriptive alt text:
+
+```md
+![Diagram showing how the browser runs a program](/images/playground-run-flow.svg)
+```

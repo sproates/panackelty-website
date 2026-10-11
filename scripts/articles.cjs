@@ -7,6 +7,8 @@ function inline(text, root = '') {
   const tokens = [];
   const hold = html => `\u0000${tokens.push(html) - 1}\u0000`;
   text = escape(text).replace(/`([^`]+)`/g, (_, code) => hold(`<code>${code}</code>`));
+  text = text.replace(/!\[([^\]]+)\]\((\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.svg)\)/g, (_, alt, url) =>
+    hold(`<figure class="article-figure"><img src="${root}${url.slice(1)}" alt="${alt}" loading="lazy" decoding="async"></figure>`));
   text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g, (_, label, url) => hold(`<a href="${escape(url.startsWith('/') ? `${root}${url.slice(1)}` : url.replace(/&amp;/g, '&'))}">${label}</a>`));
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
   return text.replace(/\u0000(\d+)\u0000/g, (_, i) => tokens[+i]);
