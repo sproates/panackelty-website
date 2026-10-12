@@ -215,3 +215,5 @@ make source-coverage-baseline
 ```
 
 The second command refuses to overwrite an existing output directory. The resulting report includes the exact manifest and source, compiler, bytecode and session identities used for that collection.
+
+The report shows me what the measured runs reached and where the evidence is incomplete. I use that to decide where to look next; the tests still have to show whether the behaviour is right.
