@@ -1,7 +1,8 @@
 ---
 title: Why there is no null in Panackelty
-status: draft
-previewOrder: 2
+status: published
+date: 2026-10-12
+publishedAt: 2026-10-12T02:00:17+02:00
 tags:
   - types
   - errors
