@@ -216,4 +216,8 @@ make source-coverage-baseline
 
 The second command refuses to overwrite an existing output directory. The resulting report includes the exact manifest and source, compiler, bytecode and session identities used for that collection.
 
-The report shows me what the measured runs reached and where the evidence is incomplete. I use that to decide where to look next; the tests still have to show whether the behaviour is right.
+## Conclusion
+
+Coverage figures are useful when I can see what they count, which runs produced them and where evidence is missing. That is why Panackelty carries the measurement scope and provenance with its report, and keeps a known zero separate from an item it could not measure.
+
+The collector and session checks are particular to a self-hosted compiler. The way I use the report is simpler: investigate the gaps, choose what deserves another test, and use assertions to check the behaviour. Coverage gives me somewhere to look; the percentage doesn't tell me whether the program is right.
