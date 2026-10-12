@@ -75,6 +75,8 @@ The collection process has several pieces. Each does a limited job:
 5. **Aggregate the sessions.** The aggregator checks that expected executions registered, their records belong to the current session, and the records form a complete, consistent set. It then combines hits for the same source item without counting shared files twice in the denominator.
 6. **Apply the reviewed policy and publish.** The source report is checked against its manifest and regression policy. The independent coverage publisher selects a successful report from the core `next` branch and verifies its provenance before replacing the live source report.
 
+That is why the collector uses a Panackelty-specific format. An LCOV tracefile is useful for conventional line, function and branch counts, but it would not be enough as the evidence we validate. Our records preserve source-item identities and the artifact and inventory they belong to. They also keep a known zero separate from unavailable data, and function entry separate from completion. We could export ordinary counts in LCOV form for tools that accept it, but that would be a less detailed view of the checked report.
+
 This division is deliberate. The VM observes execution, the compiler associates observations with source, the reader checks the evidence, and the publisher checks what it is about to make public. A test run does not get to define its own denominator just by reporting whichever items it happened to hit.
 
 Coverage is an opt-in observation alongside execution. The accepted source baseline leaves bytecode version 9 unchanged; coverage probes and counters do not become part of ordinary compiled programs. A collection failure is reported as a collection failure rather than changing the program's normal result.
