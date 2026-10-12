@@ -100,7 +100,7 @@ Unavailable doesn't mean uncovered. Calling it a zero would say I know the code 
 
 ## What the current source report covers
 
-The published baseline measures a defined native test corpus, not every test in the repository. Its versioned manifest is the checked-in list of what the report includes. It names the production `.panack` files eligible for measurement, 14 unit-test roots, 13 positive functional roots and three compiler paths: source checking, disassembly and a byte-identical compiler bootstrap check. That last check rebuilds the compiler through its stages and requires the resulting compiler artifacts to match byte for byte. Test files are executed and identified where needed, but they aren't part of the production-source denominator.
+At the time of writing, the published baseline measures a defined native test corpus, not every test in the repository. Its versioned manifest is the checked-in list of what the report includes. It names the production `.panack` files eligible for measurement, 14 unit-test roots, 13 positive functional roots and three compiler paths: source checking, disassembly and a byte-identical compiler bootstrap check. That last check rebuilds the compiler through its stages and requires the resulting compiler artifacts to match byte for byte. Test files are executed and identified where needed, but they aren't part of the production-source denominator.
 
 The manifest makes changes to scope visible. A newly tracked production source file doesn't silently enter or leave the measurement; the manifest needs review. Shared imports may be compiled in different contexts, but each source item appears once in the denominator. Hits from distinct executions can still contribute to its result.
 
@@ -110,7 +110,7 @@ A percentage without its manifest and exclusions is easy to misread. The figures
 
 ## What the current baseline says
 
-The reviewed source coverage baseline sets these floors:
+At the time of writing, the reviewed source coverage baseline sets these floors:
 
 - **Compiler:** 5,173 / 5,998 start lines; 397 / 429 functions; 5,514 / 6,922 source outcomes.
 - **Bytecode:** 587 / 601 start lines; 60 / 60 functions; 517 / 588 source outcomes.
