@@ -1,6 +1,7 @@
 ---
 title: How Panackelty measures its own source coverage
-status: draft
+status: published
+date: 2026-10-13
 tags:
   - testing
   - compiler
