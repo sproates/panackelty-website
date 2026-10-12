@@ -62,7 +62,11 @@ Panackelty reports three views, each with a different denominator:
 - **Functions** are original source declarations, including functions that were never entered. Generic functions keep one source identity even when callers use different type arguments.
 - **Source outcomes** are choices written in the source: the true or false side of an `if`, evaluating or skipping the right side of `&&` or `||`, entering or leaving a loop, and selecting a `match` arm. They are not incidental branches introduced while lowering code for the VM.
 
-For example, if only the true side of `classify` runs, its function can count as reached while its false source outcome remains a known zero. If an expression spans several lines, reaching its starting line does not claim that every line in the span ran.
+Suppose the tests call `classify(12)` but never take the other path. The same run appears differently in each measure:
+
+![One test calls classify with 12. The diagram shows the function as covered, the condition's source line as reached, the true outcome as covered and the false outcome as a known zero.](/images/source-coverage-measures.svg)
+
+Line coverage records the start line of an eligible expression or statement. If an expression spans several lines, reaching its starting line does not claim that every line in the span ran.
 
 ## How an execution becomes a source observation
 
