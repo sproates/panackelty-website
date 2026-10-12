@@ -141,7 +141,7 @@ Coverage can also move for reasons that have little to do with behavioural quali
 
 There is no universal percentage that proves a compiler is well tested. Coverage is most useful alongside focused assertions, compiler and VM tests, functional runs, bootstrap checks and mutation tests. It tells us where the test suite went; the other evidence tells us what it checked.
 
-## What another project can take from this
+## Coverage in other projects
 
 The collection system described above exists because Panackelty measures source code running across compiler invocations, nested VMs and supported child processes. That is a particular problem. An ordinary application can usually start with the coverage support already provided by its language and test framework.
 
