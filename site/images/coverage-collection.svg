@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1230" role="img" aria-labelledby="diagram-title diagram-description">
+  <title id="diagram-title">How Panackelty's source coverage becomes a report</title>
+  <desc id="diagram-description">A six-step flow: define the source and test scope, inventory eligible source items, run registered executions and collect observations, validate identities and completeness, aggregate results as covered, known zero or unavailable, then check the reviewed policy and publish.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#65d7d0"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="718" height="1228" rx="12" fill="#1d1a15" stroke="#373127" stroke-width="2"/>
+  <text x="42" y="52" fill="#9aa7ff" font-family="Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">PANACKELTY SOURCE COVERAGE</text>
+  <text x="42" y="96" fill="#f7f1e5" font-family="Georgia, serif" font-size="32">From test run to report</text>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="42" y="125" width="636" height="126" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <circle cx="78" cy="165" r="19" fill="#373127"/>
+    <text x="72" y="171" fill="#9aa7ff" font-size="17" font-weight="700">1</text>
+    <text x="112" y="164" fill="#f7f1e5" font-size="21" font-weight="700">Set the scope</text>
+    <text x="112" y="198" fill="#b8b0a1" font-size="16">The reviewed manifest names eligible source files</text>
+    <text x="112" y="222" fill="#b8b0a1" font-size="16">and the test roots that will contribute evidence.</text>
+
+    <line x1="360" y1="252" x2="360" y2="277" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="42" y="287" width="636" height="126" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <circle cx="78" cy="327" r="19" fill="#373127"/>
+    <text x="72" y="333" fill="#9aa7ff" font-size="17" font-weight="700">2</text>
+    <text x="112" y="326" fill="#f7f1e5" font-size="21" font-weight="700">Inventory the source</text>
+    <text x="112" y="360" fill="#b8b0a1" font-size="16">The compiler records eligible items and exclusions</text>
+    <text x="112" y="384" fill="#b8b0a1" font-size="16">before source code is lowered to bytecode.</text>
+
+    <line x1="360" y1="414" x2="360" y2="439" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="42" y="449" width="636" height="142" rx="8" fill="#252119" stroke="#65d7d0" stroke-width="2"/>
+    <circle cx="78" cy="489" r="19" fill="#373127"/>
+    <text x="72" y="495" fill="#65d7d0" font-size="17" font-weight="700">3</text>
+    <text x="112" y="488" fill="#f7f1e5" font-size="21" font-weight="700">Run the declared tests</text>
+    <text x="112" y="522" fill="#b8b0a1" font-size="16">Registered sessions collect observations from the</text>
+    <text x="112" y="546" fill="#b8b0a1" font-size="16">native VM and supported nested executions.</text>
+    <text x="112" y="573" fill="#65d7d0" font-size="14" font-weight="700" letter-spacing="1">FRESH EXECUTION RECORDS</text>
+
+    <line x1="360" y1="592" x2="360" y2="617" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="42" y="627" width="636" height="142" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <circle cx="78" cy="667" r="19" fill="#373127"/>
+    <text x="72" y="673" fill="#9aa7ff" font-size="17" font-weight="700">4</text>
+    <text x="112" y="666" fill="#f7f1e5" font-size="21" font-weight="700">Check the evidence</text>
+    <text x="112" y="700" fill="#b8b0a1" font-size="16">The reporter checks source, compiler, bytecode,</text>
+    <text x="112" y="724" fill="#b8b0a1" font-size="16">inventory and session identities, plus completeness.</text>
+    <text x="112" y="751" fill="#f0bd63" font-size="14" font-weight="700" letter-spacing="1">GAPS STAY VISIBLE</text>
+
+    <line x1="360" y1="770" x2="360" y2="795" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="42" y="805" width="636" height="170" rx="8" fill="#252119" stroke="#51483b" stroke-width="2"/>
+    <circle cx="78" cy="845" r="19" fill="#373127"/>
+    <text x="72" y="851" fill="#9aa7ff" font-size="17" font-weight="700">5</text>
+    <text x="112" y="844" fill="#f7f1e5" font-size="21" font-weight="700">Aggregate source results</text>
+    <text x="112" y="878" fill="#b8b0a1" font-size="16">Combine hits without counting shared source twice.</text>
+    <rect x="112" y="902" width="151" height="42" rx="6" fill="#193a34" stroke="#65d7d0"/>
+    <text x="129" y="929" fill="#65d7d0" font-size="15" font-weight="700">COVERED</text>
+    <rect x="276" y="902" width="170" height="42" rx="6" fill="#302b45" stroke="#9aa7ff"/>
+    <text x="293" y="929" fill="#c2c8ff" font-size="15" font-weight="700">KNOWN ZERO</text>
+    <rect x="459" y="902" width="185" height="42" rx="6" fill="#42351f" stroke="#f0bd63"/>
+    <text x="476" y="929" fill="#f0bd63" font-size="15" font-weight="700">UNAVAILABLE</text>
+    <text x="112" y="962" fill="#b8b0a1" font-size="14">A missing observation is never silently counted as zero.</text>
+
+    <line x1="360" y1="976" x2="360" y2="1001" stroke="#65d7d0" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="42" y="1011" width="636" height="150" rx="8" fill="#252119" stroke="#65d7d0" stroke-width="2"/>
+    <circle cx="78" cy="1051" r="19" fill="#373127"/>
+    <text x="72" y="1057" fill="#65d7d0" font-size="17" font-weight="700">6</text>
+    <text x="112" y="1050" fill="#f7f1e5" font-size="21" font-weight="700">Review, then publish</text>
+    <text x="112" y="1084" fill="#b8b0a1" font-size="16">The report must pass the reviewed baseline policy</text>
+    <text x="112" y="1108" fill="#b8b0a1" font-size="16">and its provenance checks before publication.</text>
+    <text x="112" y="1142" fill="#65d7d0" font-size="14" font-weight="700" letter-spacing="1">EVIDENCE BEFORE PERCENTAGE</text>
+  </g>
+</svg>
