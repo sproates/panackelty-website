@@ -75,7 +75,9 @@ The collection process has several pieces. Each does a limited job:
 5. **Aggregate the sessions.** The aggregator checks that expected executions registered, their records belong to the current session, and the records form a complete, consistent set. It then combines hits for the same source item without counting shared files twice in the denominator.
 6. **Apply the reviewed policy and publish.** The source report is checked against its manifest and regression policy. The independent coverage publisher selects a successful report from the core `next` branch and verifies its provenance before replacing the live source report.
 
-That is why the collector uses a Panackelty-specific format. An LCOV tracefile is useful for conventional line, function and branch counts, but it would not be enough as the evidence we validate. Our records preserve source-item identities and the artifact and inventory they belong to. They also keep a known zero separate from unavailable data, and function entry separate from completion. We could export ordinary counts in LCOV form for tools that accept it, but that would be a less detailed view of the checked report.
+![Coverage collection moves from a reviewed source and test scope through inventory, execution, evidence checks, aggregation and policy review before publication. The report classifies each item as covered, a known zero or unavailable.](/images/coverage-collection.svg)
+
+That is why the collector uses a Panackelty-specific format. LCOV is a coverage tool whose plain-text tracefiles record line, function and branch counts. Those counts are useful, but they would not be enough as the evidence we validate. Our records preserve source-item identities and the artifact and inventory they belong to. They also keep a known zero separate from unavailable data, and function entry separate from completion. We could export ordinary counts in LCOV form for tools that accept it, but that would be a less detailed view of the checked report.
 
 This division is deliberate. The VM observes execution, the compiler associates observations with source, the reader checks the evidence, and the publisher checks what it is about to make public. A test run does not get to define its own denominator just by reporting whichever items it happened to hit.
 
@@ -91,15 +93,15 @@ The session system gives each execution a fresh identity. It records which artif
 
 These checks make accidental gaps visible; they are not cryptographic proof against someone deliberately rewriting local files. The reports are reproducible engineering evidence under the stated local workflow, not signed attestations from an adversarial environment.
 
-## Zero and unavailable are different
+## Covered, known zero and unavailable
 
-A **known zero** means the report has enough evidence to say that an eligible item did not run.
+These three states answer different questions, so the report keeps them separate:
 
-**Unavailable** means it cannot safely say whether that item ran. For example, the source association may be missing or ambiguous, or a required execution record may be incomplete.
+- **Covered:** the evidence shows that the eligible source item ran at least once. That still says nothing about whether a test checked its result.
+- **Known zero:** the report has complete evidence for the item, but no measured execution reached it. This is a possible test gap.
+- **Unavailable:** the report cannot establish whether the item ran. Its source association may be ambiguous, or an execution record may be incomplete or missing.
 
-Those should never be collapsed into one number. Counting an unavailable item as zero would claim it was observed and missed. Counting it as covered would invent a hit. Panackelty preserves the state and shows covered, known-zero and unavailable counts separately.
-
-When an item is unavailable, the report does not present a complete percentage as though the denominator were fully known. It can show a lower and upper bound: the confirmed covered items form the lower bound, and treating every unavailable item as covered would form the upper bound. The report's complete percentage remains absent until the measurement is complete.
+Unavailable does not mean uncovered. Counting it as a zero would claim the report knows the code did not run; counting it as covered would invent a hit. When any item is unavailable, Panackelty leaves the complete percentage blank and shows lower and upper bounds instead. The lower bound counts confirmed hits; the upper bound assumes every unavailable item was covered.
 
 ## What the current source report covers
 
@@ -179,11 +181,13 @@ Coverage changes when source files, test selection, tool versions or configurati
 
 This does not require Panackelty's session tickets and byte-level identity checks. It does require knowing what a published report describes. A CI artifact linked to its exact commit and workflow run is often enough for an application's needs.
 
-### Use a low result to choose the next test, then check behaviour
+### Worked example: reaching a retry limit
 
-Suppose a service has a retry limit. A report might show that tests exercise retrying but never reach the path that gives up. That points to a useful test: exceed the limit and check that the request stops retrying and reaches the intended failure handling.
+Suppose a service tries a request up to three times before returning an error. The existing tests cover a successful request and a request that succeeds after one retry, but none makes all three attempts fail. The report shows the give-up outcome as a known zero.
 
-The coverage result identifies the unvisited path. The assertions establish that the application handles it correctly. Mutation testing can add another check by changing the condition or removing the handling and confirming that a test fails.
+Add a test where the dependency fails on every attempt. Check that the service makes exactly three attempts and returns the expected error. The report should now show the give-up outcome as covered, while the assertion checks that the service behaved correctly. Coverage pointed to a path worth testing; it did not decide what the right result should be.
+
+If the dependency runs in a worker that the collector cannot observe, the outcome is unavailable instead. That calls for fixing or documenting the measurement gap before drawing conclusions from the percentage.
 
 When a percentage becomes a target, teams can end up exercising code without checking its effects. A rise is useful when it reflects tests for behaviour that matters. A fall deserves explanation, which might be a real regression, a changed denominator, or more accurate measurement.
 
