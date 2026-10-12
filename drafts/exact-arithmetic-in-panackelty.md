@@ -4,15 +4,16 @@ status: draft
 tags:
   - types
   - language
+  - numerics
 ---
 
-In TypeScript, `0.1 + 0.2 === 0.3` is `false`; the sum is `0.30000000000000004`. Binary floating-point can’t represent some decimal fractions exactly, so the small difference can affect a comparison.
+In TypeScript, `0.1 + 0.2 === 0.3` is `false`; the sum is `0.30000000000000004`. The equality check fails because binary floating-point can’t represent some decimal fractions exactly.
 
-Panackelty takes a different approach for its built-in numeric types. Integers, decimal values and rational values are exact. When an operation cannot produce an exact result in the requested type, Panackelty reports that fact instead of quietly choosing a rounded value.
+Panackelty takes a different approach for its built-in numeric types. Integers, decimal values and rational values are exact. When a calculation cannot produce an exact value in the chosen type, Panackelty makes that failure visible: it may reject the program at compile time or trap at runtime, rather than quietly choosing a rounded value.
 
 That is a deliberate design choice. Panackelty makes exact values the default so a calculation does not silently lose information. If a program needs truncation or rounding, the code should make that decision visible.
 
-That doesn’t rule out other numeric types. If there were a concrete need for faster processing of large numerical workloads, we could consider adding a `Float` alongside the exact types. It would be a deliberate choice to accept approximation for that work.
+That doesn’t rule out other numeric types. If a concrete need arose for faster large-scale numerical work, we could consider adding a `Float` alongside the exact types and accept approximation where speed matters more.
 
 ## Choose the type for the calculation
 
@@ -80,16 +81,12 @@ A rational can be converted to `Dec` only when it has an exact finite decimal re
 
 `(1 / 2).dec()` succeeds and gives `0.5`. `(1 / 3).dec()` traps rather than approximating the value.
 
-These conversions are deliberately visible because changing numeric representations can change which values are possible. If a conversion cannot preserve the value, Panackelty makes the failure explicit.
+These conversions are explicit because numeric types represent different sets of values. If Panackelty cannot preserve a value during conversion, it traps instead of approximating it.
 
 ## Exact does not mean unlimited
 
-`Nat`, `Int`, `Dec` and `Rat` have no fixed machine-word precision limit in their language definitions. Large values can grow as calculations proceed, avoiding ordinary fixed-width integer overflow.
+`Nat`, `Int`, `Dec` and `Rat` have no fixed maximum number of digits. They can grow as calculations proceed, though larger values take more memory and more work. Rational numerators and denominators can grow substantially.
 
-Exact arithmetic is not free. Bigger integers and fractions take more memory and more work, and rational numerators and denominators can grow substantially.
-
-Exactness does not prove that a formula is right. It means the operations follow the defined arithmetic rules without silently rounding or truncating.
-
-The programmer still needs to choose the right model, units and domain policy. Use `Dec` for exact base-ten calculations, `Rat` when fractions must remain exact, and `quotient` when the algorithm intends to truncate integer division.
+Exactness does not prove that a formula is right. The programmer still has to choose the right model, units and domain policy. Panackelty’s exact types ensure that the operations follow its arithmetic rules without silently rounding or truncating.
 
 For the full rules, see [numeric semantics in the specification](https://github.com/sproates/panackelty/blob/main/SPEC.md#values-and-numeric-semantics), the [exact-decimal example in the README](https://github.com/sproates/panackelty/blob/main/README.md#exact-decimal-arithmetic), and the [decimal example program](https://github.com/sproates/panackelty/blob/main/examples/decimal.panack).
