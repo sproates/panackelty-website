@@ -7,20 +7,17 @@ tags:
   - coverage
 ---
 
+I wanted to know which parts of Panackelty's compiler and standard library our tests actually run. That's a slightly unusual problem because the compiler is self-hosted: it's written in Panackelty, the language it compiles. I can measure that `.panack` source with Panackelty's own compiler and virtual machine.
 
-A coverage report tries to answer a straightforward question: which parts of a program ran while a particular set of tests was running?
+But printing a percentage is the easy part. I need to know what was eligible to count, which test runs contributed evidence, and where the report couldn't tell what happened. Without that, a tidy number can give a misleading impression of how much we tested.
 
-For Panackelty, the question has an unusual extra step. Its compiler is self-hosted: it is written in Panackelty, the language it compiles. The compiler and standard library can therefore be measured as `.panack` source by Panackelty's own compiler and virtual machine.
+The machinery I built is particular to a compiler, its bytecode and its bootstrap process. Most projects don't need it. The questions behind it apply more widely, though: what does the report include, what did the tests do, and how much can I trust the result?
 
-That makes for a useful engineering tool, but it also creates room for misleading numbers. A percentage is only meaningful if the report can explain what was eligible to count, which executions it observed, and what it could not establish. This article explains how Panackelty handles those questions, what its current source report covers, and what the figures can and cannot tell you.
+## Coverage tells me what ran
 
-The details here come from a compiler project, with its own bytecode, virtual machine and bootstrap process. Most projects do not need that machinery. The useful ideas are more general: define the code and tests a report represents, make gaps in the evidence visible, and treat coverage as a guide for testing rather than a verdict on quality.
+Coverage records execution. It doesn't tell me whether a test checked the result. Assertions and other checks do that.
 
-## Coverage is evidence that code ran
-
-Coverage is not a verdict on the quality of a test suite. It records execution. Assertions and other checks tell us whether the program returned the right result.
-
-Suppose a function handles positive and non-positive values:
+Suppose a function returns different text for values of at least ten and values below ten:
 
 ```panack
 pure classify(value: Nat): Str {
@@ -32,176 +29,174 @@ pure classify(value: Nat): Str {
 }
 ```
 
-A test that calls `classify(12)` shows that the function ran, that the condition was evaluated, and that the true outcome was taken. It says nothing about the false outcome. A test could also execute both outcomes without checking that either returned the right text.
+A test that calls `classify(12)` tells me the function ran, the condition was evaluated and the true outcome was taken. It tells me nothing about the false outcome. And a test could take both paths without checking that either returned the right text.
 
-Coverage helps answer “did this path run?” It cannot answer “did the test notice if the path was wrong?” That second question needs an assertion, a checked transcript, a mutation check, or another piece of behavioural evidence.
+Coverage helps me ask, “Did this path run?” It can't answer, “Would the test notice if the path were wrong?” For that I need an assertion, a checked transcript, a mutation check or some other behavioural evidence.
 
 ## Why measure Panackelty source?
 
-Native C coverage already measures parts of the virtual machine and host implementation. That is a different report from coverage of the compiler and standard library written in `.panack`.
+Native C coverage measures parts of the virtual machine and host implementation. That's useful, but it doesn't show me what ran in the compiler and standard library written in `.panack`. The source report fills that gap.
 
-The source report makes activity in that self-hosted code easier to see. It can show, for example, whether a compiler error path ran, whether both sides of a standard-library condition were exercised, or whether a function was never reached by the measured tests.
+I can use it to see whether a compiler error path ran, whether tests exercised both sides of a standard-library condition, or whether a function was never reached by the measured tests. Those gaps give me questions to investigate. Is a test missing? Is the code unreachable? Was the test left out of the measured corpus? Or couldn't the collector connect the execution to its source? Each answer calls for a different response.
 
-It also gives maintainers a way to ask better follow-up questions. If an important source outcome has no observed hit, is there a missing test? Is the code genuinely unreachable? Was the test left out of the measured corpus? Or did the collector fail to connect execution to source? Those possibilities need different answers, so the reporting system keeps them distinct.
+## First decide what can count
 
-## First define what could count
+Before tests run, Panackelty builds a source inventory: a map of eligible source items and their locations. The compiler creates it from parsed source, before lowering that source to bytecode.
 
-Before tests run, Panackelty builds a source inventory: a map of eligible source items and their locations. The inventory is created from parsed source before the compiler lowers that source into bytecode.
+That timing matters. One `if` in a Panackelty program can become several bytecode instructions. If I counted those instructions, the report would reflect how the compiler implemented the decision, rather than the decision the programmer wrote. The inventory records source-level items instead: functions, expressions, statements, decisions and their possible outcomes.
 
-That timing matters. One `if` in a Panackelty program may become several bytecode instructions. Counting those instructions would measure details of the compiler's implementation, not the decision the programmer wrote. The inventory instead records source-level items such as functions, expressions, statements, decisions and their possible outcomes.
+I include functions even when the measured tests never call them. Otherwise, unused production code could drop out of the denominator and make the percentage look better. The inventory also lists exclusions with reasons. Imports, type declarations, record and enum declarations, and compile-time refinement checks don't execute as runtime source, so I don't count them as uncovered code.
 
-The inventory includes functions even when no test calls them. Otherwise, unused production code could disappear from the denominator and make the measured percentage look better. It also records explicit exclusions. Imports, type declarations, record and enum declarations, and compile-time refinement checks do not execute as runtime source, so the report lists them with reasons rather than pretending they were uncovered.
-
-The inventory is not itself a coverage report. It describes what could be measured. Execution evidence is collected separately.
+The inventory only tells me what could be measured. The execution evidence comes later.
 
 ### What the source measures mean
 
-Panackelty reports three views, each with a different denominator:
+Panackelty reports three measures, each with its own denominator:
 
-- **Lines** are unique source lines where an eligible expression or statement starts. They are not every line spanned by a multi-line expression. Function headers, punctuation and excluded declarations do not create executable lines.
-- **Functions** are original source declarations, including functions that were never entered. Generic functions keep one source identity even when callers use different type arguments.
-- **Source outcomes** are choices written in the source: the true or false side of an `if`, evaluating or skipping the right side of `&&` or `||`, entering or leaving a loop, and selecting a `match` arm. They are not incidental branches introduced while lowering code for the VM.
+- **Lines:** unique source lines where an eligible expression or statement starts. A multi-line expression doesn't make every line it spans executable. Function headers, punctuation and excluded declarations don't add executable lines.
+- **Functions:** original source declarations, including functions the tests never enter. Generic functions keep one source identity even when callers use different type arguments.
+- **Source outcomes:** choices in the source, such as the true or false side of an `if`, evaluating or skipping the right side of `&&` or `||`, entering or leaving a loop, and selecting a `match` arm. These aren't incidental branches introduced when the compiler lowers code for the VM.
 
-Line coverage records the start line of an eligible expression or statement. If an expression spans several lines, reaching its starting line does not claim that every line in the span ran.
+For line coverage, reaching the line where an expression starts doesn't mean every line in a multi-line expression ran. I keep that distinction explicit in the report.
 
 ## How an execution becomes a source observation
 
-The collection process has several pieces. Each does a limited job:
+The report has to connect the source inventory to the runs that produced it. This is how I do that:
 
-1. **Inventory the source.** The compiler identifies eligible items and their structural source locations for each declared test root.
-2. **Register the executions.** A coverage session records the compiled programs and inventories that may run, including supported nested VM or child-process executions.
-3. **Collect counters.** When coverage is enabled, the native VM records observations as instructions and functions run. Ordinary execution does not allocate coverage counters or write coverage files.
-4. **Recreate and check identities.** The self-hosted compiler tooling recreates the source inventory and probes. A bounded reader checks the records against the local compiler, source, bytecode and inventory identities before accepting them.
-5. **Aggregate the sessions.** The aggregator checks that expected executions registered, their records belong to the current session, and the records form a complete, consistent set. It then combines hits for the same source item without counting shared files twice in the denominator.
-6. **Apply the reviewed policy and publish.** The source report is checked against its manifest and regression policy. The independent coverage publisher selects a successful report from the core `next` branch and verifies its provenance before replacing the live source report.
+1. **Set the scope.** A reviewed manifest names the eligible source files and test roots.
+2. **Register the executions.** A coverage session records the compiled programs and inventories that may run, including supported nested VM and child-process executions.
+3. **Collect observations.** With coverage enabled, the native VM records counters as instructions and functions run. Ordinary execution doesn't allocate these counters or write coverage files.
+4. **Check the identities.** The self-hosted compiler tooling recreates the source inventory and probes. A bounded reader checks each record against the local compiler, source, bytecode and inventory identities before accepting it.
+5. **Combine the sessions.** The aggregator checks that expected executions registered, that their records belong to this session, and that the records form a complete, consistent set. It combines hits for the same source item without counting shared files twice in the denominator.
+6. **Review and publish.** The report is checked against its manifest and regression policy. An independent coverage publisher selects a successful report from the core `next` branch and checks its provenance before replacing the live source report.
 
 ![Coverage collection moves from a reviewed source and test scope through inventory, execution, evidence checks, aggregation and policy review before publication. The report classifies each item as covered, a known zero or unavailable.](/images/coverage-collection.svg)
 
-That is why the collector uses a Panackelty-specific format rather than, say, LCOV. LCOV is a coverage tool whose plain-text tracefiles record line, function and branch counts. Those counts are useful, but they would not be enough as the evidence we validate. Our records preserve source-item identities and the artifact and inventory they belong to. They also keep a known zero separate from unavailable data, and function entry separate from completion. We could export ordinary counts in LCOV form for tools that accept it, but that would be a less detailed view of the checked report.
+I use a Panackelty-specific format because ordinary counts don't carry all the evidence this process checks. LCOV tracefiles record line, function and branch counts. Those are useful measures, but our records also preserve source-item identities and the artifact and inventory each record belongs to. They distinguish a known zero from unavailable data, and function entry from function completion. We could export ordinary counts in LCOV form for tools that accept them, but that would leave out detail from the checked report.
 
-This division is deliberate. The VM observes execution, the compiler associates observations with source, the reader checks the evidence, and the publisher checks what it is about to make public. A test run does not get to define its own denominator just by reporting whichever items it happened to hit.
+The VM observes execution, the compiler connects observations to source, the reader checks the evidence, and the publisher checks what it's about to make public. A test run can't choose its own denominator by reporting only the items it happened to hit.
 
-Coverage is an opt-in observation alongside execution. The accepted source baseline leaves bytecode version 9 unchanged; coverage probes and counters do not become part of ordinary compiled programs. A collection failure is reported as a collection failure rather than changing the program's normal result.
+Coverage is an opt-in observation alongside execution. The accepted source baseline leaves bytecode version 9 unchanged; coverage probes and counters aren't part of ordinary compiled programs. If collection fails, Panackelty reports a collection failure without changing the program's normal result.
 
 ## Attempts, completions and interrupted runs
 
-The collector distinguishes an attempted execution from a completed one. Entering a function is different from returning from it. Evaluating an expression is different from leaving it successfully. That distinction matters when an operation traps or a process stops part-way through a run.
+I need to know whether a run was merely attempted or completed. Entering a function isn't the same as returning from it, and evaluating an expression isn't the same as leaving it successfully. That matters if an operation traps or a process stops part-way through.
 
-A trap can still leave useful evidence about the instructions reached before it. A killed process, crash, timeout or missing session record may leave the evidence incomplete. Panackelty does not fill those gaps with zeroes. A report must establish what ran and that its records are complete before it can claim a complete measurement.
+A trap can still leave useful evidence about instructions reached before it. A killed process, crash, timeout or missing session record can leave the evidence incomplete. I don't fill those gaps with zeroes. Before a report claims a complete measurement, it has to establish what ran and that the records are complete.
 
-The session system gives each execution a fresh identity. It records which artifacts may run, admits each execution, and checks the resulting records against the session identity and expected execution tree. Replaying an old record, omitting an expected child, adding a surplus record or changing the registered artifact set prevents a complete report.
+Each execution gets a fresh session identity. The session records which artifacts may run, admits each execution, then checks the records against that identity and the expected execution tree. Replaying an old record, leaving out an expected child, adding an extra record or changing the registered artifact set prevents a complete report.
 
-These checks make accidental gaps visible; they are not cryptographic proof against someone deliberately rewriting local files. The reports are reproducible engineering evidence under the stated local workflow, not signed attestations from an adversarial environment.
+These checks make accidental gaps visible. They aren't cryptographic proof against someone deliberately rewriting local files. I treat the reports as reproducible engineering evidence under the stated local workflow, not signed attestations from an adversarial environment.
 
 ## Covered, known zero and unavailable
 
-These three states answer different questions, so the report keeps them separate:
+The report keeps three states separate because they mean different things:
 
-- **Covered:** the evidence shows that the eligible source item ran at least once. That still says nothing about whether a test checked its result.
-- **Known zero:** the report has complete evidence for the item, but no measured execution reached it. This is a possible test gap.
-- **Unavailable:** the report cannot establish whether the item ran. Its source association may be ambiguous, or an execution record may be incomplete or missing.
+- **Covered:** the evidence shows that an eligible source item ran at least once. That still doesn't tell me whether a test checked its result.
+- **Known zero:** the report has complete evidence for the item, but no measured execution reached it. That may point to a test gap.
+- **Unavailable:** the report can't establish whether the item ran. Its source association may be ambiguous, or an execution record may be incomplete or missing.
 
-Unavailable does not mean uncovered. Counting it as a zero would claim the report knows the code did not run; counting it as covered would invent a hit. When any item is unavailable, Panackelty leaves the complete percentage blank and shows lower and upper bounds instead. The lower bound counts confirmed hits; the upper bound assumes every unavailable item was covered.
+Unavailable doesn't mean uncovered. Calling it a zero would say I know the code didn't run; calling it covered would invent a hit. If any item is unavailable, Panackelty leaves the complete percentage blank and shows lower and upper bounds instead. The lower bound counts confirmed hits; the upper bound assumes every unavailable item was covered.
 
 ## What the current source report covers
 
-The published baseline is a defined native test corpus, not every test in the repository. Its versioned manifest, a checked-in list of what the report includes, names the production `.panack` files eligible for measurement, 14 unit-test roots, 13 positive functional roots and three compiler paths: source checking, disassembly and a byte-identical compiler bootstrap check. That last check rebuilds the compiler through its stages and requires the resulting compiler artifacts to match byte for byte. Test files themselves are executed and identified where needed, but they are not part of the production-source denominator.
+The published baseline measures a defined native test corpus, not every test in the repository. Its versioned manifest is the checked-in list of what the report includes. It names the production `.panack` files eligible for measurement, 14 unit-test roots, 13 positive functional roots and three compiler paths: source checking, disassembly and a byte-identical compiler bootstrap check. That last check rebuilds the compiler through its stages and requires the resulting compiler artifacts to match byte for byte. Test files are executed and identified where needed, but they aren't part of the production-source denominator.
 
-The manifest is explicit. A newly tracked production source file does not silently enter or leave the measured scope; the manifest needs review. Shared imports can be compiled in different contexts, but the same source item is counted once in the denominator. Actual hits from the distinct executions can contribute to that item's result.
+The manifest makes changes to scope visible. A newly tracked production source file doesn't silently enter or leave the measurement; the manifest needs review. Shared imports may be compiled in different contexts, but each source item appears once in the denominator. Hits from distinct executions can still contribute to its result.
 
-The initial corpus omits some external-process and death tests, TCP integration, package and release paths, other functional cases, and browser or WASI suites. Some dynamically generated compiler checks also need separate registered batches before they can be included. These are stated scope limits, not claims that those tests are unimportant or that the code they exercise has no coverage. Native C/LLVM coverage remains a separate report for core `main`; the `.panack` source report follows core `next`.
+The initial corpus leaves out some external-process and death tests, TCP integration, package and release paths, other functional cases, and browser or WASI suites. Some dynamically generated compiler checks also need separate registered batches before I can include them. These are scope limits, not claims that those tests don't matter or that the code they exercise has no coverage. Native C/LLVM coverage remains a separate report for core `main`; the `.panack` source report follows core `next`.
 
-A coverage percentage without its manifest and exclusions would be easy to misread. A change to the source tree, denominator or execution corpus can change the figures even when the behaviour under test has not changed.
+A percentage without its manifest and exclusions is easy to misread. The figures can change when the source tree, denominator or execution corpus changes, even if the behaviour under test hasn't.
 
 ## What the current baseline says
 
-The reviewed SC6 source baseline requires these coverage floors:
+The reviewed SC6 source baseline sets these coverage floors:
 
 - **Compiler:** 5,173 / 5,998 start lines; 397 / 429 functions; 5,514 / 6,922 source outcomes.
 - **Bytecode:** 587 / 601 start lines; 60 / 60 functions; 517 / 588 source outcomes.
 - **Standard library:** 72 / 133 start lines; 23 / 33 functions; 33 / 64 source outcomes.
 
-These are policy floors for the reviewed baseline, not universal targets for every project and not a claim that a particular percentage makes software dependable. The full accepted collection recorded 31 fresh executions, no unavailable measurements and 68 protected source items. The report also records commit, manifest, toolchain and source identities so readers can see what was measured and when.
+These are floors for this reviewed baseline, not universal targets or a claim that a particular percentage makes software dependable. The accepted collection recorded 31 fresh executions, no unavailable measurements and 68 protected source items. Its report records the commit, manifest, toolchain and source identities so I can see what was measured and when.
 
-Selected UTF-8, `Option`/`Result` and duration items have additional positive-coverage requirements. Their source hashes and structural IDs are pinned in the policy. If one is edited or removed, the guard cannot quietly disappear with it; the change needs an explicit policy review.
+Selected UTF-8, `Option`/`Result` and duration items also have positive-coverage requirements. The policy pins their source hashes and structural IDs. If one is changed or removed, the guard can't quietly disappear with it; the policy change needs explicit review.
 
 ## How coverage helped find a bug
 
-The first assertion batch added checks for UTF-8 boundaries and malformed sequences, both sides of `Option` and `Result` handling, and exact, negative and zero duration ratios. Looking at the coverage gap helped identify behaviour that needed those checks.
+The first assertion batch covered UTF-8 boundaries and malformed sequences, both sides of `Option` and `Result` handling, and exact, negative and zero duration ratios. Looking at the coverage gap helped me see which behaviour needed those checks.
 
-The new duration assertions exposed a real type-sensitive comparison bug. `duration_ratio` compared signed ticks with a natural-number zero, and `duration_divide` could receive a signed zero. Because equality is kind-sensitive, the intended error check could be skipped and the program could trap instead. Comparing two `Duration` values preserves the intended typed error.
+The new duration assertions exposed a type-sensitive comparison bug. `duration_ratio` compared signed ticks with a natural-number zero, and `duration_divide` could receive a signed zero. Equality is kind-sensitive, so the intended error check could be skipped and the program could trap instead. Comparing two `Duration` values preserves the intended typed error.
 
-Coverage did not find the defect by itself. It showed where execution evidence was missing; assertions made the expected behaviour precise and exposed the wrong result. Mutation checks then confirmed that tests rejected an overlong UTF-8 sequence, an incorrect fallback value and removal of a duration error guard.
+Coverage didn't find the defect by itself. It showed me where execution evidence was missing; assertions made the expected behaviour precise and exposed the wrong result. Mutation checks then confirmed that the tests rejected an overlong UTF-8 sequence, an incorrect fallback value and removal of a duration error guard.
 
-That distinction is central to how I use the report. A hit is evidence of execution. It is not evidence that a test would fail if the behaviour were broken.
+That's how I use the report: a hit tells me code ran, but it doesn't tell me whether a test would fail if that behaviour broke.
 
 ## Use the report as a guide
 
-When a source item is a known zero, the next step is to decide whether it deserves a test. A missing error path, boundary case or important alternative usually does. A defensive path that cannot occur under the language's rules may need an explanation rather than a test. The report gives a place to investigate; it does not make that decision automatically.
+When an item is a known zero, I decide whether it deserves a test. A missing error path, boundary case or important alternative usually does. A defensive path that can't occur under the language's rules may need an explanation instead. The report gives me somewhere to look; it doesn't make the decision for me.
 
-When a source item is unavailable, the right response is to fix or explain the measurement gap. Treating it as zero would hide whether the test suite or the collector needs attention.
+When an item is unavailable, I need to fix or explain the measurement gap. Treating it as zero would hide whether the problem is in the test suite or the collector.
 
-Coverage can also move for reasons that have little to do with behavioural quality. Splitting a packed line into several lines can change the line denominator. A new production function can add an unvisited function. A changed manifest can add or remove measured executions. Panackelty compares each component against reviewed floors and requires changes to scope, exclusions and protected items to be explained. An improvement in one component cannot conceal a regression in another.
+Coverage can move for reasons that have little to do with behavioural quality. Splitting a packed line can change the line denominator. A new production function can add an unvisited function. A changed manifest can add or remove measured executions. Panackelty compares each component against reviewed floors and requires changes to scope, exclusions and protected items to be explained. An improvement in one component can't conceal a regression in another.
 
-There is no universal percentage that proves a compiler is well tested. Coverage is most useful alongside focused assertions, compiler and VM tests, functional runs, bootstrap checks and mutation tests. It tells us where the test suite went; the other evidence tells us what it checked.
+There isn't a universal percentage that proves a compiler is well tested. I use coverage alongside focused assertions, compiler and VM tests, functional runs, bootstrap checks and mutation tests. Coverage tells me where the test suite went; the other evidence tells me what it checked.
 
 ## Using coverage in your own project
 
-The collection system described above exists because Panackelty measures source code running across compiler invocations, nested VMs and supported child processes. That is a particular problem. An ordinary application can usually start with the coverage support already provided by its language and test framework.
+Panackelty needs a collection system that can follow source through compiler invocations, nested VMs and supported child processes. That's a particular problem. An ordinary application can usually start with the coverage support in its language and test framework.
 
-The decisions around the report still matter. They apply to a web service, a desktop application or a command-line tool as much as to a compiler.
+The questions I had to answer still apply to a web service, a desktop app or a command-line tool. You don't need Panackelty's machinery to make those decisions clear.
 
 ### Decide what question the report should answer
 
-“How much of the code ran?” needs a boundary. Is the report about production code, the tests themselves, generated files, or the whole repository? Which test commands and environments contribute? Are background workers, scheduled jobs or child processes included?
+“How much of the code ran?” needs a boundary. Does the report include production code, tests, generated files or the whole repository? Which test commands and environments contribute? What about background workers, scheduled jobs or child processes?
 
-Write down that scope before comparing percentages. For example, a web service report built from request tests may not include a queue worker that runs in a separate process. The worker's code has not necessarily been tested just because the service's main test command passed. Make the boundary visible in the report or its documentation so readers know what the number describes.
+Write down the scope before comparing percentages. A web service report built from request tests, for example, may miss a queue worker running in a separate process. Passing the service's main test command doesn't mean the worker's code was tested. Put the boundary in the report or its documentation so readers know what the number describes.
 
-Most projects can use their test runner's existing file selection and coverage configuration for this. A small checked-in configuration or manifest can make the intended scope reviewable, especially when generated, vendored or platform-specific code needs special treatment.
+Most projects can use their test runner's existing file selection and coverage configuration. A small checked-in configuration or manifest makes the intended scope easier to review, particularly when generated, vendored or platform-specific code needs special treatment.
 
 ### Choose a measure that matches the risk
 
-Line coverage gives a useful map of where execution reached. Function coverage can highlight code that was never called. Branch coverage can show that a decision's alternatives have not all run. None of these measures is automatically the right one for every project.
+Line coverage gives me a map of where execution reached. Function coverage can show code that was never called. Branch coverage can show decisions whose alternatives haven't all run. None of these is automatically right for every project.
 
-For an application, the important alternatives may be successful and failed requests, retry and stop behaviour, permission granted and denied, or valid and invalid input. A metric should help you see those paths. The most detailed number available is not necessarily the most useful one.
+For an application, the paths that matter might be a successful and failed request, retry and stop behaviour, permission granted and denied, or valid and invalid input. Choose a measure that helps you see those paths. The most detailed number available isn't always the most useful one.
 
-Panackelty counts source outcomes because VM-level branches can reflect compiler lowering rather than choices in the language source. Most application teams should use their established tool's metrics and make clear what those metrics count; they rarely need to design a new collector.
+I count source outcomes in Panackelty because VM-level branches can reflect compiler lowering rather than choices in the language source. Most application teams should use the measures their established tool provides and make clear what those measures count. They rarely need to design a new collector.
 
-Coverage tools can use different rules for what counts as a line or branch. A percentage from one tool or configuration may not be directly comparable with a percentage from another. Read the tool's definition before treating the figures as the same measure.
+Coverage tools also differ in what they count as a line or branch. A percentage from one tool or configuration may not compare directly with one from another. Check the tool's definition before treating the figures as the same measure.
 
 ### Keep missed code separate from missing evidence
 
-If the tool can establish that a branch did not run, that is a useful test gap. If instrumentation failed, a subprocess was not observed, or a report is missing data, the result is uncertain. Those situations call for different actions.
+If a tool establishes that a branch didn't run, I can consider it as a test gap. If instrumentation failed, a subprocess wasn't observed or a report is missing data, the result is uncertain. Those call for different actions.
 
-Check how a coverage tool represents files it cannot instrument, code excluded by configuration and tests that fail before producing a report. If those cases can be mistaken for uncovered code or silently disappear from the denominator, document the limit and make it visible in the workflow. Panackelty's explicit `unavailable` state is one way to make that distinction; another project may use warnings, report errors or separate status fields.
+Check how your tool represents files it can't instrument, code excluded by configuration and tests that fail before producing a report. If any of those can be mistaken for uncovered code or disappear from the denominator, document the limit and make it visible in the workflow. Panackelty's explicit `unavailable` state is one way to do that; another project might use warnings, report errors or separate status fields.
 
 ### Tie every number to the run that produced it
 
-Coverage changes when source files, test selection, tool versions or configuration change. Save enough provenance to understand a result later: the source revision, test commands, coverage configuration and tool version. If separate jobs or processes contribute, establish that the report combines the intended runs and does not reuse an old result by accident.
+Coverage changes when source files, test selection, tool versions or configuration change. Save enough provenance to understand a result later: the source revision, test commands, coverage configuration and tool version. If separate jobs or processes contribute, check that the report combines the intended runs and hasn't picked up an old result by accident.
 
-This does not require Panackelty's session tickets and byte-level identity checks. It does require knowing what a published report describes. A CI artifact linked to its exact commit and workflow run is often enough for an application's needs.
+This doesn't require Panackelty's session tickets and byte-level identity checks. For an application, a CI artifact linked to its exact commit and workflow run is often enough. The point is to know what a published report describes.
 
 ### Worked example: reaching a retry limit
 
-Suppose a service tries a request up to three times before returning an error. The existing tests cover a successful request and a request that succeeds after one retry, but none makes all three attempts fail. The report shows the give-up outcome as a known zero.
+Suppose a service tries a request up to three times before returning an error. The tests cover a successful request and one that succeeds after a retry, but none where all three attempts fail. The report shows the give-up outcome as a known zero.
 
-Add a test where the dependency fails on every attempt. Check that the service makes exactly three attempts and returns the expected error. The report should now show the give-up outcome as covered, while the assertion checks that the service behaved correctly. Coverage pointed to a path worth testing; it did not decide what the right result should be.
+I would add a test where the dependency fails on every attempt. Then I'd check that the service makes exactly three attempts and returns the expected error. The report should show the give-up outcome as covered; the assertion checks whether the service behaved correctly. Coverage pointed me to a path worth testing, but it didn't decide what the right result should be.
 
-If the dependency runs in a worker that the collector cannot observe, the outcome is unavailable instead. That calls for fixing or documenting the measurement gap before drawing conclusions from the percentage.
+If the dependency runs in a worker the collector can't observe, the outcome is unavailable instead. I'd fix or document that measurement gap before drawing conclusions from the percentage.
 
-When a percentage becomes a target, teams can end up exercising code without checking its effects. A rise is useful when it reflects tests for behaviour that matters. A fall deserves explanation, which might be a real regression, a changed denominator, or more accurate measurement.
+When a percentage becomes a target, it's possible to exercise code without checking its effects. A rise is useful when it reflects tests for behaviour that matters. A fall deserves an explanation: perhaps there's a real regression, perhaps the denominator changed, or perhaps the measurement became more accurate.
 
 ### A short review before sharing a coverage figure
 
-Before treating a coverage number as a project result, ask:
+Before I treat a coverage number as a project result, I ask:
 
 1. Which source files and test runs are included?
-2. Which metric is being reported, and what exactly does it count?
-3. Can I tell the difference between code that did not run and code the tool could not measure?
-4. Can I connect this report to the source revision and test configuration that produced it?
+2. Which measure is reported, and what exactly does it count?
+3. Can I tell the difference between code that didn't run and code the tool couldn't measure?
+4. Can I connect the report to the source revision and test configuration that produced it?
 5. Which tests check that the covered behaviour was correct?
 
-Those answers make a coverage figure much more useful than a larger percentage without context. The Panackelty implementation is one detailed example of putting those questions into practice; the same questions can improve reports produced by much simpler tools.
+Those answers make a figure more useful than a larger percentage without context. Panackelty is one detailed example of putting the questions into practice; the same questions can improve reports from much simpler tools.
 
 ## Inspect the evidence
 
@@ -218,6 +213,4 @@ The second command refuses to overwrite an existing output directory. The result
 
 ## Conclusion
 
-Coverage figures are useful when I can see what they count, which runs produced them and where evidence is missing. That is why Panackelty carries the measurement scope and provenance with its report, and keeps a known zero separate from an item it could not measure.
-
-The collector and session checks are particular to a self-hosted compiler. The way I use the report is simpler: investigate the gaps, choose what deserves another test, and use assertions to check the behaviour. Coverage gives me somewhere to look; the percentage doesn't tell me whether the program is right.
+For me, the value isn't the percentage on its own. It's knowing which code and tests produced it, seeing where the evidence is missing, and having a sensible place to start the next test. Panackelty needs compiler-specific checks to make that work, but the habit is simpler: use coverage to find questions, then use assertions to answer them.
