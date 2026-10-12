@@ -1,6 +1,8 @@
 ---
 title: Exact arithmetic without silent rounding
-status: draft
+status: published
+date: 2026-10-12
+publishedAt: 2026-10-12T10:38:55+02:00
 tags:
   - types
   - language
