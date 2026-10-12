@@ -7,7 +7,6 @@ tags:
   - coverage
 ---
 
-# How Panackelty measures its own source coverage
 
 A coverage report tries to answer a straightforward question: which parts of a program ran while a particular set of tests was running?
 
