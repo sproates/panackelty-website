@@ -110,7 +110,7 @@ A percentage without its manifest and exclusions is easy to misread. The figures
 
 ## What the current baseline says
 
-The reviewed SC6 source baseline sets these coverage floors:
+The reviewed source coverage baseline sets these floors:
 
 - **Compiler:** 5,173 / 5,998 start lines; 397 / 429 functions; 5,514 / 6,922 source outcomes.
 - **Bytecode:** 587 / 601 start lines; 60 / 60 functions; 517 / 588 source outcomes.
@@ -118,7 +118,7 @@ The reviewed SC6 source baseline sets these coverage floors:
 
 These are floors for this reviewed baseline, not universal targets or a claim that a particular percentage makes software dependable. The accepted collection recorded 31 fresh executions, no unavailable measurements and 68 protected source items. Its report records the commit, manifest, toolchain and source identities so I can see what was measured and when.
 
-Selected UTF-8, `Option`/`Result` and duration items also have positive-coverage requirements. The policy pins their source hashes and structural IDs. If one is changed or removed, the guard can't quietly disappear with it; the policy change needs explicit review.
+The report also requires a hit for selected UTF-8, `Option`/`Result` and duration items. The policy records their source hashes and structural IDs, so an edit or deletion can't quietly remove the requirement. Changing the policy needs explicit review.
 
 ## How coverage helped find a bug
 
