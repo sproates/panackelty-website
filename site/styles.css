@@ -183,6 +183,9 @@ pre code { color: var(--ink) !important; }
 .vision h2 { max-width: 20ch; }
 .vision-lede { font: 400 clamp(1.25rem, 2.5vw, 1.8rem)/1.5 var(--serif); max-width: 55ch; margin-block: 2rem; }
 .vision-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.home-motivation h2 { max-width: 22ch; margin-bottom: 2rem; font-size: clamp(2.4rem, 4.5vw, 3.8rem); line-height: 1.1; }
+.home-motivation-copy { max-width: 72ch; color: var(--muted); font-size: 1.05rem; }
+.home-motivation-copy p + p { margin-top: 1.25rem; }
 .steps { list-style: decimal-leading-zero; padding-left: 2rem; max-width: 900px; }
 .steps > li { padding: 0 0 2rem 1rem; }
 .steps > li::marker { color: var(--signal); font-family: var(--mono); }
@@ -262,8 +265,10 @@ footer { color: var(--muted); }
 /* Compact contributor profiles above the site footer. */
 .contributors { padding: 2.25rem 0; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 3rem; }
 .contributors h2 { margin: 0; color: var(--muted); font: 500 .85rem/1.6 var(--sans); letter-spacing: 0; }
+.home-page .contributors h2 { font: 500 .85rem/1.6 var(--sans); letter-spacing: 0; }
 .contributors ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem 3rem; }
 .contributors li { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+.contributor-name { color: var(--ink); font-size: .85rem; font-weight: 600; }
 .contributor-link { display: inline-flex; align-items: center; gap: .5rem; min-height: 40px; border-radius: 4px; color: var(--muted); font-size: .78rem; text-decoration: none; }
 .contributor-link svg { flex-shrink: 0; width: 18px; height: 18px; }
 .contributor-link:hover { background: var(--panel); color: var(--ink); text-decoration: underline; text-underline-offset: .22em; }

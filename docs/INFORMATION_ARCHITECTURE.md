@@ -14,14 +14,13 @@ or old-anchor compatibility is required for this refactor.
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
 | Releases and roadmap | `/roadmap/` | Available now, next alpha 13 and first non-alpha target, separately labelled |
-| About | `/about/` | Vision, experimental status, contributor credit and feedback |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
 
 Primary navigation includes Capabilities, Get started, Examples, Releases and
 roadmap. All primary links, including Try it online, are always visible and aligned
-in one navigation group; they wrap naturally on phones. No expanding menu. Under the hood, About and release history live in the shared footer,
-alongside compiler explanations, coverage, GitHub and the licence.
+in one navigation group; they wrap naturally on phones. No expanding menu. Under the hood and release history live in the shared footer,
+alongside compiler explanations, coverage, GitHub and the licence. Project motivation and creator credit live on the homepage.
 
 The homepage owns shared chrome; `scripts/site_chrome.cjs` renders page-relative
 links and one current-page marker on every editorial page and the playground.

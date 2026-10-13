@@ -23,13 +23,13 @@ cmp site/robots.txt "$work/pages/robots.txt"
 sed '/<loc>https:\/\/panackelty\.com\/articles\//d' "$work/pages/sitemap.xml" > "$work/static-sitemap.xml"
 cmp site/sitemap.xml "$work/static-sitemap.xml"
 grep -q 'https://panackelty.com/articles/panackelty-alpha-12-release/' "$work/pages/sitemap.xml"
-for page in index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html about/index.html playground/index.html releases/index.html; do
+for page in index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html playground/index.html releases/index.html; do
     test -s "$work/pages/$page"
 done
 grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases/index.html"
 node scripts/site_chrome.cjs site/index.html site/index.html home > "$work/home"
 cmp "$work/home" "$work/pages/index.html"
-for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html about/index.html; do
+for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html; do
     test "$(grep -c 'aria-current="page"' "$work/pages/$page")" = 1
     grep -q 'Releases &amp; roadmap' "$work/pages/$page"
     grep -q 'Under the hood' "$work/pages/$page"

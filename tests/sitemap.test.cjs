@@ -19,7 +19,6 @@ test('sitemap lists the canonical public website routes once', () => {
     'https://panackelty.com/explain/',
     'https://panackelty.com/under-the-hood/',
     'https://panackelty.com/roadmap/',
-    'https://panackelty.com/about/',
     'https://panackelty.com/playground/',
     'https://panackelty.com/releases/',
   ]);
