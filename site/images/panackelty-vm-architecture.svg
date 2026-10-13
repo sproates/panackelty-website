@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 310" role="img" aria-labelledby="title description">
+  <title id="title">How Panackelty programs reach the VM</title>
+  <desc id="description">A source program is compiled to bytecode in memory. A saved bytecode file is decoded and verified. Both routes lead to the same C11 VM.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#c9bda8"/>
+    </marker>
+    <style>
+      text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#f5efe4}
+      .label{font-size:18px;font-weight:600}
+      .sub{font-size:14px;fill:#c9bda8}
+      .box{fill:#211e19;stroke:#776c5c;stroke-width:2;rx:13}
+      .engine{fill:#29251e;stroke:#c39a61;stroke-width:2.5;rx:16}
+      .line{fill:none;stroke:#c9bda8;stroke-width:2.5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="960" height="310" rx="20" fill="#151310"/>
+  <text x="40" y="48" class="label">How bytecode reaches the VM</text>
+  <rect x="40" y="78" width="155" height="74" class="box"/>
+  <text x="117" y="108" text-anchor="middle" class="label">Source</text>
+  <text x="117" y="132" text-anchor="middle" class="sub">.panack</text>
+  <rect x="250" y="78" width="190" height="74" class="box"/>
+  <text x="345" y="108" text-anchor="middle" class="label">Compiler</text>
+  <text x="345" y="132" text-anchor="middle" class="sub">produces bytecode</text>
+  <rect x="493" y="78" width="155" height="74" class="box"/>
+  <text x="570" y="108" text-anchor="middle" class="label">Bytecode</text>
+  <text x="570" y="132" text-anchor="middle" class="sub">in memory</text>
+  <rect x="40" y="190" width="155" height="74" class="box"/>
+  <text x="117" y="220" text-anchor="middle" class="label">Saved file</text>
+  <text x="117" y="244" text-anchor="middle" class="sub">.bc</text>
+  <rect x="250" y="190" width="190" height="74" class="box"/>
+  <text x="345" y="220" text-anchor="middle" class="label">Decode + verify</text>
+  <text x="345" y="244" text-anchor="middle" class="sub">format and call checks</text>
+  <rect x="710" y="115" width="205" height="105" class="engine"/>
+  <text x="812" y="154" text-anchor="middle" class="label">C11 VM</text>
+  <text x="812" y="180" text-anchor="middle" class="sub">executes bytecode</text>
+  <path d="M195 115H250" class="line"/>
+  <path d="M440 115H493" class="line"/>
+  <path d="M648 115H710" class="line"/>
+  <path d="M195 227H250" class="line"/>
+  <path d="M440 227H680V200H710" class="line"/>
+</svg>
