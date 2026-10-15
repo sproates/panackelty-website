@@ -126,8 +126,9 @@ builds are deleted after the server stops. Both hosted browser suites now use th
 actual tool. Local `make check` passes (30 tests plus assembly checks). The fresh preview
 contains 81 files, all byte-identical through the tool; the largest is 706,607
 bytes. All 24 execution/resource checks and nine editorial/navigation checks pass
-across Chromium, Firefox and WebKit, including phone widths. CI, core PR #498
-integration and owner approval of the website PR remain pending.
+across Chromium, Firefox and WebKit, including phone widths. Core PR #498 merged
+into `next` as `90661d4`; the pinned implementation commit is its ancestor. Hosted
+CI and owner approval of the website PR remain pending.
 GI#162 stays open until adoption and acceptance are complete. Production content,
 release pins and domain settings are unchanged. The delivery maintainer owns the
 request-latency trade-off (roughly 7–13 ms locally versus sub-millisecond Node)
