@@ -114,7 +114,7 @@ acceptance.
 
 ### Panackelty-written preview server
 
-[Core GI#162](https://github.com/sproates/panackelty/issues/162) is in progress.
+[Core GI#162](https://github.com/sproates/panackelty/issues/162) is complete (2026-10-15).
 The generic service and tool live in core `packages/static_http` and
 `tools/http-server`. This adoption replaces local HTTP serving with the installed
 tool while retaining Node assembly, provenance and preview banners. The source
@@ -127,9 +127,11 @@ actual tool. Local `make check` passes (30 tests plus assembly checks). The fres
 contains 81 files, all byte-identical through the tool; the largest is 706,607
 bytes. All 24 execution/resource checks and nine editorial/navigation checks pass
 across Chromium, Firefox and WebKit, including phone widths. Core PR #498 merged
-into `next` as `90661d4`; the pinned implementation commit is its ancestor. Hosted
-CI and owner approval of the website PR remain pending.
-GI#162 stays open until adoption and acceptance are complete. Production content,
+into `next` as `90661d4`; the tool is pinned to the alpha.13 preparation commit
+`994dc60`, including Linux libcurl compatibility. Website PR #42 merged as
+`18b4cd5` after owner preview and merge approval. Its exact-head and post-merge
+checks passed (post-merge Check run 38760731372); core PR #500 records completion
+and GI#162 is closed. Production content,
 release pins and domain settings are unchanged. The delivery maintainer owns the
 request-latency trade-off (roughly 7–13 ms locally versus sub-millisecond Node)
 and accepts it for local previews based on the complete responsive-page suite
