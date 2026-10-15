@@ -212,3 +212,6 @@ release history retain their acceptance records in the
 [core website register](https://github.com/sproates/panackelty/blob/main/ROADMAP.md#website-follow-up-register).
 Their migration does not reopen completed work or transfer historical closed
 issues. Future enhancements use this repository's issues and roadmap.
+
+Owner wording correction: describe `panack-http-server` as a general-purpose
+static HTTP server. Website preview is an application of the tool, not its scope.

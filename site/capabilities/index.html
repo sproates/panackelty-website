@@ -42,7 +42,7 @@
 <li><a href="#host">Practical access to the host</a></li>
 <li><a href="#tcp">Bounded TCP clients and servers</a></li>
 <li><a href="#http">HTTP clients and services</a></li>
-<li><a href="#preview-server">Serve a folder for previews</a></li>
+<li><a href="#preview-server">Serve files over HTTP</a></li>
 <li><a href="#local-packages">Share local packages</a></li>
 <li><a href="#imports">Build programs across files</a></li>
 <li><a href="#explain">A compiler you can question</a></li>
@@ -157,11 +157,11 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>Build cleartext HTTP services with typed GET, HEAD and POST handlers, checked message framing and bounded concurrent requests. Continuous services announce readiness after binding and drain active requests on shutdown. Server TLS is not included.</p>
 
 </article>
-<article class="capability-detail" aria-labelledby="preview-server"><h3 id="preview-server">Serve a folder for previews</h3>
+<article class="capability-detail" aria-labelledby="preview-server"><h3 id="preview-server">Serve files over HTTP</h3>
 <p><span class="badge">New in native alpha.13</span></p>
-<p>The installed <code>panack-http-server</code> tool serves any chosen folder. Confined asynchronous reads, directory indexes, redirects, MIME types and GET/HEAD support make it useful for static website previews.</p>
+<p>The installed <code>panack-http-server</code> tool serves any chosen folder. It provides confined asynchronous reads, directory indexes, redirects, MIME types and GET/HEAD support. Use it to serve static content such as documents, generated reports or websites; website preview is one application.</p>
 <p>It starts on loopback by default and offers no-cache and noindex options. Requests, responses and clients are bounded; directory listings, ranges, TLS, file watching and automatic rebuilds are outside its contract.</p>
-<p><a href="../examples/#folder-preview-example">Preview your first folder →</a></p>
+<p><a href="../examples/#folder-preview-example">Serve your first files →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="local-packages"><h3 id="local-packages">Share local packages</h3>
 <p><span class="badge">New in alpha.13</span></p>
