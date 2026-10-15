@@ -35,6 +35,30 @@ jobs:
           SCOPE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           SCOPE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: echo "mode=$(node scripts/browser_scope.cjs)" >> "$GITHUB_OUTPUT"
+      - name: Read pinned preview tool revision
+        id: preview-tool
+        run: node -e 'console.log("revision=" + require("./preview-tool.json").revision)' >> "$GITHUB_OUTPUT"
+      - name: Check out pinned preview tool source
+        uses: actions/checkout@v6
+        with:
+          repository: sproates/panackelty
+          ref: ${{ steps.preview-tool.outputs.revision }}
+          path: build/preview-tool-source
+          persist-credentials: false
+      - name: Install native tool build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libcurl4-openssl-dev
+      - name: Build the preview tool once
+        run: |
+          make -C build/preview-tool-source -j2 install PREFIX="$GITHUB_WORKSPACE/build/preview-tool"
+          echo "PANACK_HTTP_SERVER=$GITHUB_WORKSPACE/build/preview-tool/bin/panack-http-server" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: preview-tool
+          path: build/preview-tool
+          if-no-files-found: error
+          retention-days: 1
       - run: make check
       - run: make build
       - uses: actions/upload-artifact@v7

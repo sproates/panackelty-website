@@ -1,10 +1,9 @@
 // Portable static review artifact and loopback server. No deployment credentials.
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
 const os = require('node:os');
-const {once} = require('node:events');
-const {execFileSync} = require('node:child_process');
+const {once, EventEmitter} = require('node:events');
+const {execFileSync, fork} = require('node:child_process');
 const {download, unpack} = require('./fetch_playground.cjs');
 
 async function build(root, destination, metadata, archive) {
@@ -38,59 +37,87 @@ async function build(root, destination, metadata, archive) {
   } finally { fs.rmSync(temporary, {recursive: true, force: true}); }
 }
 
-function serve(directory, port = 4173) {
+function serve(directory, port = 4173, temporary) {
+  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid preview port');
   const root = fs.realpathSync(directory);
-  const types = {'.html':'text/html; charset=utf-8', '.css':'text/css', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json', '.wasm':'application/wasm', '.svg':'image/svg+xml'};
-  const server = http.createServer((request, response) => {
-    response.setHeader('Cache-Control', 'no-store');
-    response.setHeader('X-Robots-Tag', 'noindex');
-    if (!['GET', 'HEAD'].includes(request.method)) { response.writeHead(405).end(); return; }
-    try {
-      const pathname = decodeURIComponent(request.url.split('?')[0]);
-      let file = path.resolve(root, '.' + pathname);
-      if (fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-      file = fs.realpathSync(file);
-      const relative = path.relative(root, file);
-      if (relative.startsWith('..') || path.isAbsolute(relative) || !fs.statSync(file).isFile()) throw new Error('Invalid path');
-      response.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream');
-      response.end(request.method === 'HEAD' ? undefined : fs.readFileSync(file));
-    } catch { response.writeHead(404).end('Not found'); }
+  const server = new EventEmitter();
+  let closed = false;
+  let endpoint = null;
+  let failure;
+  const worker = fork(path.join(__dirname, 'preview_server.cjs'), [JSON.stringify({
+    root, port, temporary, executable:process.env.PANACK_HTTP_SERVER || 'panack-http-server'
+  })], {stdio:['ignore','ignore','pipe','ipc']});
+  const completed = new Promise(resolve => worker.once('close', resolve));
+  server.address = () => endpoint;
+  server.close = () => {
+    if (!closed && worker.connected) worker.send({stop:true}, () => {});
+    return completed;
+  };
+  const failed = message => {
+    if (failure) return;
+    failure = new Error(message);
+    if (/bind failed/.test(message)) failure.code = 'EADDRINUSE';
+    server.emit('error', failure);
+  };
+  // Store failures even when a caller is between attaching lifecycle listeners.
+  server.on('error', () => {});
+  worker.stderr.on('data', chunk => process.stderr.write(chunk));
+  worker.on('message', message => {
+    if (message.ready) {
+      endpoint = {address:'127.0.0.1', port:message.port};
+      server.pid = message.pid;
+      server.emit('listening');
+    }
+    if (message.diagnostic) process.stderr.write(message.diagnostic);
+    if (message.error) failed(message.error);
+    if (message.closed) closed = true;
   });
-  server.listen(port, '127.0.0.1');
+  worker.once('error', error => failed(error.message));
+  worker.once('close', () => {
+    if (!closed) failed('Preview supervisor stopped unexpectedly');
+    closed = true;
+    server.emit('close');
+  });
   return server;
 }
 
 async function start(root, metadata, port = 4173, archive) {
-  // Own only this freshly allocated directory: never erase a user's saved build.
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'panackelty-preview-'));
   const directory = path.join(temporary, 'site');
   let server;
   let stopped = false;
+  let stopping;
   const cleanup = () => fs.rmSync(temporary, {recursive:true, force:true});
-  const stop = () => {
-    if (stopped) return;
-    stopped = true;
-    if (server) {
-      server.close();
-      server.closeAllConnections();
-    }
-    cleanup();
-    process.removeListener('exit', cleanup);
+  const detach = () => {
+    process.removeListener('exit', exit);
     process.removeListener('SIGINT', interrupt);
     process.removeListener('SIGTERM', interrupt);
   };
-  const interrupt = () => { stop(); process.exit(0); };
-  process.once('exit', cleanup);
+  const stop = () => {
+    if (stopping) return stopping;
+    stopped = true;
+    stopping = (async () => {
+      if (server) await server.close();
+      cleanup();
+      detach();
+    })();
+    return stopping;
+  };
+  // After spawn the supervisor owns cleanup and observes parent death through IPC.
+  const exit = () => { if (!server) cleanup(); };
+  const interrupt = () => { stop().then(() => process.exit(0)); };
+  process.once('exit', exit);
   process.once('SIGINT', interrupt);
   process.once('SIGTERM', interrupt);
   try {
     await build(root, directory, metadata, archive);
-    server = serve(directory, port);
-    server.once('close', stop);
+    if (stopped) throw new Error('Preview startup cancelled');
+    server = serve(directory, port, temporary);
+    server.once('close', () => { cleanup(); detach(); });
     await once(server, 'listening');
     return {server, directory, stop};
   } catch (error) {
-    stop();
+    await stop();
     throw error;
   }
 }
@@ -110,13 +137,22 @@ if (require.main === module) (async () => {
   if (command === 'start' && args.length <= 2 && validPort(args[1] || '4173')) {
     const selectedPort = +(args[1] || '4173');
     console.log('Building a fresh local preview...');
-    await start(process.cwd(), metadata(), selectedPort);
+    const session = await start(process.cwd(), metadata(), selectedPort);
+    session.server.on('error', error => { console.error(error.message); process.exitCode = 1; });
     console.log(`Preview: http://127.0.0.1:${selectedPort}/\nStop with Ctrl-C. After editing, stop and rerun to rebuild, then refresh your browser.`);
   } else if (command === 'build' && args.length <= 2) {
     await build(process.cwd(), output, metadata());
     console.log(`Preview built at ${output}`);
   } else if (command === 'serve' && args.length <= 3 && validPort(port)) {
-    serve(output, +port).on('listening', () => console.log(`Preview: http://127.0.0.1:${port}/`))
+    const server = serve(output, +port);
+    const stop = () => server.close().then(() => process.exit(0));
+    process.once('SIGINT', stop);
+    process.once('SIGTERM', stop);
+    server.once('close', () => {
+      process.removeListener('SIGINT', stop);
+      process.removeListener('SIGTERM', stop);
+    });
+    server.on('listening', () => console.log(`Preview: http://127.0.0.1:${port}/`))
       .on('error', error => { console.error(error.message); process.exitCode = 1; });
   } else throw new Error('Usage: node scripts/preview.cjs [start [port] | build [output] | serve [output] [port]]');
 })().catch(error => {
