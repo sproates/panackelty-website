@@ -308,12 +308,21 @@ The normal diagnostic appears alongside the extra detail, so the explanation add
 
 ## Why I think this approach is different
 
-Other language tools expose useful compiler information in different forms. Rust’s `rustc --explain` gives a longer explanation keyed to a compiler error code. GHC provides low-level typechecker tracing, and GHCi can query an inferred type at a source location. [Rust compiler command-line documentation](https://doc.rust-lang.org/stable/rustc/command-line-arguments.html), [GHC typechecker trace documentation](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghc.html), [GHCi `:type-at` documentation](https://downloads.haskell.org/ghc/9.14.1.20260728/docs/users_guide/ghci.html).
+Other language tools expose useful compiler information in different forms. Rust’s `rustc --explain` gives a longer explanation keyed to a compiler error code ([1](https://doc.rust-lang.org/stable/rustc/command-line-arguments.html)). GHC provides low-level typechecker tracing ([2](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghc.html)), and GHCi can query an inferred type at a source location ([3](https://downloads.haskell.org/ghc/9.14.1.20260728/docs/users_guide/ghci.html)).
 
 I’m taking a different direction with Panack. I want one developer-facing, per-function explanation that brings selected decisions together across types, effects, and proofs. I want it to show not only why a check failed, but also why it passed, what checker facts supported the result, and where those facts came from. That combination is the part I think can become distinctive.
 
-There isn’t yet an explanation for every type, effect, and proof decision made while checking a function. I’ll keep expanding the coverage, and I’ll improve the output too. The full report can be long, with sections that aren’t relevant to every function. I want to make it easier to scan while keeping the facts and source locations that make the explanations useful.
+There isn’t yet an explanation for every type, effect, and proof decision made while checking a function. I’ll keep expanding the coverage, and I’ll improve the output too. The full report can be long, with sections that aren’t relevant to every function. I want to make it easier to scan while keeping the facts and source locations that make the explanations useful. The current scope and known limits are in the compiler explanation guide ([4](https://github.com/sproates/panackelty/blob/main/docs/COMPILER_EXPLANATIONS.md)) and the Panackelty README ([5](https://github.com/sproates/panackelty/blob/main/README.md#explain-checked-types-guarded-conversions-subtraction-and-effects)).
 
 ## The title
 
-The title comes from “Double Life”, an advert for the original PlayStation that used the slogan “Do not underestimate the power of PlayStation”. In my opinion, it’s one of the most memorable and powerful adverts of all time. [Watch “Double Life” on YouTube](https://www.youtube.com/watch?v=QIW4HMl81hw).
+The title comes from “Double Life”, an advert for the original PlayStation that used the slogan “Do not underestimate the power of PlayStation”. In my opinion, it’s one of the most memorable and powerful adverts of all time. [Watch “Double Life” on YouTube](https://www.youtube.com/watch?v=QIW4HMl81hw) [6].
+
+## References
+
+1. [Rust compiler command-line documentation](https://doc.rust-lang.org/stable/rustc/command-line-arguments.html).
+2. [GHC typechecker trace documentation](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghc.html).
+3. [GHCi `:type-at` documentation](https://downloads.haskell.org/ghc/9.14.1.20260728/docs/users_guide/ghci.html).
+4. [Panackelty compiler explanation guide](https://github.com/sproates/panackelty/blob/main/docs/COMPILER_EXPLANATIONS.md).
+5. [Panackelty README: explain checked types, guarded conversions, subtraction and effects](https://github.com/sproates/panackelty/blob/main/README.md#explain-checked-types-guarded-conversions-subtraction-and-effects).
+6. [“Double Life” PlayStation advert](https://www.youtube.com/watch?v=QIW4HMl81hw).
