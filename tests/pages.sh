@@ -9,7 +9,7 @@ version=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 assets="$work/playground/assets/$version"
 mkdir -p "$assets/vendor"
 printf '%s\n' "$version" > "$work/playground/asset-version.txt"
-printf '<!doctype html><head></head><body><header class="site-header">Old</header><main id="main"><footer class="playground-footer">Runtime resources</footer></main></body>\n' > "$work/playground/index.html"
+printf '<!doctype html><head></head><body><header class="site-header">Old</header><p class="version-note">Old compiler label</p><main id="main"><footer class="playground-footer">Runtime resources</footer></main></body>\n' > "$work/playground/index.html"
 for asset in style.css app.mjs examples.mjs controller.mjs worker.mjs runtime.mjs vm.wasm compiler.bc stdlib.json provenance.json LICENSE vendor/index.js vendor/LICENSE-MIT; do
     printf 'fixture\n' > "$assets/$asset"
 done

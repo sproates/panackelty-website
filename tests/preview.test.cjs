@@ -27,14 +27,14 @@ function fixture(t) {
   const version = 'a'.repeat(64);
   const browser = path.join(root, 'browser');
   fs.mkdirSync(path.join(browser, `assets/${version}/vendor`), {recursive:true});
-  fs.writeFileSync(path.join(browser, 'index.html'), '<!doctype html><head></head><body><header class="site-header">Old</header><main id="main">Playground</main></body>');
+  fs.writeFileSync(path.join(browser, 'index.html'), '<!doctype html><head></head><body><header class="site-header">Old</header><p class="version-note">Old compiler label</p><main id="main">Playground</main></body>');
   fs.writeFileSync(path.join(browser, 'asset-version.txt'), version);
   for (const file of ['style.css','app.mjs','examples.mjs','controller.mjs','worker.mjs','runtime.mjs','vm.wasm','compiler.bc','stdlib.json','provenance.json','LICENSE','vendor/index.js','vendor/LICENSE-MIT'])
     fs.writeFileSync(path.join(browser, `assets/${version}`, file), 'fixture');
   const archivePath = path.join(root, 'browser.tar.gz');
   execFileSync('tar', ['-czf',archivePath,'-C',browser,'.']);
   const archive = fs.readFileSync(archivePath);
-  fs.writeFileSync(path.join(root,'site/playground.json'), JSON.stringify({repository:'sproates/panackelty-browser',tag:'v0.1.0',assetVersion:version,sha256:createHash('sha256').update(archive).digest('hex')}));
+  fs.writeFileSync(path.join(root,'site/playground.json'), JSON.stringify({repository:'sproates/panackelty-browser',tag:'v0.1.0',coreVersion:'0.1.0-alpha.13',bytecodeVersion:9,assetVersion:version,sha256:createHash('sha256').update(archive).digest('hex')}));
   return {root, archive, output:path.join(root,'output'), metadata:{commit:'1'.repeat(40),dirty:false,repository:'sproates/panackelty'}};
 }
 
