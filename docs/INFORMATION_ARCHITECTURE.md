@@ -68,3 +68,7 @@ plans and links to this archive. `/releases/` remains the detailed changelog and
 migration reference. Historical articles retain their original release context.
 Both the roadmap and release notes link to the archive; shared navigation marks
 it within Roadmap. Future promotions move the previous current summary here.
+
+Release cards link to website walkthroughs with prerequisites, commands, expected
+results and limitations. Repository links are secondary references to specific
+files or planning sections; avoid folder listings and repeated generic issue links.
