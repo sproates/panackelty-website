@@ -114,10 +114,26 @@ acceptance.
 
 ### Panackelty-written preview server
 
-[Core GI#162](https://github.com/sproates/panackelty/issues/162) remains the
-unscheduled general-purpose server/dogfooding proposal. Repository choice and
-required capabilities remain unresolved. This website may eventually consume it;
-retain the working Node preview until a separately accepted replacement exists.
+[Core GI#162](https://github.com/sproates/panackelty/issues/162) is in progress.
+The generic service and tool live in core `packages/static_http` and
+`tools/http-server`. This adoption replaces local HTTP serving with the installed
+tool while retaining Node assembly, provenance and preview banners. The source
+revision in `preview-tool.json` is built once; normal previews never rebuild it.
+
+The launcher validates protocol/readiness and supervises normal stop, child
+failure and abrupt parent loss. Existing supplied output survives; owned temporary
+builds are deleted after the server stops. Both hosted browser suites now use the
+actual tool. Local `make check` passes (30 tests plus assembly checks). The fresh preview
+contains 81 files, all byte-identical through the tool; the largest is 706,607
+bytes. All 24 execution/resource checks and nine editorial/navigation checks pass
+across Chromium, Firefox and WebKit, including phone widths. CI, core PR #498
+integration and owner approval of the website PR remain pending.
+GI#162 stays open until adoption and acceptance are complete. Production content,
+release pins and domain settings are unchanged. The delivery maintainer owns the
+request-latency trade-off (roughly 7–13 ms locally versus sub-millisecond Node)
+and accepts it for local previews based on the complete responsive-page suite
+(50.0s execution/resource checks; 5.5s editorial/navigation). This is not a
+production-serving performance claim.
 
 Learning-path, executable-documentation, technical-showcase and public-Markdown
 work remain in core GI#137, GI#138, GI#140 and GI#281 respectively; website-specific

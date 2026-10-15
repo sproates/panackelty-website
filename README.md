@@ -23,7 +23,8 @@ All pages use the homepage-owned shared navigation and footer.
 ## Develop and preview
 
 Use Node 24, Git, Make, a POSIX shell, awk and tar. No npm packages are needed
-for local assembly and automation tests.
+for local assembly and automation tests. Preview and its integration tests also
+need the pinned `panack-http-server` installation described below.
 
 ```sh
 make check
@@ -31,13 +32,54 @@ make build
 make preview
 ```
 
-`make check` runs offline automation, assembly and portable-preview tests.
+`make check` runs offline automation, assembly and actual-tool preview tests
+after the tool is installed. CI builds the pinned tool once and shares that
+installation with both browser suites.
 `make build` downloads the checksummed browser release and writes a fresh
 `build/website`; remove your previous generated build before rebuilding.
 `make preview` prints a loopback URL and removes its temporary output when stopped.
 Stop and restart after edits. A saved review artifact can be built with
 `node scripts/preview.cjs build build/preview` and served with
 `node scripts/preview.cjs serve build/preview 4173`.
+
+### Install the preview server once
+
+`preview-tool.json` pins the core source revision providing launcher protocol 1.
+It is a development-tool dependency, independent of the release advertised by the
+website. Published alpha.11 archives do not include it. Use a separate core source
+checkout at that exact revision, with a C compiler, Make and libcurl development
+headers (`libcurl4-openssl-dev` on Ubuntu; system libcurl on macOS):
+
+```sh
+# Run from the website checkout; choose your own source and installation paths.
+revision=$(node -p 'require("./preview-tool.json").revision')
+git clone https://github.com/sproates/panackelty.git /your/source/panackelty-preview
+git -C /your/source/panackelty-preview checkout --detach "$revision"
+make -C /your/source/panackelty-preview -j2 install PREFIX=/your/installation
+export PANACK_HTTP_SERVER=/your/installation/bin/panack-http-server
+make preview
+```
+
+Alternatively put the installed `bin` directory on PATH. The launcher checks
+`panackelty-http-server 1` before starting. It does not download or compile on
+preview startup and does not assume an adjacent core checkout. Paths containing
+spaces work when quoted. Move the whole installation together if relocating it.
+
+Preview still assembles the site and records provenance in Node. The Panackelty
+tool serves the resulting folder on loopback with no-store/noindex headers,
+GET/HEAD, directory indexes and confined reads. Malformed paths return 400, absent
+files return 404, and directory URLs redirect to their slash form. Complete
+responses must fit 1 MiB including headers; oversized files return 503. Current
+assets fit, but new large assets must be checked before adoption.
+
+Readiness is confirmed before printing the URL. Ctrl-C/termination stops admission,
+drains for up to one second, and removes only an owned temporary build after the
+server exits. A separate supervisor also stops the server if the launcher dies;
+a child that does not exit is killed after three seconds. Supplied saved builds
+are preserved. Missing tools, version mismatch, port conflicts and unexpected
+server exits fail clearly. Local measurements showed roughly 7–13 ms request
+latency versus under 1 ms for the previous Node server; this trade-off remains
+subject to real preview acceptance, not a production throughput claim.
 
 `make release-check` verifies both advertised native archives against committed
 checksums and the published checksum files, then checks, runs and compiles the

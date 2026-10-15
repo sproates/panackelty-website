@@ -9,6 +9,15 @@ const {once} = require('node:events');
 const http = require('node:http');
 const {build, serve, start} = require('../scripts/preview.cjs');
 
+async function availablePort() {
+  const reservation = http.createServer();
+  reservation.listen(0, '127.0.0.1');
+  await once(reservation, 'listening');
+  const port = reservation.address().port;
+  await new Promise(resolve => reservation.close(resolve));
+  return port;
+}
+
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'preview-test-'));
   t.after(() => fs.rmSync(root, {recursive:true, force:true}));
@@ -87,7 +96,7 @@ test('server serves Wasm with correct MIME and rejects traversal, links and writ
   await build(f.root,f.output,{...f.metadata,dirty:true},f.archive);
   fs.writeFileSync(path.join(f.root,'secret'),'not public');
   fs.symlinkSync(path.join(f.root,'secret'),path.join(f.output,'leak'));
-  const server=serve(f.output,0);
+  const server=serve(f.output,await availablePort());
   await once(server,'listening');
   t.after(()=>server.close());
   const request = (url,method='GET') => new Promise((resolve,reject)=> {
@@ -102,7 +111,8 @@ test('server serves Wasm with correct MIME and rejects traversal, links and writ
   const wasm=await request(`/playground/assets/${'a'.repeat(64)}/vm.wasm`);
   assert.equal(wasm.status,200);assert.equal(wasm.headers['content-type'],'application/wasm');
   assert.equal(wasm.headers['cache-control'],'no-store');
-  for(const url of ['/../secret','/%2e%2e/secret','/leak','/%xx','/missing']) assert.equal((await request(url)).status,404);
+  for(const url of ['/../secret','/%2e%2e/secret','/%xx']) assert.equal((await request(url)).status,400);
+  for(const url of ['/leak','/missing']) assert.equal((await request(url)).status,404);
   assert.equal((await request('/','POST')).status,405);
   assert.equal((await request('/','HEAD')).body,'');
 });
@@ -111,7 +121,7 @@ test('one-command session builds fresh bytes, preserves saved builds, and cleans
   const f = fixture(t);
   fs.mkdirSync(path.join(f.root, 'build/preview'), {recursive:true});
   fs.writeFileSync(path.join(f.root, 'build/preview/keep'), 'user-owned');
-  const first = await start(f.root, f.metadata, 0, f.archive);
+  const first = await start(f.root, f.metadata, await availablePort(), f.archive);
   t.after(first.stop);
   assert.equal(first.server.address().address, '127.0.0.1');
   const url = `http://127.0.0.1:${first.server.address().port}/`;
@@ -120,7 +130,7 @@ test('one-command session builds fresh bytes, preserves saved builds, and cleans
   assert.equal(fs.existsSync(first.directory), false);
   assert.equal(fs.readFileSync(path.join(f.root, 'build/preview/keep'), 'utf8'), 'user-owned');
   fs.appendFileSync(path.join(f.root, 'site/index.html'), '\n<!-- rebuilt-local-edit -->');
-  const second = await start(f.root, {...f.metadata, dirty:true}, 0, f.archive);
+  const second = await start(f.root, {...f.metadata, dirty:true}, await availablePort(), f.archive);
   t.after(second.stop);
   const response = await fetch(`http://127.0.0.1:${second.server.address().port}/`);
   assert.match(await response.text(), /rebuilt-local-edit/);
@@ -132,28 +142,31 @@ test('startup failures release temporary directories and signal handlers', async
   const temporary = () => fs.readdirSync(os.tmpdir()).filter(name => name.startsWith('panackelty-preview-')).sort();
   const before = temporary();
   const signals = ['exit','SIGINT','SIGTERM'].map(name => process.listenerCount(name));
-  await assert.rejects(start(f.root, f.metadata, 0, Buffer.from('bad')), /SHA-256/);
-  const server = serve(f.root, 0); await once(server, 'listening'); t.after(() => server.close());
+  await assert.rejects(start(f.root, f.metadata, await availablePort(), Buffer.from('bad')), /SHA-256/);
+  const server = serve(f.root, await availablePort()); await once(server, 'listening'); t.after(() => server.close());
   await assert.rejects(start(f.root, f.metadata, server.address().port, f.archive), {code:'EADDRINUSE'});
   assert.deepEqual(temporary(), before);
   assert.deepEqual(['exit','SIGINT','SIGTERM'].map(name => process.listenerCount(name)), signals);
 });
 
-test('Ctrl-C and termination stop a session and remove its temporary build', {timeout:10000}, async t => {
+test('signals and launcher death stop the tool and remove its temporary build', {timeout:15000}, async t => {
   const f = fixture(t);
-  for (const signal of ['SIGINT','SIGTERM']) {
+  for (const signal of ['SIGINT','SIGTERM','SIGKILL']) {
     const child = spawn(process.execPath, ['-e', `
       const fs = require('node:fs');
       const {start} = require(process.argv[1]);
-      start(process.argv[2], JSON.parse(process.argv[3]), 0, fs.readFileSync(process.argv[4]))
+      start(process.argv[2], JSON.parse(process.argv[3]), Number(process.argv[5]), fs.readFileSync(process.argv[4]))
         .then(session => process.send({directory:session.directory,port:session.server.address().port}));
-    `, path.resolve(__dirname,'../scripts/preview.cjs'), f.root, JSON.stringify(f.metadata), path.join(f.root,'browser.tar.gz')],
+    `, path.resolve(__dirname,'../scripts/preview.cjs'), f.root, JSON.stringify(f.metadata), path.join(f.root,'browser.tar.gz'), String(await availablePort())],
     {stdio:['ignore','pipe','pipe','ipc']});
     t.after(() => { if (child.exitCode === null) child.kill('SIGKILL'); });
     const [{directory, port}] = await once(child, 'message');
     assert.equal((await fetch(`http://127.0.0.1:${port}/`)).status, 200);
     const exited = once(child, 'exit'); child.kill(signal);
-    assert.deepEqual(await exited, [0,null]);
+    assert.deepEqual(await exited, signal === 'SIGKILL' ? [null, signal] : [0,null]);
+    for (let attempt = 0; attempt < 100 && fs.existsSync(directory); attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
     assert.equal(fs.existsSync(directory), false);
     await assert.rejects(fetch(`http://127.0.0.1:${port}/`));
   }
@@ -164,4 +177,73 @@ test('CLI rejects invalid ports and extra arguments before building', () => {
     assert.throws(() => execFileSync(process.execPath, [path.resolve(__dirname,'../scripts/preview.cjs'), ...args], {stdio:'pipe'}),
       error => error.status === 1 && /Usage:/.test(error.stderr.toString()));
   }
+});
+
+
+test('unexpected tool exit reports failure and cleans its owned directory', {timeout:10000}, async t => {
+  const f = fixture(t);
+  const session = await start(f.root, f.metadata, await availablePort(), f.archive);
+  t.after(session.stop);
+  const failed = once(session.server, 'error');
+  // The error event intentionally precedes close; avoid once(close)'s error rejection.
+  const closed = new Promise(resolve => session.server.once('close', resolve));
+  process.kill(session.server.pid, 'SIGKILL');
+  assert.match((await failed)[0].message, /stopped unexpectedly/);
+  await closed;
+  assert.equal(fs.existsSync(session.directory), false);
+});
+
+test('missing or incompatible tools fail clearly without losing supplied files', {timeout:10000}, async t => {
+  const f = fixture(t);
+  const previous = process.env.PANACK_HTTP_SERVER;
+  t.after(() => {
+    if (previous === undefined) delete process.env.PANACK_HTTP_SERVER;
+    else process.env.PANACK_HTTP_SERVER = previous;
+  });
+  const incompatible = path.join(f.root, 'wrong-tool');
+  fs.writeFileSync(incompatible, '#!/bin/sh\nprintf "wrong protocol\\n"\n', {mode:0o755});
+  for (const executable of [path.join(f.root, 'missing'), incompatible]) {
+    process.env.PANACK_HTTP_SERVER = executable;
+    const server = serve(f.root, await availablePort());
+    const closed = new Promise(resolve => server.once('close', resolve));
+    await assert.rejects(once(server, 'listening'), /Install the pinned tool/);
+    await closed;
+    assert.ok(fs.existsSync(path.join(f.root, 'site/index.html')));
+  }
+});
+
+test('startup with no readiness times out and terminates its child', {timeout:15000}, async t => {
+  const f = fixture(t);
+  const previous = process.env.PANACK_HTTP_SERVER;
+  t.after(() => {
+    if (previous === undefined) delete process.env.PANACK_HTTP_SERVER;
+    else process.env.PANACK_HTTP_SERVER = previous;
+  });
+  const executable = path.join(f.root, 'silent-tool');
+  fs.writeFileSync(executable, `#!${process.execPath}
+if (process.argv.includes('--version')) console.log('panackelty-http-server 1');
+else setInterval(() => {}, 1000);
+`, {mode:0o755});
+  process.env.PANACK_HTTP_SERVER = executable;
+  const server = serve(f.root, await availablePort());
+  const closed = new Promise(resolve => server.once('close', resolve));
+  await assert.rejects(once(server, 'listening'), /readiness timed out/);
+  await closed;
+  assert.ok(fs.existsSync(f.root));
+});
+
+
+test('CI pins the tool and exercises both suites through the preview launcher', () => {
+  const pin = require('../preview-tool.json');
+  assert.equal(pin.repository, 'sproates/panackelty');
+  assert.match(pin.revision, /^[0-9a-f]{40}$/);
+  assert.equal(pin.protocol, 'panackelty-http-server 1');
+  const checks = fs.readFileSync('.github/workflows/check.yml', 'utf8');
+  assert.match(checks, /require\("\.\/preview-tool.json"\)\.revision/);
+  assert.match(checks, /ref: \$\{\{ steps.preview-tool.outputs.revision \}\}/);
+  assert.match(checks, /make -C build\/preview-tool-source -j2 install/);
+  const browser = fs.readFileSync('.github/workflows/browser-validation.yml', 'utf8');
+  assert.equal((browser.match(/--config preview.playwright.config.mjs/g) || []).length, 2);
+  assert.match(browser, /PANACK_PREVIEW_SCRIPT=/);
+  assert.match(fs.readFileSync('tests/website.playwright.config.mjs', 'utf8'), /preview.playwright.config.mjs/);
 });
