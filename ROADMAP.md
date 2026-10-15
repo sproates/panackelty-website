@@ -16,27 +16,29 @@ not start its individual features or change their agreed priorities.
 
 ## Alpha.13 release promotion
 
-**In progress.** Promote verified native alpha.13 and browser v0.1.3 together
-with download checksums, immutable installer/release-note references and current
-capability claims. Keep alpha.12 roadmap text on a dedicated Previous releases
-page; alpha.13 becomes available and alpha.14 becomes next. Historical
-articles and release notes retain their original versions.
+**Done on successful publication of [PR#44](https://github.com/sproates/panackelty-website/pull/44).**
+Promotes verified native alpha.13 and browser v0.1.3, including download checksums,
+immutable installer/release-note references, capability descriptions and roadmap.
+Alpha.12 is preserved on Previous releases; alpha.14 is identified as planned.
+Historical articles and release notes retain their original versions.
 
-Acceptance: native examples from the published archive, website/browser checks,
-a phone/desktop preview on the owner's local network, explicit merge approval,
-and exact deployed-pin verification. This update does not republish core assets
-or change the core installer's default. No issue was created solely for this
-promotion. Native archive/example acceptance, 30 local automation tests, nine
-editorial browser checks and all 24 playground browser cases passed. The LAN
-preview is available for owner review; hosted checks, approval and production
-verification remain pending. Owner review identified weak folder links and repeated generic milestone links.
-Owner review rejected the HTTP tutorial because it exposes an unsuitable public
-API for an introductory example. The HTTP/package walkthrough and its promotional
-links are removed; capability descriptions retain their scope and limitations.
-The folder-preview walkthrough remains available;
-external links identify exact source files or scoped planning references.
-Static content and navigation changes introduce no
-new runtime service or client-side dependency.
+Owner preview review selected a general-purpose static HTTP server description,
+a self-contained two-package greeting example, and useful website destinations
+instead of bare repository folders or repeated generic milestone links. The
+introductory HTTP API tutorial was removed. Preview artifacts omit production
+canonical/social URL metadata so sharing retains the preview host.
+
+The owner authorised finalisation after LAN preview review. Published native
+archive/example acceptance, local assembly/automation and three-engine browser
+checks support the update; the current PR must pass Website checks before merge.
+Completion requires the main publication job to verify deployed pages, browser
+asset bytes and publication provenance against its tested artifact. If that job
+fails, publication acceptance remains open. No issue was created solely for this
+promotion. Core release assets and installer defaults are unchanged.
+
+Performance: static content/navigation introduces no new runtime service or
+client-side dependency. The installed static HTTP server remains the preview
+server. Production canonical URLs remain intact.
 
 ## Website information architecture
 
@@ -212,10 +214,3 @@ release history retain their acceptance records in the
 [core website register](https://github.com/sproates/panackelty/blob/main/ROADMAP.md#website-follow-up-register).
 Their migration does not reopen completed work or transfer historical closed
 issues. Future enhancements use this repository's issues and roadmap.
-
-Owner wording correction: describe `panack-http-server` as a general-purpose
-static HTTP server. Website preview is an application of the tool, not its scope.
-
-The local-package example now uses a small user-created greeting library and
-application, with all four files, commands and expected output shown. No repository
-clone or network dependency is required. The HTTP API tutorial remains removed.
