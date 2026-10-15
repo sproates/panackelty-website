@@ -45,6 +45,10 @@ jobs:
           ref: ${{ steps.preview-tool.outputs.revision }}
           path: build/preview-tool-source
           persist-credentials: false
+      - name: Install native tool build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libcurl4-openssl-dev
       - name: Build the preview tool once
         run: |
           make -C build/preview-tool-source -j2 install PREFIX="$GITHUB_WORKSPACE/build/preview-tool"

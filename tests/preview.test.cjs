@@ -242,6 +242,7 @@ test('CI pins the tool and exercises both suites through the preview launcher', 
   assert.match(checks, /require\("\.\/preview-tool.json"\)\.revision/);
   assert.match(checks, /ref: \$\{\{ steps.preview-tool.outputs.revision \}\}/);
   assert.match(checks, /make -C build\/preview-tool-source -j2 install/);
+  assert.match(checks, /apt-get install --no-install-recommends -y libcurl4-openssl-dev/);
   const browser = fs.readFileSync('.github/workflows/browser-validation.yml', 'utf8');
   assert.equal((browser.match(/--config preview.playwright.config.mjs/g) || []).length, 2);
   assert.match(browser, /PANACK_PREVIEW_SCRIPT=/);
