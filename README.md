@@ -128,7 +128,9 @@ A separate website PR promotes a release deliberately:
    commit and label the website-selected release without claiming it is latest.
    Review pending/unreleased claims explicitly.
 4. If promoting the browser runtime, update `site/playground.json` with its
-   released tag, archive digest and asset identity. Native and browser versions
+   released tag, archive digest, asset identity and reviewed compiler/bytecode
+   versions. Website assembly renders the playground version note from this pin,
+   rather than retaining potentially stale prose in the browser archive. Native and browser versions
    may differ; explain the differences on the site.
 5. Run checks, native release acceptance and browser integration, review the
    preview, then obtain explicit merge approval. A website merge is the promotion;
