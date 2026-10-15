@@ -14,6 +14,24 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Alpha.13 release promotion
+
+**In progress.** Promote verified native alpha.13 and browser v0.1.3 together
+with download checksums, immutable installer/release-note references and current
+capability claims. Keep alpha.12 roadmap text on a dedicated Previous releases
+page; alpha.13 becomes available and alpha.14 becomes next. Historical
+articles and release notes retain their original versions.
+
+Acceptance: native examples from the published archive, website/browser checks,
+a phone/desktop preview on the owner's local network, explicit merge approval,
+and exact deployed-pin verification. This update does not republish core assets
+or change the core installer's default. No issue was created solely for this
+promotion. Native archive/example acceptance, 30 local automation tests, nine
+editorial browser checks and all 24 playground browser cases passed. The LAN
+preview is available for owner review; hosted checks, approval and production
+verification remain pending. Static content and navigation changes introduce no
+new runtime service or client-side dependency.
+
 ## Website information architecture
 
 **In progress.** [GI#8: Refactor the information structure](https://github.com/sproates/panackelty-website/issues/8)

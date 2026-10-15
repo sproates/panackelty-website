@@ -18,6 +18,8 @@ and release programmes remain in core.
 [Information architecture](docs/INFORMATION_ARCHITECTURE.md) records page ownership,
 clean routes and release-content maintenance. Installation lives on Get started,
 examples have their own catalogue and release history is generated at `/releases/`.
+Previous release summaries live at `/previous-releases/`, preserving the older
+roadmap text while the roadmap describes the current release and upcoming work.
 All pages use the homepage-owned shared navigation and footer.
 
 ## Develop and preview

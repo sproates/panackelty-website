@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#15130f">
-    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.12: exact arithmetic, guarded types, effects, async/await and more.">
+    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.13: exact arithmetic, guarded types, effects, async/await and more.">
     <link rel="canonical" href="https://panackelty.com/capabilities/">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
@@ -20,7 +20,7 @@
         <h1 id="page-title">Small language.<br><em>Serious capabilities.</em></h1>
 <p class="lede">Exact arithmetic. Types that express your rules. Compiler-checked effects. Generic functions, exhaustive pattern matching and async/await.</p>
 <p class="section-intro">Panackelty brings these together in a language for building terminal tools, processing data and exploring algorithms. Its compiler is written in Panackelty itself—and the toolchain can explain selected parts of its reasoning.</p>
-<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.12</strong> for Linux x86-64 and Apple silicon. The browser playground runs v0.1.2, with alpha.12 namespace imports and different host capabilities.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.12">Native alpha.12</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.1.2">Browser v0.1.2</a></p></div>
+<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.13</strong> for Linux x86-64 and Apple silicon. The browser playground runs v0.1.3, with the alpha.13 compiler and different host capabilities.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.13">Native alpha.13</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.1.3">Browser v0.1.3</a></p></div>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p>
@@ -41,6 +41,9 @@
 <ul>
 <li><a href="#host">Practical access to the host</a></li>
 <li><a href="#tcp">Bounded TCP clients and servers</a></li>
+<li><a href="#http">HTTP clients and services</a></li>
+<li><a href="#preview-server">Serve a folder for previews</a></li>
+<li><a href="#local-packages">Share local packages</a></li>
 <li><a href="#imports">Build programs across files</a></li>
 <li><a href="#explain">A compiler you can question</a></li>
 <li><a href="#tooling">Check, run, compile and inspect</a></li>
@@ -49,7 +52,7 @@
 
 </nav>
 <div class="capabilities-content">
-<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.12 · experimental</p><h2 id="language-features">Language features</h2>
+<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.13 · experimental</p><h2 id="language-features">Language features</h2>
 <article class="capability-detail" aria-labelledby="exact-values"><h3 id="exact-values">Exact answers, without hidden rounding</h3>
 <p>A third should stay a third until your program decides otherwise.</p>
 <p>Panackelty supports arbitrary-precision whole numbers, exact base-10 decimals and exact fractions. Calculations preserve their meaning without silently substituting floating-point approximations.</p>
@@ -136,7 +139,7 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>That distinction matters for file formats, command output and network protocols. Code points are not always the same as the visible characters a reader perceives.</p>
 </article>
 </section>
-<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.12 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
+<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.13 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
 <article class="capability-detail" aria-labelledby="host"><h3 id="host">Practical access to the host</h3>
 <p>The native toolchain provides typed paths, filesystem operations, process execution and elapsed-time measurement.</p>
 <p>Read and write files, inspect directories and work with temporary resources. Run commands with explicit arguments, working directories, environment overrides, output limits and timeouts.</p>
@@ -146,18 +149,37 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <article class="capability-detail" aria-labelledby="tcp"><h3 id="tcp">Bounded TCP clients and servers</h3>
 <p>Native alpha.11 puts async/await to work with TCP request/response operations and finite servers with concurrent handlers.</p>
 <p>Connection limits, payload bounds, deadlines and shutdown rules are explicit parts of the API.</p>
-<p>This is a working, experimental networking foundation. DNS, TLS, HTTP and indefinitely running servers are not included. Raw TCP is unavailable in the browser playground.</p>
+<p>This is a working, experimental networking foundation. Alpha.13 adds native HTTP packages and continuous services. The HTTP client supports bounded GET and verified HTTPS; the cleartext server supports typed GET/HEAD/POST handlers, explicit limits and graceful shutdown. Server TLS is not included. These host capabilities are unavailable in the browser playground.</p>
+</article>
+<article class="capability-detail" aria-labelledby="http"><h3 id="http">HTTP clients and services</h3>
+<p><span class="badge">New in native alpha.13</span></p>
+<p>Request data with bounded HTTP/1.1 GET and verified HTTPS. Responses and errors are typed; deadlines, cancellation and response-size limits are explicit. Certificate and hostname verification use the native platform’s libcurl transport.</p>
+<p>Build cleartext HTTP services with typed GET, HEAD and POST handlers, checked message framing and bounded concurrent requests. Continuous services announce readiness after binding and drain active requests on shutdown. Server TLS is not included.</p>
+<p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.13/examples/network">Explore released networking examples →</a></p>
+</article>
+<article class="capability-detail" aria-labelledby="preview-server"><h3 id="preview-server">Serve a folder for previews</h3>
+<p><span class="badge">New in native alpha.13</span></p>
+<p>The installed <code>panack-http-server</code> tool serves any chosen folder. Confined asynchronous reads, directory indexes, redirects, MIME types and GET/HEAD support make it useful for static website previews.</p>
+<p>It starts on loopback by default and offers no-cache and noindex options. Requests, responses and clients are bounded; directory listings, ranges, TLS, file watching and automatic rebuilds are outside its contract.</p>
+<p><a href="https://github.com/sproates/panackelty/tree/v0.1.0-alpha.13/tools">Read the preview tool documentation →</a></p>
+</article>
+<article class="capability-detail" aria-labelledby="local-packages"><h3 id="local-packages">Share local packages</h3>
+<p><span class="badge">New in alpha.13</span></p>
+<p>Reuse local libraries through strict <code>panack.json</code> manifests, dependency aliases and explicit public exports. Applications can check, compile and run through a project entry point, and the complete package tree can move without changing declaration identity.</p>
+<p>Manifests select the exact matching toolchain. Conflicting versions and roots are rejected. Remote dependency restoration, registries and package-management workflows remain future work.</p>
+<p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.13/docs/MODULE_PACKAGE_DESIGN.md">Read the local-package contract →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="imports"><h3 id="imports">Build programs across files</h3>
 <p>Imports let you organise code into separate source files and use the standard library.</p>
 <p>Logical paths such as <code>stdlib/path</code> and <code>project/shared/module</code> keep imports independent of where the toolchain is installed.</p>
 <p>Alpha.12 adds executable file-based namespaces. Import modules explicitly from <code>project/</code> or <code>stdlib/</code>, use aliases or selected imports, qualify names, and expose public declarations or re-exports. The compiler keeps declarations from different modules distinct through checking and code generation; source and saved-v9 bytecode run only the selected entry module.</p>
-<p>Imports are limited to the entry module’s tree and active toolchain. Packages, remote dependencies and unsupported or deferred body checks are not included; the compiler rejects incomplete namespace checks instead of emitting an unchecked program.</p>
+<p>Alpha.13 adds local reusable packages with strict <code>panack.json</code> manifests, dependency aliases and explicit public exports. Package graphs stay within their configured roots and retain identity when moved together. Manifests pin the exact toolchain version. Remote dependency restoration and package management remain planned.</p>
 <p><a href="../examples/#namespace-examples">Run the namespace examples →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="explain"><h3 id="explain">A compiler you can question</h3>
 <p>Checking a program is useful. Understanding the reason behind a decision is useful too.</p>
-<p>Alpha.11 introduces <code>panack explain</code> for selected compiler reasoning, including supported natural-number subtraction proofs and local call/await effect boundaries.</p>
+<p><span class="badge">Expanded in native alpha.13</span></p>
+<p>Alpha.13 expands <code>panack explain</code> with recorded decisions for values, calls, returns, assignments, operators, conditions, matches, collections and effect boundaries. Source locations and explicit unavailable results keep the supported scope visible.</p>
 <p>Use it to inspect the facts behind a supported decision instead of treating the compiler as a black box.</p>
 <p>Its scope is currently limited. It does not explain every diagnostic or certify an entire program.</p>
 </article>
@@ -170,7 +192,7 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <article class="capability-detail" aria-labelledby="self-hosting"><h3 id="self-hosting">Written in the language it compiles</h3>
 <p>Panackelty’s compiler is written in Panackelty.</p>
 <p>The project uses its own language to implement a substantial compiler, alongside bootstrap and reproducibility checks. The language is exercised by the toolchain that develops it, not only by demonstration programs.</p>
-<p>Testing includes compiler, runtime and complete-program checks. The coverage site reports the native C VM and measured <code>.panack</code> source separately, with explicit revisions and test scope. The alpha.12 source-coverage baseline inventories 43 tracked compiler, bytecode and standard-library files across its declared roots; it is not whole-suite coverage.</p>
+<p>Testing includes compiler, runtime and complete-program checks. The coverage site reports the native C VM and measured <code>.panack</code> source separately, with explicit revisions and test scope. Source coverage is reported weekly or on demand, separately from releases. Read each report’s revision and declared measured scope; it is not whole-suite coverage.</p>
 <p><a href="../coverage/">Read the coverage scope and reports →</a></p>
 </article>
 </section>
