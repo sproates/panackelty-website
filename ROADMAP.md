@@ -214,3 +214,10 @@ release history retain their acceptance records in the
 [core website register](https://github.com/sproates/panackelty/blob/main/ROADMAP.md#website-follow-up-register).
 Their migration does not reopen completed work or transfer historical closed
 issues. Future enhancements use this repository's issues and roadmap.
+
+## Playground release-label correction
+
+The v0.1.3 browser archive retained a hard-coded alpha.12 label despite its
+alpha.13 compiler. Website assembly now owns that presentation text, using
+reviewed compiler/bytecode metadata alongside the immutable browser pin. Runtime
+asset bytes and checksums are unchanged. Publication acceptance remains pending.
