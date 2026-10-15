@@ -215,3 +215,7 @@ issues. Future enhancements use this repository's issues and roadmap.
 
 Owner wording correction: describe `panack-http-server` as a general-purpose
 static HTTP server. Website preview is an application of the tool, not its scope.
+
+The local-package example now uses a small user-created greeting library and
+application, with all four files, commands and expected output shown. No repository
+clone or network dependency is required. The HTTP API tutorial remains removed.
