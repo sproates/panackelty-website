@@ -30,7 +30,10 @@ promotion. Native archive/example acceptance, 30 local automation tests, nine
 editorial browser checks and all 24 playground browser cases passed. The LAN
 preview is available for owner review; hosted checks, approval and production
 verification remain pending. Owner review identified weak folder links and repeated generic milestone links.
-Release cards now lead to on-site HTTP, package and folder-preview walkthroughs;
+Owner review rejected the HTTP tutorial because it exposes an unsuitable public
+API for an introductory example. The HTTP/package walkthrough and its promotional
+links are removed; capability descriptions retain their scope and limitations.
+The folder-preview walkthrough remains available;
 external links identify exact source files or scoped planning references.
 Static content and navigation changes introduce no
 new runtime service or client-side dependency.
