@@ -5,7 +5,7 @@ import path from 'node:path';
 const siteRoot=process.env.PLAYGROUND_SITE_DIR;
 if(!siteRoot) throw new Error('PLAYGROUND_SITE_DIR must point at the assembled website');
 const nativeVersion=fs.readFileSync(path.join(siteRoot,'native-release.txt'),'utf8').trim();
-const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/'];
+const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/','/previous-releases/'];
 test('editorial pages have consistent clean navigation at desktop and phone widths',async({page})=>{
   for(const width of [1280,390]){
     await page.setViewportSize({width,height:844});
@@ -34,8 +34,13 @@ test('release availability and copy controls remain explicit',async({page,contex
   await page.goto('/roadmap/');
   await expect(page.locator('#next-release')).toContainText('not released');
   await expect(page.locator('#first-non-alpha')).toContainText('not released');
-  await expect(page.locator('#alpha-13')).toContainText('not released');
+  await expect(page.locator('#alpha-13')).toContainText('Released');
+  await expect(page.locator('#alpha-14')).toContainText('not released');
   await expect(page.locator('#alpha-13')).toContainText('HTTP client and server');
+  await page.getByRole('link', {name:'Previous releases: explore what alpha.12 delivered →'}).click();
+  await expect(page.locator('#alpha-12')).toBeVisible();
+  await expect(page.locator('#alpha-12')).toContainText('Executable namespaces');
+  await expect(page.locator('#alpha-12 a[href$="/releases/tag/v0.1.0-alpha.12"]')).toHaveCount(1);
   await page.goto('/get-started/');
   const command=page.locator('#optional-install-command');
   await expect(command).toContainText(`--version ${nativeVersion}`);

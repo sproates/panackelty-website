@@ -26,12 +26,27 @@ async function build(root, destination, metadata, archive) {
     const provenance = {...metadata, browser: pin};
     fs.writeFileSync(path.join(output, 'preview.json'), JSON.stringify(provenance, null, 2) + '\n');
     const notice = identity => `<aside style="padding:1rem;background:#fff3cd;color:#222;overflow-wrap:anywhere;min-width:0;box-sizing:border-box">Review preview: ${metadata.headCommit || metadata.commit}${metadata.headCommit ? ' (merged with PR base)' : ''}${metadata.dirty ? ' (local changes)' : ''}. <a href="${identity}">Build identity</a></aside>`;
-    for (const file of ['index.html', 'releases/index.html', 'playground/index.html', ...['capabilities','get-started','examples','explain','under-the-hood','roadmap'].map(page => `${page}/index.html`)]) {
+    for (const file of ['index.html', 'releases/index.html', 'playground/index.html', ...['capabilities','get-started','examples','explain','under-the-hood','roadmap','previous-releases'].map(page => `${page}/index.html`)]) {
       const target = path.join(output, file);
       const html = fs.readFileSync(target, 'utf8');
       if (!/<body\b[^>]*>/i.test(html)) throw new Error('Preview page has no body');
       fs.writeFileSync(target, html.replace(/<body\b[^>]*>/i, match => match + notice(path.posix.relative(path.posix.dirname(file), 'preview.json'))));
     }
+    // Browser share controls may prefer canonical metadata to the current URL.
+    // Preview artifacts are portable across loopback, LAN and staging hosts.
+    function removeProductionShareMetadata(directory) {
+      for (const entry of fs.readdirSync(directory, {withFileTypes:true})) {
+        const file = path.join(directory, entry.name);
+        if (entry.isDirectory()) removeProductionShareMetadata(file);
+        else if (entry.isFile() && entry.name.endsWith('.html')) {
+          const html = fs.readFileSync(file, 'utf8');
+          fs.writeFileSync(file, html
+            .replace(/<link\b[^>]*\brel=["']canonical["'][^>]*>/gi, '')
+            .replace(/<meta\b[^>]*(?:property|name)=["'](?:og:url|twitter:url)["'][^>]*>/gi, ''));
+        }
+      }
+    }
+    removeProductionShareMetadata(output);
     fs.writeFileSync(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
     fs.renameSync(output, destination);
   } finally { fs.rmSync(temporary, {recursive: true, force: true}); }

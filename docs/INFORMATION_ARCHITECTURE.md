@@ -59,3 +59,16 @@ use the same assembled chrome. The external report publisher also needs matching
 chrome, delivered separately without changing coverage data.
 
 The Examples page includes complete released programs for Result handling, persistent collections, records, sorting names and Fibonacci. Release integrity executes displayed source and saved bytecode, plus the guide’s explanation query. Alpha 13 describes new capabilities; the first non-alpha section describes integration, breadth and readiness.
+
+## Previous releases
+
+`/previous-releases/` preserves completed release summaries, beginning with the
+full alpha.12 roadmap text. The roadmap retains the current release and future
+plans and links to this archive. `/releases/` remains the detailed changelog and
+migration reference. Historical articles retain their original release context.
+Both the roadmap and release notes link to the archive; shared navigation marks
+it within Roadmap. Future promotions move the previous current summary here.
+
+Release cards link to website walkthroughs with prerequisites, commands, expected
+results and limitations. Repository links are secondary references to specific
+files or planning sections; avoid folder listings and repeated generic issue links.

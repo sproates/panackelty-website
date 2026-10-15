@@ -14,6 +14,32 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Alpha.13 release promotion
+
+**Done on successful publication of [PR#44](https://github.com/sproates/panackelty-website/pull/44).**
+Promotes verified native alpha.13 and browser v0.1.3, including download checksums,
+immutable installer/release-note references, capability descriptions and roadmap.
+Alpha.12 is preserved on Previous releases; alpha.14 is identified as planned.
+Historical articles and release notes retain their original versions.
+
+Owner preview review selected a general-purpose static HTTP server description,
+a self-contained two-package greeting example, and useful website destinations
+instead of bare repository folders or repeated generic milestone links. The
+introductory HTTP API tutorial was removed. Preview artifacts omit production
+canonical/social URL metadata so sharing retains the preview host.
+
+The owner authorised finalisation after LAN preview review. Published native
+archive/example acceptance, local assembly/automation and three-engine browser
+checks support the update; the current PR must pass Website checks before merge.
+Completion requires the main publication job to verify deployed pages, browser
+asset bytes and publication provenance against its tested artifact. If that job
+fails, publication acceptance remains open. No issue was created solely for this
+promotion. Core release assets and installer defaults are unchanged.
+
+Performance: static content/navigation introduces no new runtime service or
+client-side dependency. The installed static HTTP server remains the preview
+server. Production canonical URLs remain intact.
+
 ## Website information architecture
 
 **In progress.** [GI#8: Refactor the information structure](https://github.com/sproates/panackelty-website/issues/8)
