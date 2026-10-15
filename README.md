@@ -40,6 +40,8 @@ installation with both browser suites.
 `make build` downloads the checksummed browser release and writes a fresh
 `build/website`; remove your previous generated build before rebuilding.
 `make preview` prints a loopback URL and removes its temporary output when stopped.
+Preview builds omit canonical and social URL metadata so browser sharing uses
+the current preview address. Production builds retain their canonical URLs.
 Stop and restart after edits. A saved review artifact can be built with
 `node scripts/preview.cjs build build/preview` and served with
 `node scripts/preview.cjs serve build/preview 4173`.

@@ -32,6 +32,21 @@ async function build(root, destination, metadata, archive) {
       if (!/<body\b[^>]*>/i.test(html)) throw new Error('Preview page has no body');
       fs.writeFileSync(target, html.replace(/<body\b[^>]*>/i, match => match + notice(path.posix.relative(path.posix.dirname(file), 'preview.json'))));
     }
+    // Browser share controls may prefer canonical metadata to the current URL.
+    // Preview artifacts are portable across loopback, LAN and staging hosts.
+    function removeProductionShareMetadata(directory) {
+      for (const entry of fs.readdirSync(directory, {withFileTypes:true})) {
+        const file = path.join(directory, entry.name);
+        if (entry.isDirectory()) removeProductionShareMetadata(file);
+        else if (entry.isFile() && entry.name.endsWith('.html')) {
+          const html = fs.readFileSync(file, 'utf8');
+          fs.writeFileSync(file, html
+            .replace(/<link\b[^>]*\brel=["']canonical["'][^>]*>/gi, '')
+            .replace(/<meta\b[^>]*(?:property|name)=["'](?:og:url|twitter:url)["'][^>]*>/gi, ''));
+        }
+      }
+    }
+    removeProductionShareMetadata(output);
     fs.writeFileSync(path.join(output, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
     fs.renameSync(output, destination);
   } finally { fs.rmSync(temporary, {recursive: true, force: true}); }
