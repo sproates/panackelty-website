@@ -47,7 +47,7 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     assert.ok(latest.indexOf('Article 11') < latest.indexOf('Article 10'));
     assert.match(latest, /← Older/); assert.match(older, /← Older/); assert.match(older, /Newer →/);
     assert.doesNotMatch(oldest, /← Older/); assert.match(oldest, /Newer →/);
-    assert.match(detail, /Posted by Ian Sproates on/); assert.match(detail, /data-copy-link="\/articles\/article-11\/"/);
+    assert.match(detail, /Posted by <a href="https:\/\/sproates\.net">Ian Sproates<\/a> on/); assert.match(detail, /data-copy-link="\/articles\/article-11\/"/);
     assert.match(detail, /<time datetime="2026-01-10T11:00:00\+02:00">10 January 2026<\/time>/);
     assert.equal((detail.match(/class="article-permalink article-permalink-(?:top|bottom)"/g) || []).length, 2);
     assert.match(detail, /class="article-permalink article-permalink-top"[\s\S]*?<a class="permalink-link" href="\.\/">Permalink<\/a>/);
