@@ -86,3 +86,9 @@ test('homepage section navigation and example references have unique targets', (
     assert(ids.includes(`${name}-output`), `missing expected output: ${name}`);
   }
 });
+
+test('homepage contributor links include the personal website', () => {
+  const html = fs.readFileSync('site/index.html', 'utf8');
+  assert.match(html, /<span class="contributor-name">Ian Sproates<\/span>/);
+  assert.match(html, /<a class="contributor-link" href="https:\/\/sproates\.net" aria-label="Ian Sproates personal website" title="Personal website">[\s\S]*?<span>Website<\/span><\/a>/);
+});

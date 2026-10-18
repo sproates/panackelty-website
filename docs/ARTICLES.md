@@ -35,10 +35,10 @@ The build creates the newest-first `/articles/` archive, article pages and
 tag-topic pages. It adds published routes to `sitemap.xml`. The archive shows
 up to five articles per page, with Older and Newer links when needed.
 
-Every article page has an Ian Sproates byline, its publication date, linked
-topic tags and a **Copy link** button. The button copies the current preview or
-production URL. Drafts have no publication date until one is set as part of
-publishing.
+Every article page has an Ian Sproates byline linking to [sproates.net](https://sproates.net),
+its publication date, linked topic tags and a **Copy link** button. The button
+copies the current preview or production URL. Drafts have no publication date
+until one is set as part of publishing.
 
 Article Markdown supports local SVG illustrations. Store them under
 `site/images/` and refer to them with a site-root path and descriptive alt text:
