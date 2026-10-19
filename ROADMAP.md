@@ -14,6 +14,17 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Alpha.14 methods and HTTP framework communication
+
+Done on publication: publish “Giving Panackelty methods a proper home” and update
+the homepage release summary and alpha.14 roadmap to include type-owned dispatch
+and the HTTP server framework. Both remain explicitly planned and unreleased;
+alpha.13 release pins and historical release notes are unchanged. The article
+explains deliberate early receiver sugar, staged arrow syntax and final dot calls.
+No issue was created solely for this editorial update. Static content adds no
+runtime service or client-side dependency. Acceptance requires local website
+checks, hosted Website checks and verification of the deployed article and pages.
+
 ## Alpha.13 release promotion
 
 **Done on successful publication of [PR#44](https://github.com/sproates/panackelty-website/pull/44).**
