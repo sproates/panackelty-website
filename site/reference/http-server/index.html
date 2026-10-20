@@ -366,8 +366,21 @@ server.get("/", @home)</code></pre>
 
             <section id="handler-contract" class="capability-detail" aria-labelledby="handler-contract-title">
               <h3 id="handler-contract-title">Handler inputs and responses</h3>
-              <p><code>Request</code> contains <code>method</code>, raw <code>path</code>, raw <code>query</code> without <code>?</code>, ordered <code>headers</code>, and buffered body bytes. <code>request.header(name)</code> returns the first case-insensitive match; <code>header_values(name)</code> preserves repeated values.</p>
-              <p><code>ResponseWriter</code> starts with status 200. Set a status with <code>status</code>, replace a header with <code>header</code>, append a repeated header with <code>add_header</code>, and finish once with <code>send</code> or <code>send_bytes</code>. Text defaults to UTF-8 plain text; bytes default to <code>application/octet-stream</code>. The server owns framing headers and closes each connection after one response.</p>
+              <p><strong>Request fields</strong></p>
+              <dl class="api-parameters">
+                <div><dt><code>method</code></dt><dd>The HTTP method.</dd></div>
+                <div><dt><code>path</code></dt><dd>The raw request path.</dd></div>
+                <div><dt><code>query</code></dt><dd>The raw query string, without the leading question mark.</dd></div>
+                <div><dt><code>headers</code></dt><dd>Headers in request order. <code>request.header(name)</code> returns the first case-insensitive match; <code>header_values(name)</code> preserves repeated values.</dd></div>
+                <div><dt><code>body</code></dt><dd>The buffered request body bytes.</dd></div>
+              </dl>
+              <p><strong>ResponseWriter</strong> starts with status 200. Its methods let the handler:</p>
+              <ul>
+                <li>Set the status with <code>status</code>.</li>
+                <li>Replace a header with <code>header</code>, or append a repeated header with <code>add_header</code>.</li>
+                <li>Finish the response once with <code>send</code> or <code>send_bytes</code>.</li>
+              </ul>
+              <p>Text responses default to UTF-8 plain text; byte responses default to <code>application/octet-stream</code>. The server supplies framing headers and closes each connection after one response.</p>
               <pre><code>async echo(request: http.Request,
     response: http.ResponseWriter): Result[Unit,Str] {
   response.send_bytes(request.body)
