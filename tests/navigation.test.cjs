@@ -87,11 +87,15 @@ test('homepage section navigation and example references have unique targets', (
   }
 });
 
-test('homepage exposes a short HTTP API link before the footer', () => {
+test('HTTP API footer link is short and stays out of homepage Explore links', () => {
   const html = fs.readFileSync('site/index.html', 'utf8');
   const explore = html.match(/<section class="closing">[\s\S]*?<\/section>/)?.[0];
   assert(explore, 'homepage has an Explore section');
-  assert.match(explore, /<a href="reference\/http-server\/">HTTP API <span/);
+  assert.doesNotMatch(explore, /reference\/http-server\//);
+  const footer = html.match(/<footer>[\s\S]*?<\/footer>/)?.[0];
+  assert(footer, 'homepage has the shared footer');
+  assert.match(footer, /<a href="reference\/http-server\/">HTTP API<\/a>/);
+  assert.doesNotMatch(footer, /HTTP Server reference · alpha\.14 development/);
 });
 
 test('HTTP Server reference index targets every unique API section', () => {
