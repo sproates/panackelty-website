@@ -92,7 +92,21 @@ async main(): Unit {
 <p>Once the routes are registered, <code>await server.listen()</code> starts the listener and returns when it&#39;s ready to accept connections. The server continues running after <code>main</code> finishes, so it can keep answering requests.</p>
 <h3 id="the-project-manifest">The project manifest</h3>
 <p>The example also includes a <code>panack.json</code> file, which tells Panackelty where to find the program and its dependencies. Here&#39;s the manifest from <code>examples/network/http_server/panack.json</code>:</p>
-<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
+<pre><code class="language-json">{
+  &quot;schema&quot;: 1,
+  &quot;package&quot;: &quot;examples.http_server&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;language&quot;: &quot;modules-v1&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;source&quot;: &quot;src&quot;,
+  &quot;entry&quot;: &quot;main.panack&quot;,
+  &quot;exports&quot;: {},
+  &quot;dependencies&quot;: {
+    &quot;http&quot;: {
+      &quot;path&quot;: &quot;../../../packages/http&quot;
+    }
+  }
+}</code></pre>
 <p>Together, <code>source</code> and <code>entry</code> point to <code>src/main.panack</code>. The <code>http</code> dependency points to the HTTP package bundled with the release. Its path is relative to <code>panack.json</code>, so if you copy the example to another directory, copy the manifest too and update the dependency path to match the HTTP package&#39;s location.</p>
 <h2 id="handle-requests-and-responses">Handle requests and responses</h2>
 <p>The first server includes an <code>/echo</code> route that sends back whatever you put in the request body. To try it, leave that server running and send this request from a second terminal:</p>
@@ -168,7 +182,21 @@ async main(): Unit {
   }
 }</code></pre>
 <p>The accompanying manifest is shown below. It&#39;s included at <code>examples/network/http_contextual_server/panack.json</code>:</p>
-<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_contextual_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
+<pre><code class="language-json">{
+  &quot;schema&quot;: 1,
+  &quot;package&quot;: &quot;examples.http_contextual_server&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;language&quot;: &quot;modules-v1&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;source&quot;: &quot;src&quot;,
+  &quot;entry&quot;: &quot;main.panack&quot;,
+  &quot;exports&quot;: {},
+  &quot;dependencies&quot;: {
+    &quot;http&quot;: {
+      &quot;path&quot;: &quot;../../../packages/http&quot;
+    }
+  }
+}</code></pre>
 <p>Every handler on this server takes <code>AppContext</code> as its first argument, followed by the request and response writer. The compiler works out the context type from the value passed to <code>create_bound_contextual_server</code> and checks that the handlers accept it.</p>
 <p>The address <code>127.0.0.1</code> keeps this example accessible only from the same machine. You can also use <code>create_contextual_server(port, context)</code>, which listens on all local IPv4 interfaces.</p>
 <p>These settings stay unchanged while the server runs. If you need handlers to update shared data or use a database connection pool, you&#39;ll also need to decide how concurrent access is managed. Passing a context doesn&#39;t handle that for you.</p>
