@@ -22,6 +22,11 @@ function render(home, html, page, release) {
   const current = `href="${page === 'home' ? root : root + currentRoute + '/'}"`;
   if (header.includes(current)) header = once(header, current, current + ' aria-current="page"');
   else if (footer.includes(current)) footer = once(footer, current, current + ' aria-current="page"');
+  // Older pinned browser artifacts predate the core documentation move.
+  if (page === 'playground') {
+    html = html.replaceAll('https://github.com/sproates/panackelty/blob/main/SPEC.md',
+      'https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md');
+  }
   if (page === 'playground' && release) {
     if (!/^v[0-9]+\.[0-9]+\.[0-9]+$/.test(release.tag) ||
         !/^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$/.test(release.coreVersion) ||

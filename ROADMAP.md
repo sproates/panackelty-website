@@ -21,9 +21,20 @@ roadmap sections and maintenance guidance to match the core release direction.
 Preserve alpha.13 availability and pins, historical articles and conditional or
 optional scope. No new issue is needed for this editorial change.
 
-Verification pending: local and hosted website checks, owner preview/merge approval,
-then deployed-page verification by the maintainer delivering this change. Content
-only: no compiler, runtime or client-side dependency changes.
+Done: [PR#48](https://github.com/sproates/panackelty-website/pull/48) merged with
+owner approval. Local and hosted checks passed; publication run 39429324422
+verified deployed bytes and provenance. The live homepage and roadmap were
+verified against source e27abcd on 20 October 2026. Content only: no compiler,
+runtime or client-side dependency changes.
+
+## Editorial headings and reference links — 20 October 2026
+
+Done on successful publication: apply the owner-reviewed homepage and editorial
+headings, remove unwanted forced line breaks, and repair the relocated language
+reference link on Under the hood and in the pinned playground's assembled HTML.
+Local website checks and a targeted reference-link regression test support the
+change; hosted checks and deployed-page verification remain publication gates.
+No issue is associated with this editorial task. No runtime or release-pin changes.
 
 ## Alpha.14 methods and HTTP framework communication
 
