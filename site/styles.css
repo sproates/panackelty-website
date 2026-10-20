@@ -323,6 +323,7 @@ footer { color: var(--muted); }
 .capabilities-group > p:not(.eyebrow), .capability-detail p, .capability-detail li, .capabilities-explore p { color: var(--muted); }
 .capability-detail { border-top: 1px solid var(--line); padding-block: 2rem; }
 .capability-detail h3 { font: 400 clamp(1.65rem, 3vw, 2.2rem)/1.2 var(--serif); letter-spacing: -.025em; margin: 0 0 1.5rem; color: var(--ink); }
+.capability-detail h3 code { overflow-wrap: anywhere; }
 .capability-detail p { margin-block: 1rem; }
 .capability-detail code { color: var(--accent); }
 .capability-detail pre { margin-block: 1.75rem; }
