@@ -14,7 +14,8 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('[aria-current="page"]')).toHaveCount(1);
       await expect(page.getByRole('link',{name:'Try it online',exact:true})).toBeVisible();
-      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+      const width=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth}));
+      expect(width.page,`${route} overflows at ${width.viewport}px`).toBeLessThanOrEqual(width.viewport);
       await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
       await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
       await expect(page.locator('.closing .closing-links')).toHaveCount(1);
