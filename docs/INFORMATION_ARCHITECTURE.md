@@ -13,7 +13,7 @@ or old-anchor compatibility is required for this refactor.
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
-| Releases and roadmap | `/roadmap/` | Available now, next alpha 13 and first non-alpha target, separately labelled |
+| Releases and roadmap | `/roadmap/` | Available now, alpha.14–alpha.18 direction and first non-alpha target, separately labelled |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
 
@@ -31,14 +31,15 @@ renderer remains based on the immutable reviewed changelog snapshot.
 
 - Available now means the deliberately promoted native release, not core main
   or next. Browser capabilities follow their separately promoted artifact.
-- Alpha 12 is the current native release. The website promotion records its
-  else-if, source-coverage and executable-namespace features alongside the
-  release pins. The next planned native release is alpha 13.
-- Alpha 13 is planned for native HTTP client/server and expanded checker and
-  compilation explanations, backed by core GI#236/GI#237/GI#134/GI#173. Package
-  prerequisites and the paused explanation programme remain explicit; recording
-  the plan does not restart implementation. Exact explanation cases are defined
-  during slice planning.
+- Alpha.13 is the promoted native release. Alpha.14–alpha.18 have agreed general
+  directions on the homepage and roadmap: foundations; useful programs; everyday
+  development; interactive/connected applications; language ergonomics.
+- Keep the homepage outline and detailed roadmap consistent with core's agreed
+  release scope. Package-management scope remains to be settled; alpha.17's Docker
+  and Linux ARM64 work is optional; alpha.18 features require design and evidence.
+  Preserve existing alpha.14 guard/inference selections and avoid duplicate credit.
+- Historical articles keep their publication context. Current capability pages,
+  download pins and release history change only during a release promotion.
 - The first non-alpha section is a target, with scope/version/date still under
   definition. Future features must not appear as current capabilities.
 - A release promotion updates Get started's commands and example validation,
@@ -53,7 +54,7 @@ Provide an iPhone-accessible preview before merge approval.
 
 Tracking: [website GI#8](https://github.com/sproates/panackelty-website/issues/8).
 
-Owner preview feedback: Home uses a compact introduction and four release rows;
+Owner preview feedback: Home uses a compact introduction and linked release rows;
 all editorial pages share the same closing link component. Coverage entry pages
 use the same assembled chrome. The external report publisher also needs matching
 chrome, delivered separately without changing coverage data.

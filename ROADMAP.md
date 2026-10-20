@@ -14,6 +14,17 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Alpha.14 through alpha.18 release direction
+
+Owner-selected general scope, 20 October 2026. Update the homepage release rows,
+roadmap sections and maintenance guidance to match the core release direction.
+Preserve alpha.13 availability and pins, historical articles and conditional or
+optional scope. No new issue is needed for this editorial change.
+
+Verification pending: local and hosted website checks, owner preview/merge approval,
+then deployed-page verification by the maintainer delivering this change. Content
+only: no compiler, runtime or client-side dependency changes.
+
 ## Alpha.14 methods and HTTP framework communication
 
 Done on publication: publish “Giving Panackelty methods a proper home” and update
