@@ -87,6 +87,13 @@ test('homepage section navigation and example references have unique targets', (
   }
 });
 
+test('homepage exposes a short HTTP API link before the footer', () => {
+  const html = fs.readFileSync('site/index.html', 'utf8');
+  const explore = html.match(/<section class="closing">[\s\S]*?<\/section>/)?.[0];
+  assert(explore, 'homepage has an Explore section');
+  assert.match(explore, /<a href="reference\/http-server\/">HTTP API <span/);
+});
+
 test('HTTP Server reference index targets every unique API section', () => {
   const html = fs.readFileSync('site/reference/http-server/index.html', 'utf8');
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
