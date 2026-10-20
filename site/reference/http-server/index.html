@@ -141,7 +141,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
-              <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. <strong>Handler:</strong> runs asynchronously for a matching request and receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes become setup errors reported by <code>listen()</code>. Registering after listening begins traps.</p>
               <p><code>GET</code> is supported. A missing exact route runs the fallback if one is registered; otherwise the response is 404. Paths match case-sensitively without decoding or normalization.</p>
               <p><a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">Complete example source</a> registers GET <code>/</code>.</p>
@@ -158,9 +158,8 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
-              <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the complete bounded request body on <code>request.body</code>.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. <strong>Handler:</strong> runs asynchronously for a matching request and receives the complete bounded request body on <code>request.body</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
-              <p><code>POST</code> is supported. The framework reads and buffers the complete request before invoking the handler.</p>
               <p><a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">Complete example source</a> registers POST <code>/echo</code>.</p>
             </section>
 
@@ -175,7 +174,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
-              <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. <strong>Handler:</strong> runs asynchronously for a matching PUT request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
               <p>Register and invoke handlers using the same named-function pattern as the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary server program</a>.</p>
             </section>
@@ -191,7 +190,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
-              <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. <strong>Handler:</strong> runs asynchronously for a matching DELETE request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
               <p>Register and invoke handlers using the same named-function pattern as the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary server program</a>.</p>
             </section>
@@ -206,7 +205,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async function called for otherwise unmatched supported methods and paths.</dd></div></dl>
-              <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The fallback handler runs asynchronously for unmatched supported requests.</p>
               <p><strong>Errors:</strong> registering a second fallback records a setup error reported by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach the fallback.</p>
               <p>The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> uses its fallback to send a 404 response.</p>
             </section>
@@ -230,7 +229,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
-              <p>Registers an exact GET route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The handler runs asynchronously for a matching GET request and receives <code>(context, request, response)</code>.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a>.</p>
             </section>
 
@@ -246,7 +245,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature; it receives the shared context first and the complete bounded request body on <code>request.body</code>.</dd></div></dl>
-              <p>Registers an exact POST route. Registration returns <code>Unit</code> synchronously.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The handler runs asynchronously for a matching POST request and receives the complete bounded body on <code>request.body</code>.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary program</a> for the corresponding POST and body pattern.</p>
             </section>
 
@@ -262,7 +261,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
-              <p>Registers an exact PUT route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The handler runs asynchronously for a matching PUT request and receives <code>(context, request, response)</code>.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
             </section>
 
@@ -278,7 +277,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
-              <p>Registers an exact DELETE route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The handler runs asynchronously for a matching DELETE request and receives <code>(context, request, response)</code>.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
             </section>
 
@@ -293,7 +292,7 @@ server.get("/", @home)</code></pre>
   ]
 ): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async contextual handler for unmatched supported methods and paths; it receives <code>(context, request, response)</code>.</dd></div></dl>
-              <p>Registers one fallback. Registration returns <code>Unit</code> synchronously.</p>
+              <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. The fallback handler runs asynchronously for an unmatched supported request.</p>
               <p>A second fallback is a setup error returned by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach it. The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> returns 404 from its fallback.</p>
             </section>
           </section>
