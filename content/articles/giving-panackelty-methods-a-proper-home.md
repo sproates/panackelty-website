@@ -8,6 +8,9 @@ tags:
   - compiler
   - alpha.14
 ---
+
+> Update, 20 October 2026: the method migration and routed HTTP framework are now complete on `next`, ready for alpha.14 release preparation. Dot calls use type-owned dispatch and the temporary arrow syntax has been removed. Alpha.14 will also include the HTTP API reference and runnable examples. The account below describes the migration while it was in progress.
+
 Panackelty’s early use of global functions and receiver-call sugar was a deliberate choice. I needed to get the language moving, build useful programs and establish a working compiler and runtime. A relatively simple function model provided a practical foundation without making a complete method system a prerequisite for everything else.
 
 That choice has served its purpose. The language and libraries have developed far enough to show where the model becomes restrictive, and there’s now enough working infrastructure to replace it carefully.

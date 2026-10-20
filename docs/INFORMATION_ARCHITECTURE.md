@@ -13,7 +13,7 @@ or old-anchor compatibility is required for this refactor.
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
-| Releases and roadmap | `/roadmap/` | Available now, alpha.14–alpha.18 direction and first non-alpha target, separately labelled |
+| Releases and roadmap | `/roadmap/` | Available now, alpha.14–alpha.19 direction and first non-alpha target, separately labelled |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
 
@@ -31,13 +31,13 @@ renderer remains based on the immutable reviewed changelog snapshot.
 
 - Available now means the deliberately promoted native release, not core main
   or next. Browser capabilities follow their separately promoted artifact.
-- Alpha.13 is the promoted native release. Alpha.14–alpha.18 have agreed general
+- Alpha.13 is the promoted native release. Alpha.14–alpha.19 have agreed general
   directions on the homepage and roadmap: foundations; useful programs; everyday
   development; interactive/connected applications; language ergonomics.
 - Keep the homepage outline and detailed roadmap consistent with core's agreed
-  release scope. Package-management scope remains to be settled; alpha.17's Docker
-  and Linux ARM64 work is optional; alpha.18 features require design and evidence.
-  Preserve existing alpha.14 guard/inference selections and avoid duplicate credit.
+  release scope. Package-management scope remains to be settled; alpha.18's Docker
+  and Linux ARM64 work is optional; alpha.19 features require design and evidence.
+  Preserve existing alpha.15 guard/inference selections and avoid duplicate credit.
 - Historical articles keep their publication context. Current capability pages,
   download pins and release history change only during a release promotion.
 - The first non-alpha section is a target, with scope/version/date still under
@@ -73,3 +73,9 @@ it within Roadmap. Future promotions move the previous current summary here.
 Release cards link to website walkthroughs with prerequisites, commands, expected
 results and limitations. Repository links are secondary references to specific
 files or planning sections; avoid folder listings and repeated generic issue links.
+
+Release rebalance (20 October 2026): alpha.14 now contains completed methods/HTTP
+and the planned HTTP reference/examples slice, with colours optional. Incomplete
+foundation work moves to alpha.15, where the test-speed milestone stays. Former
+alpha.15–alpha.18 themes shift to alpha.16–alpha.19. Update both homepage release
+rows and roadmap sections together; keep published release pins unchanged.
