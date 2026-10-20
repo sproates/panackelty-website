@@ -11,7 +11,7 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">API reference · alpha.14 development</p>
+<p class="eyebrow">API reference · alpha.14</p>
 <h1 id="page-title">HTTP Server</h1><p class="lede">Signatures, behaviour and limits for the routed HTTP server.</p>
 <p>Want to get started quickly? See the <a href="../../playbook/http-server/">HTTP Server Playbook</a></p>
 </section>
@@ -48,7 +48,7 @@
 <li class="toc-level-2"><a href="#fixed-limits">Fixed limits</a></li>
 <li class="toc-level-2"><a href="#runnable-programs">Runnable programs</a></li>
 <li class="toc-level-2"><a href="#source-and-test-evidence">Source and test evidence</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p><strong>Alpha.14 development API — unreleased.</strong> This page documents the unreleased alpha.14 HTTP server API. It is not part of the published alpha.13 toolchain or the current browser playground. Signatures and behaviour are checked against the package source and integration tests linked in <a href="../../reference/http-server/#source-and-test-evidence">Source and test evidence</a>.</p>
+<article class="capabilities-content http-docs-content"><p>Signatures and behaviour are checked against the package source and integration tests linked in <a href="../../reference/http-server/#source-and-test-evidence">Source and test evidence</a>.</p>
 <p>Use <a href="https://github.com/sproates/panackelty/blob/next/packages/http/README.md">http/server</a> for routed handlers. The packaged HTTP client is a separate API. For directory serving, see the <a href="https://github.com/sproates/panackelty/blob/next/tools/http-server/README.md">static HTTP server tool</a>.</p>
 <p>New to this API? Start with <a href="../../playbook/http-server/">the HTTP playbook</a>. It includes complete programs, setup steps, requests to try and expected results.</p>
 <h2 id="import-and-first-server">Import and first server</h2>
@@ -330,7 +330,7 @@ async main(): Unit {
 <p>Request bodies are buffered before handlers run. Capacity overflow receives 503, oversized request bodies receive 413, and oversized request headers receive 431. Invalid or oversized application responses become a generic 500 if no response has been committed.</p>
 <p>This API has no TLS server, WebSocket, HTTP/2, streaming response, keep-alive, route parameters, middleware, or closure-capture support.</p>
 <h2 id="runnable-programs">Runnable programs</h2>
-<p>Both examples are complete Panackelty packages with manifests and use the matching toolchain version (<code>0.1.0-alpha.13</code> in the current development checkout). Run from the repository root; both bind to loopback and accept Ctrl-C for shutdown:</p>
+<p>Both examples are complete Panackelty packages with manifests and use the matching toolchain version. Run from the repository root; both bind to loopback and accept Ctrl-C for shutdown:</p>
 <pre><code class="language-sh">./bin/panack run --project examples/network/http_server/panack.json 8080
 ./bin/panack run --project examples/network/http_contextual_server/panack.json 8081</code></pre>
 <p>The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/README.md">ordinary example README</a> shows GET and POST routes, requests to try, expected responses, and links to the source and manifest. The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/README.md">contextual example README</a> demonstrates typed shared configuration and fallback routing. The integration suite runs both checked-in examples from source and saved bytecode.</p>
