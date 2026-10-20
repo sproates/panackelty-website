@@ -16,6 +16,7 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       await expect(page.getByRole('link',{name:'Try it online',exact:true})).toBeVisible();
       const width=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth,offenders:[...document.body.querySelectorAll('*')].map(element=>{const rect=element.getBoundingClientRect();return {tag:element.tagName,className:typeof element.className==='string'?element.className:'',text:element.innerText?.slice(0,60),left:Math.round(rect.left),right:Math.round(rect.right)}}).filter(element=>element.right>innerWidth+1).sort((a,b)=>b.right-a.right).slice(0,8)}));
       expect(width.page,`${route} overflows at ${width.viewport}px: ${JSON.stringify(width.offenders)}`).toBeLessThanOrEqual(width.viewport);
+      if(route==='/reference/http-server/') await expect(page.locator('.capabilities-toc')).toHaveCSS('position','static');
       await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
       await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
       await expect(page.locator('.closing .closing-links')).toHaveCount(1);
