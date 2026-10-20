@@ -77,7 +77,9 @@
 
             <section id="create-server" class="capability-detail" aria-labelledby="create-server-title">
               <h3 id="create-server-title"><code>create_server</code></h3>
-              <pre><code>create_server(port: Nat): Server</code></pre>
+              <pre><code>create_server(
+  port: Nat
+): Server</code></pre>
               <dl class="api-parameters"><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div></dl>
               <p><strong>Returns:</strong> a new <code>Server</code> bound to <code>0.0.0.0</code>, all local IPv4 interfaces.</p>
               <p><strong>Errors:</strong> an invalid port is returned by <code>listen()</code> as <code>Error(ServerError)</code>. The constructor itself is synchronous.</p>
@@ -87,7 +89,10 @@
 
             <section id="create-bound-server" class="capability-detail" aria-labelledby="create-bound-server-title">
               <h3 id="create-bound-server-title"><code>create_bound_server</code></h3>
-              <pre><code>create_bound_server(address: Str, port: Nat): Server</code></pre>
+              <pre><code>create_bound_server(
+  address: Str,
+  port: Nat
+): Server</code></pre>
               <dl class="api-parameters"><div><dt><code>address</code></dt><dd>Dotted-decimal IPv4 bind address.</dd></div><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div></dl>
               <p><strong>Returns:</strong> a new <code>Server</code> for that address. For example, <code>"127.0.0.1"</code> accepts connections from the local machine only.</p>
               <p><strong>Errors:</strong> invalid address and port values are returned by <code>listen()</code> as <code>ServerError</code>. Hostnames and IPv6 addresses are unsupported.</p>
@@ -97,7 +102,10 @@
 
             <section id="create-contextual-server" class="capability-detail" aria-labelledby="create-contextual-server-title">
               <h3 id="create-contextual-server-title"><code>create_contextual_server</code></h3>
-              <pre><code>create_contextual_server[T](port: Nat, context: T): ContextualServer[T]</code></pre>
+              <pre><code>create_contextual_server[T](
+  port: Nat,
+  context: T
+): ContextualServer[T]</code></pre>
               <dl class="api-parameters"><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div><div><dt><code>context</code></dt><dd>Typed value stored for this server; its type determines <code>T</code>.</dd></div></dl>
               <p><strong>Returns:</strong> a contextual server that binds to <code>0.0.0.0</code> when listening.</p>
               <p><strong>Errors and async:</strong> the same port errors as <code>create_server</code>; construction is synchronous.</p>
@@ -116,8 +124,12 @@ server.get("/", @home)</code></pre>
             </section>
 
             <section id="create-bound-contextual-server" class="capability-detail" aria-labelledby="create-bound-contextual-server-title">
-              <h3 id="create-bound-contextual-server-title"><code>create_bound_contextual_server</code></h3>
-              <pre><code>create_bound_contextual_server[T](address: Str, port: Nat, context: T): ContextualServer[T]</code></pre>
+              <h3 id="create-bound-contextual-server-title"><code>create_bound_<wbr>contextual_server</code></h3>
+              <pre><code>create_bound_contextual_server[T](
+  address: Str,
+  port: Nat,
+  context: T
+): ContextualServer[T]</code></pre>
               <dl class="api-parameters"><div><dt><code>address</code></dt><dd>Dotted-decimal IPv4 bind address.</dd></div><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div><div><dt><code>context</code></dt><dd>Typed value stored for this server; its type determines <code>T</code>.</dd></div></dl>
               <p><strong>Returns:</strong> a contextual server using the specified address. <code>"127.0.0.1"</code> keeps the listener local; <code>"0.0.0.0"</code> listens on all local IPv4 interfaces.</p>
               <p><strong>Errors and async:</strong> invalid address and port errors are returned by <code>listen()</code>; construction is synchronous. Hostnames and IPv6 are unsupported.</p>
