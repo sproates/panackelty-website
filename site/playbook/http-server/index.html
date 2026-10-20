@@ -39,9 +39,10 @@
 <pre><code class="language-sh">curl http://127.0.0.1:8080/</code></pre>
 <p>Expected body:</p>
 <pre><code class="language-text">hello from Panackelty HTTP server</code></pre>
-<p>Stop with Ctrl-C in the server terminal. If port 8080 is occupied, replace it with 8083 in both commands. A startup error is printed on stderr and the program exits with status 1. This server listens on <code>127.0.0.1</code>: only your machine can connect. Explicitly choose <code>0.0.0.0</code> if you intend to accept connections through other local network interfaces; it is a listening address, not a browser URL.</p>
+<p>When you&#39;ve finished, press Ctrl-C in the terminal running the server. If another program is already using port 8080, use 8083 in both the server command and the curl request. If the server can&#39;t start, it writes an error message to stderr and exits with status 1.</p>
+<p>The example listens on <code>127.0.0.1</code>, so you can only connect from the same machine. To try it from another device on your network, change the address passed to <code>create_bound_server</code> to <code>0.0.0.0</code>. Then connect using the server machine&#39;s network IP address and port, for example <code>http://192.168.1.10:8080/</code>. Replace that example IP address with your machine&#39;s address; don&#39;t put <code>0.0.0.0</code> in your browser.</p>
 <h3 id="the-complete-program">The complete program</h3>
-<p>The file is <code>examples/network/http_server/src/main.panack</code>. This single example also supplies the routes used in the next two guides. You can read every line here:</p>
+<p>Open <code>examples/network/http_server/src/main.panack</code> to see how the server works. The full program is shown below. We&#39;ll use its routes to explore requests, responses and fallbacks in the next two sections.</p>
 <pre><code class="language-panack">import http/server as http
 import stdlib/async_host as host
 
