@@ -22,6 +22,7 @@ test('sitemap lists the canonical public website routes once', () => {
     'https://panackelty.com/playground/',
     'https://panackelty.com/releases/',
     'https://panackelty.com/previous-releases/',
+    'https://panackelty.com/api/',
     'https://panackelty.com/reference/http-server/',
     'https://panackelty.com/playbook/http-server/',
   ]);
