@@ -128,7 +128,7 @@ server.get("/", @home)</code></pre>
           <section id="server-routes" class="capabilities-group" aria-labelledby="server-routes-title">
             <p class="eyebrow">Ordinary handlers</p>
             <h2 id="server-routes-title">Server route methods</h2>
-            <p>An ordinary handler is an async function reference with the signature <code>AsyncFn[Request,ResponseWriter,Result[Unit,Str]]</code>. Route methods return <code>Unit</code>; registration problems are saved on the handle and reported by <code>listen()</code>.</p>
+            <p>Register exact routes with named async handlers. A matching handler receives a <code>Request</code> and its <code>ResponseWriter</code>; invalid or duplicate routes are reported by <code>listen()</code>.</p>
 
             <section id="server-get" class="capability-detail" aria-labelledby="server-get-title">
               <h3 id="server-get-title"><code>Server.get</code></h3>
