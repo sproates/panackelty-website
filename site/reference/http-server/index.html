@@ -155,7 +155,7 @@ server.get("/", @home)</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns:</strong> <code>Unit</code>. <strong>Registration:</strong> synchronous. <strong>Handler:</strong> runs asynchronously for a matching request and receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes become setup errors reported by <code>listen()</code>. Registering after listening begins traps.</p>
-              <p><code>GET</code> is supported. A missing exact route runs the fallback if one is registered; otherwise the response is 404. Paths match case-sensitively without decoding or normalization.</p>
+              <p>A missing exact route runs the fallback if one is registered; otherwise the response is 404. Paths match case-sensitively without decoding or normalization.</p>
               <p><a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">Complete example source</a> registers GET <code>/</code>.</p>
             </section>
 
