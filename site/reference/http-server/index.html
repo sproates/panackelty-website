@@ -20,7 +20,7 @@
         <h1 id="page-title">HTTP Server</h1>
         <p class="lede">Create a routed HTTP server, register named handlers and manage its listener lifecycle.</p>
         <div class="release-note" role="note" aria-label="Release status">
-          <p><strong>Alpha.14 development API — unreleased.</strong> This page describes the core <code>next</code> branch. It is not part of the published alpha.13 toolchain or the current browser playground.</p>
+          <p><strong>Alpha.14 development API — unreleased.</strong> This API is planned for alpha.14; it is not part of the published alpha.13 toolchain or the current browser playground.</p>
           <p>Signatures and behaviour below are checked against the <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/server.panack">HTTP package source</a> and its <a href="https://github.com/sproates/panackelty/blob/next/tests/http_package.sh">integration tests</a>.</p>
         </div>
       </section>
@@ -433,7 +433,7 @@ server.get("/", @home)</code></pre>
 
           <section class="capabilities-explore" aria-labelledby="reference-evidence-title">
             <h2 id="reference-evidence-title">Source and test evidence</h2>
-            <p>This page describes the package in core <code>next</code>; the published alpha.13 package still has its earlier HTTP server contract. The contextual and ordinary constructors, route policy, error translation, response handling and lifecycle limits are documented from source and tested at the public package boundary.</p>
+            <p>The API documented here is planned for alpha.14. The published alpha.13 package still has its earlier HTTP server contract. The contextual and ordinary constructors, route policy, error translation, response handling and lifecycle limits are documented from source and tested at the public package boundary.</p>
             <p><a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/server.panack">Server exports</a> · <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/routing.panack">Route policy</a> · <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/request.panack">Request view</a> · <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/response.panack">Response writer</a> · <a href="https://github.com/sproates/panackelty/blob/next/tests/http_package.sh">HTTP package integration</a> · <a href="https://github.com/sproates/panackelty/blob/next/tests/unit/vm/http_state.c">Server state tests</a></p>
           </section>
         </div>
