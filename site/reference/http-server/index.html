@@ -78,7 +78,7 @@
             <section id="create-server" class="capability-detail" aria-labelledby="create-server-title">
               <h3 id="create-server-title"><code>create_server</code></h3>
               <pre><code>create_server(port: Nat): Server</code></pre>
-              <p><strong>Parameters:</strong> <code>port</code> must be from 1 through 65535.</p>
+              <dl class="api-parameters"><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div></dl>
               <p><strong>Returns:</strong> a new <code>Server</code> bound to <code>0.0.0.0</code>, all local IPv4 interfaces.</p>
               <p><strong>Errors:</strong> an invalid port is returned by <code>listen()</code> as <code>Error(ServerError)</code>. The constructor itself is synchronous.</p>
               <p>Use this when the server should accept connections on every local IPv4 interface. Use the bound constructor for a loopback-only service.</p>
@@ -88,7 +88,7 @@
             <section id="create-bound-server" class="capability-detail" aria-labelledby="create-bound-server-title">
               <h3 id="create-bound-server-title"><code>create_bound_server</code></h3>
               <pre><code>create_bound_server(address: Str, port: Nat): Server</code></pre>
-              <p><strong>Parameters:</strong> <code>address</code> is a dotted-decimal IPv4 literal; <code>port</code> is from 1 through 65535.</p>
+              <dl class="api-parameters"><div><dt><code>address</code></dt><dd>Dotted-decimal IPv4 bind address.</dd></div><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div></dl>
               <p><strong>Returns:</strong> a new <code>Server</code> for that address. For example, <code>"127.0.0.1"</code> accepts connections from the local machine only.</p>
               <p><strong>Errors:</strong> invalid address and port values are returned by <code>listen()</code> as <code>ServerError</code>. Hostnames and IPv6 addresses are unsupported.</p>
               <p><strong>Async:</strong> no. The socket is opened later by <code>await server.listen()</code>.</p>
@@ -98,7 +98,7 @@
             <section id="create-contextual-server" class="capability-detail" aria-labelledby="create-contextual-server-title">
               <h3 id="create-contextual-server-title"><code>create_contextual_server</code></h3>
               <pre><code>create_contextual_server[T](port: Nat, context: T): ContextualServer[T]</code></pre>
-              <p><strong>Parameters:</strong> a valid port and one typed context value <code>T</code>.</p>
+              <dl class="api-parameters"><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div><div><dt><code>context</code></dt><dd>Typed value stored for this server; its type determines <code>T</code>.</dd></div></dl>
               <p><strong>Returns:</strong> a contextual server that binds to <code>0.0.0.0</code> when listening.</p>
               <p><strong>Errors and async:</strong> the same port errors as <code>create_server</code>; construction is synchronous.</p>
               <p>Each contextual handler receives the stored value as its first parameter. The value's type is inferred from <code>context</code>; all handlers on this server must use the same <code>T</code>. Handlers are named async function references and do not capture closures.</p>
@@ -118,7 +118,7 @@ server.get("/", @home)</code></pre>
             <section id="create-bound-contextual-server" class="capability-detail" aria-labelledby="create-bound-contextual-server-title">
               <h3 id="create-bound-contextual-server-title"><code>create_bound_contextual_server</code></h3>
               <pre><code>create_bound_contextual_server[T](address: Str, port: Nat, context: T): ContextualServer[T]</code></pre>
-              <p><strong>Parameters:</strong> a dotted-decimal IPv4 bind address, a port from 1 through 65535, and the typed context value <code>T</code>.</p>
+              <dl class="api-parameters"><div><dt><code>address</code></dt><dd>Dotted-decimal IPv4 bind address.</dd></div><div><dt><code>port</code></dt><dd>Port from 1 through 65535.</dd></div><div><dt><code>context</code></dt><dd>Typed value stored for this server; its type determines <code>T</code>.</dd></div></dl>
               <p><strong>Returns:</strong> a contextual server using the specified address. <code>"127.0.0.1"</code> keeps the listener local; <code>"0.0.0.0"</code> listens on all local IPv4 interfaces.</p>
               <p><strong>Errors and async:</strong> invalid address and port errors are returned by <code>listen()</code>; construction is synchronous. Hostnames and IPv6 are unsupported.</p>
               <p>See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual example source</a>, which binds to loopback and shares a typed greeting and query between handlers.</p>
@@ -133,7 +133,7 @@ server.get("/", @home)</code></pre>
             <section id="server-get" class="capability-detail" aria-labelledby="server-get-title">
               <h3 id="server-get-title"><code>Server.get</code></h3>
               <pre><code>get(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p><strong>Parameters:</strong> an exact URI-reference path beginning with <code>/</code> and a named async handler.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes become setup errors reported by <code>listen()</code>. Registering after listening begins traps.</p>
               <p><code>GET</code> is supported. A missing exact route runs the fallback if one is registered; otherwise the response is 404. Paths match case-sensitively without decoding or normalization.</p>
@@ -143,7 +143,7 @@ server.get("/", @home)</code></pre>
             <section id="server-post" class="capability-detail" aria-labelledby="server-post-title">
               <h3 id="server-post-title"><code>Server.post</code></h3>
               <pre><code>post(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p><strong>Parameters:</strong> an exact URI-reference path beginning with <code>/</code> and a named async handler.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the complete bounded request body on <code>request.body</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
               <p><code>POST</code> is supported. The framework reads and buffers the complete request before invoking the handler.</p>
@@ -153,7 +153,7 @@ server.get("/", @home)</code></pre>
             <section id="server-put" class="capability-detail" aria-labelledby="server-put-title">
               <h3 id="server-put-title"><code>Server.put</code></h3>
               <pre><code>put(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p><strong>Parameters:</strong> an exact URI-reference path beginning with <code>/</code> and a named async handler.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
               <p>Register and invoke handlers using the same named-function pattern as the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary server program</a>.</p>
@@ -162,7 +162,7 @@ server.get("/", @home)</code></pre>
             <section id="server-delete" class="capability-detail" aria-labelledby="server-delete-title">
               <h3 id="server-delete-title"><code>Server.delete</code></h3>
               <pre><code>delete(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p><strong>Parameters:</strong> an exact URI-reference path beginning with <code>/</code> and a named async handler.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
               <p>Register and invoke handlers using the same named-function pattern as the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary server program</a>.</p>
@@ -171,7 +171,7 @@ server.get("/", @home)</code></pre>
             <section id="server-fallback" class="capability-detail" aria-labelledby="server-fallback-title">
               <h3 id="server-fallback-title"><code>Server.fallback</code></h3>
               <pre><code>fallback(handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p><strong>Parameters:</strong> one named async handler for otherwise unmatched supported methods and paths.</p>
+              <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async function called for otherwise unmatched supported methods and paths.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous.</p>
               <p><strong>Errors:</strong> registering a second fallback records a setup error reported by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach the fallback.</p>
               <p>The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> uses its fallback to send a 404 response.</p>
@@ -187,35 +187,40 @@ server.get("/", @home)</code></pre>
             <section id="contextual-get" class="capability-detail" aria-labelledby="contextual-get-title">
               <h3 id="contextual-get-title"><code>ContextualServer.get</code></h3>
               <pre><code>get(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p>Registers an exact GET route. The handler receives <code>(context, request, response)</code>. <code>path</code> starts with <code>/</code>; registration returns <code>Unit</code> synchronously.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
+              <p>Registers an exact GET route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a>.</p>
             </section>
 
             <section id="contextual-post" class="capability-detail" aria-labelledby="contextual-post-title">
               <h3 id="contextual-post-title"><code>ContextualServer.post</code></h3>
               <pre><code>post(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p>Registers an exact POST route. The handler receives the shared context first and the complete bounded request body in <code>request.body</code>. Registration returns <code>Unit</code> synchronously.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature; it receives the shared context first and the complete bounded request body on <code>request.body</code>.</dd></div></dl>
+              <p>Registers an exact POST route. Registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary program</a> for the corresponding POST and body pattern.</p>
             </section>
 
             <section id="contextual-put" class="capability-detail" aria-labelledby="contextual-put-title">
               <h3 id="contextual-put-title"><code>ContextualServer.put</code></h3>
               <pre><code>put(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p>Registers an exact PUT route. The contextual handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
+              <p>Registers an exact PUT route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
             </section>
 
             <section id="contextual-delete" class="capability-detail" aria-labelledby="contextual-delete-title">
               <h3 id="contextual-delete-title"><code>ContextualServer.delete</code></h3>
               <pre><code>delete(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p>Registers an exact DELETE route. The contextual handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
+              <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
+              <p>Registers an exact DELETE route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
             </section>
 
             <section id="contextual-fallback" class="capability-detail" aria-labelledby="contextual-fallback-title">
               <h3 id="contextual-fallback-title"><code>ContextualServer.fallback</code></h3>
               <pre><code>fallback(handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
-              <p>Registers one fallback for unmatched supported methods and paths. The handler receives <code>(context, request, response)</code>. Registration returns <code>Unit</code> synchronously.</p>
+              <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async contextual handler for unmatched supported methods and paths; it receives <code>(context, request, response)</code>.</dd></div></dl>
+              <p>Registers one fallback. Registration returns <code>Unit</code> synchronously.</p>
               <p>A second fallback is a setup error returned by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach it. The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> returns 404 from its fallback.</p>
             </section>
           </section>
