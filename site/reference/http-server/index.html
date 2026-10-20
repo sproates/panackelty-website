@@ -132,7 +132,14 @@ server.get("/", @home)</code></pre>
 
             <section id="server-get" class="capability-detail" aria-labelledby="server-get-title">
               <h3 id="server-get-title"><code>Server.get</code></h3>
-              <pre><code>get(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>get(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes become setup errors reported by <code>listen()</code>. Registering after listening begins traps.</p>
@@ -142,7 +149,14 @@ server.get("/", @home)</code></pre>
 
             <section id="server-post" class="capability-detail" aria-labelledby="server-post-title">
               <h3 id="server-post-title"><code>Server.post</code></h3>
-              <pre><code>post(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>post(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous. The handler receives the complete bounded request body on <code>request.body</code>.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
@@ -152,7 +166,14 @@ server.get("/", @home)</code></pre>
 
             <section id="server-put" class="capability-detail" aria-labelledby="server-put-title">
               <h3 id="server-put-title"><code>Server.put</code></h3>
-              <pre><code>put(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>put(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
@@ -161,7 +182,14 @@ server.get("/", @home)</code></pre>
 
             <section id="server-delete" class="capability-detail" aria-labelledby="server-delete-title">
               <h3 id="server-delete-title"><code>Server.delete</code></h3>
-              <pre><code>delete(path: Str, handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>delete(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the ordinary handler signature.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request.</p>
               <p><strong>Errors:</strong> invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. Unsupported path/method combinations receive 405 and an <code>Allow</code> header.</p>
@@ -170,7 +198,13 @@ server.get("/", @home)</code></pre>
 
             <section id="server-fallback" class="capability-detail" aria-labelledby="server-fallback-title">
               <h3 id="server-fallback-title"><code>Server.fallback</code></h3>
-              <pre><code>fallback(handler: AsyncFn[Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>fallback(
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async function called for otherwise unmatched supported methods and paths.</dd></div></dl>
               <p><strong>Returns / async:</strong> <code>Unit</code>; registration is synchronous.</p>
               <p><strong>Errors:</strong> registering a second fallback records a setup error reported by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach the fallback.</p>
@@ -186,7 +220,15 @@ server.get("/", @home)</code></pre>
 
             <section id="contextual-get" class="capability-detail" aria-labelledby="contextual-get-title">
               <h3 id="contextual-get-title"><code>ContextualServer.get</code></h3>
-              <pre><code>get(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>get(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
               <p>Registers an exact GET route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a>.</p>
@@ -194,7 +236,15 @@ server.get("/", @home)</code></pre>
 
             <section id="contextual-post" class="capability-detail" aria-labelledby="contextual-post-title">
               <h3 id="contextual-post-title"><code>ContextualServer.post</code></h3>
-              <pre><code>post(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>post(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature; it receives the shared context first and the complete bounded request body on <code>request.body</code>.</dd></div></dl>
               <p>Registers an exact POST route. Registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/src/main.panack">complete ordinary program</a> for the corresponding POST and body pattern.</p>
@@ -202,7 +252,15 @@ server.get("/", @home)</code></pre>
 
             <section id="contextual-put" class="capability-detail" aria-labelledby="contextual-put-title">
               <h3 id="contextual-put-title"><code>ContextualServer.put</code></h3>
-              <pre><code>put(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>put(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
               <p>Registers an exact PUT route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
@@ -210,7 +268,15 @@ server.get("/", @home)</code></pre>
 
             <section id="contextual-delete" class="capability-detail" aria-labelledby="contextual-delete-title">
               <h3 id="contextual-delete-title"><code>ContextualServer.delete</code></h3>
-              <pre><code>delete(path: Str, handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>delete(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>path</code></dt><dd>Exact URI-reference path beginning with <code>/</code>.</dd></div><div><dt><code>handler</code></dt><dd>Named async function with the contextual handler signature.</dd></div></dl>
               <p>Registers an exact DELETE route. The handler receives <code>(context, request, response)</code>; registration returns <code>Unit</code> synchronously.</p>
               <p>Invalid/duplicate routes are returned through <code>listen()</code>; registering after listening begins traps. See the <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> for the named-handler pattern.</p>
@@ -218,7 +284,14 @@ server.get("/", @home)</code></pre>
 
             <section id="contextual-fallback" class="capability-detail" aria-labelledby="contextual-fallback-title">
               <h3 id="contextual-fallback-title"><code>ContextualServer.fallback</code></h3>
-              <pre><code>fallback(handler: AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]): Unit</code></pre>
+              <pre><code>fallback(
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
               <dl class="api-parameters"><div><dt><code>handler</code></dt><dd>Named async contextual handler for unmatched supported methods and paths; it receives <code>(context, request, response)</code>.</dd></div></dl>
               <p>Registers one fallback. Registration returns <code>Unit</code> synchronously.</p>
               <p>A second fallback is a setup error returned by <code>listen()</code>. Unsupported HTTP methods and 405 cases do not reach it. The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/src/main.panack">complete contextual program</a> returns 404 from its fallback.</p>
