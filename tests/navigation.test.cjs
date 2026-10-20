@@ -87,6 +87,21 @@ test('homepage section navigation and example references have unique targets', (
   }
 });
 
+test('HTTP Server reference index targets every unique API section', () => {
+  const html = fs.readFileSync('site/reference/http-server/index.html', 'utf8');
+  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(ids).size, ids.length, 'reference IDs are unique');
+  const index = html.match(/<nav class="capabilities-toc"[\s\S]*?<\/nav>/)?.[0];
+  assert(index, 'reference has a linked API index');
+  const targets = [...index.matchAll(/href="#([^"]+)"/g)].map(match => match[1]);
+  assert(targets.length >= 24, 'index includes constructors, methods and related sections');
+  assert.equal(new Set(targets).size, targets.length, 'index targets are unique');
+  for (const target of targets) assert(ids.includes(target), `missing API anchor: ${target}`);
+  assert.match(html, /Alpha\.14 development API — unreleased/);
+  assert.match(html, /examples\/network\/http_server/);
+  assert.match(html, /examples\/network\/http_contextual_server/);
+});
+
 test('homepage contributor links include the personal website', () => {
   const html = fs.readFileSync('site/index.html', 'utf8');
   assert.match(html, /<span class="contributor-name">Ian Sproates<\/span>/);

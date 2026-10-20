@@ -22,6 +22,7 @@ test('sitemap lists the canonical public website routes once', () => {
     'https://panackelty.com/playground/',
     'https://panackelty.com/releases/',
     'https://panackelty.com/previous-releases/',
+    'https://panackelty.com/reference/http-server/',
   ]);
   assert.equal(new Set(urls).size, urls.length);
   for (const url of urls) assert.match(url, /^https:\/\/panackelty\.com\//);

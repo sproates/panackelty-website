@@ -43,7 +43,7 @@ test('portable build preserves assets, records identity, and separates coverage'
   await build(f.root,f.output,{...f.metadata,headCommit:'2'.repeat(40),baseCommit:'3'.repeat(40)},f.archive);
   const read = p => fs.readFileSync(path.join(f.output,p),'utf8');
   assert.equal(JSON.parse(read('preview.json')).commit, f.metadata.commit);
-  for (const page of ['index.html', 'releases/index.html', 'playground/index.html', 'capabilities/index.html', ...['get-started','examples','under-the-hood','roadmap'].map(page => `${page}/index.html`)]) {
+  for (const page of ['index.html', 'releases/index.html', 'playground/index.html', 'capabilities/index.html', ...['get-started','examples','under-the-hood','roadmap','reference/http-server'].map(page => `${page}/index.html`)]) {
     const identity = read(page).match(/href="([^"]+)">Build identity/)[1];
     assert.equal(new URL(identity, `https://example.test/project/${page}`).pathname,
       '/project/preview.json', `identity escapes the project mount on ${page}`);
@@ -63,7 +63,7 @@ test('portable build preserves assets, records identity, and separates coverage'
 test('capabilities navigation and homepage topic links resolve in the assembled site', async t => {
   const f = fixture(t);
   await build(f.root, f.output, f.metadata, f.archive);
-  for (const page of ['index.html', 'capabilities/index.html', 'releases/index.html', 'playground/index.html']) {
+  for (const page of ['index.html', 'capabilities/index.html', 'releases/index.html', 'playground/index.html', 'reference/http-server/index.html']) {
     const html = fs.readFileSync(path.join(f.output, page), 'utf8');
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, `${page}: duplicate IDs`);

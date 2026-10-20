@@ -11,6 +11,7 @@ or old-anchor compatibility is required for this refactor.
 | Capabilities | `/capabilities/` | Features of the promoted native release, with browser limits and examples |
 | Get started | `/get-started/` | Browser/native choice, greeting, one-command installer and optional manual-download reveal |
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
+| HTTP Server reference | `/reference/http-server/` | Alpha.14 development reference for the routed Server and ContextualServer API, linked from Examples and the shared footer |
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
 | Releases and roadmap | `/roadmap/` | Available now, alpha.14–alpha.18 direction and first non-alpha target, separately labelled |
@@ -24,6 +25,8 @@ alongside compiler explanations, coverage, GitHub and the licence. Project motiv
 
 The homepage owns shared chrome; `scripts/site_chrome.cjs` renders page-relative
 links and one current-page marker on every editorial page and the playground.
+The HTTP Server API reference is explicitly unreleased alpha.14 development
+material linked from Examples and the footer; it does not change alpha.13 claims.
 `site/site.js` owns clipboard feedback. The release history
 renderer remains based on the immutable reviewed changelog snapshot.
 
