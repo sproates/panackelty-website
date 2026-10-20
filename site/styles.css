@@ -312,8 +312,10 @@ footer { color: var(--muted); }
 .capabilities-toc .toc-group { font-weight: 700; color: var(--ink); }
 .capabilities-toc ul { list-style: none; padding: 0; margin: .25rem 0 1.25rem; }
 .capabilities-toc a { display: block; font-size: .8rem; line-height: 1.45; padding: .35rem 0; }
+.capabilities-toc a { overflow-wrap: anywhere; }
 .capabilities-toc a:hover { text-decoration: underline; text-underline-offset: .2em; }
 .capabilities-content { min-width: 0; max-width: 76ch; }
+.capabilities-content p code, .capabilities-content li code { overflow-wrap: anywhere; }
 .capabilities-group { padding-top: 1.5rem; margin-bottom: 4rem; }
 .capabilities-group h2 { font-size: clamp(2.6rem, 4.8vw, 4rem); margin-bottom: 2rem; }
 .capabilities-group > p:not(.eyebrow), .capability-detail p, .capability-detail li, .capabilities-explore p { color: var(--muted); }
