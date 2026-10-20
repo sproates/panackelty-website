@@ -21,7 +21,7 @@ function headings(source) {
 }
 function render(doc, sources) {
   let source = sources[doc.name].replace(/^# [^\n]+\n/, '').replace(/\n## API index\n[\s\S]*?(?=\n## Import and first server)/, '');
-  source = source.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (whole, label, target) => {
+  source = source.split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (whole, label, target) => {
     label = label.replace(/`/g, "");
     if (/^https?:/.test(target)) return `[${label}](${target})`;
     const [file, fragment] = target.split('#');
@@ -31,7 +31,7 @@ function render(doc, sources) {
     const h = headings(sources[destination.name]).find(h => h.github === fragment || h.id === fragment);
     if (fragment && !h) throw new Error(`Unknown heading: ${target}`);
     return `[${label}](/${destination.route}/${fragment ? '#'+h.id : ''})`;
-  });
+  })).join('');
   const toc = headings(source).map(h => `<li class="toc-level-${h.level}"><a href="#${h.id}">${escape(h.text)}</a></li>`).join('\n');
   const body = markdown(source, '../../');
   const companion = documents.find(d => d !== doc);

@@ -103,6 +103,10 @@ test('HTTP documents are synchronized and every local anchor resolves', () => {
   run(undefined, true);
   for (const doc of documents) {
     const html = fs.readFileSync(`site/${doc.route}/index.html`, 'utf8');
+    const source = fs.readFileSync(`docs/http/${doc.name}`, 'utf8');
+    const blocks = [...source.matchAll(/```[\w-]*\n([\s\S]*?)\n```/g)].map(m => m[1]);
+    const rendered = [...html.matchAll(/<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/g)].map(m => m[1].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'));
+    assert.deepEqual(rendered, blocks, 'all code blocks retain their exact source text');
     assert(!html.includes('\u0000'), 'rendered content contains no unresolved Markdown tokens');
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, 'document IDs are unique');
@@ -117,4 +121,14 @@ test('homepage contributor links include the personal website', () => {
   const html = fs.readFileSync('site/index.html', 'utf8');
   assert.match(html, /<span class="contributor-name">Ian Sproates<\/span>/);
   assert.match(html, /<a class="contributor-link" href="https:\/\/sproates\.net" aria-label="Ian Sproates personal website" title="Personal website">[\s\S]*?<span>Website<\/span><\/a>/);
+});
+
+
+test('wrapped Markdown bullet text remains inside its list item', () => {
+  const {markdown} = require('../scripts/articles.cjs');
+  const html = markdown('- `address`: Bind address. Use `127.0.0.1` for\n  connections from the local machine only.\n- `port`: Port.\n\nA separate paragraph.');
+  assert.match(html, /<li><code>address<\/code>: Bind address\. Use <code>127\.0\.0\.1<\/code> for connections from the local machine only\.<\/li>/);
+  assert.equal((html.match(/<li>/g) || []).length, 2);
+  assert.match(html, /<\/ul>\n<p>A separate paragraph\.<\/p>/);
+  assert.equal(markdown('```panack\n  first\n    second\n```'), '<pre><code class="language-panack">  first\n    second</code></pre>');
 });

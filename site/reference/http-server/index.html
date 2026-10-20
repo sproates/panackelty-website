@@ -87,15 +87,12 @@ async main(): Unit {
 ): Server</code></pre>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><code>address</code>: Dotted-decimal IPv4 bind address. Use <code>&quot;127.0.0.1&quot;</code> for</li>
-</ul>
-<p>connections from the local machine only.</p>
-<ul>
+<li><code>address</code>: Dotted-decimal IPv4 bind address. Use <code>&quot;127.0.0.1&quot;</code> for connections from the local machine only.</li>
 <li><code>port</code>: Port from 1 through 65535.</li>
 </ul>
 <p><strong>Returns:</strong> A new <code>Server</code> for that address. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. Invalid address and port values are returned by <code>listen()</code> as <code>Error(ServerError)</code>.</p>
 <h3 id="create-contextual-server"><code>create_contextual_server</code></h3>
-<pre><code class="language-panack">create_contextual_server[T](https://github.com/sproates/panackelty/blob/next/docs/reference/
+<pre><code class="language-panack">create_contextual_server[T](
   port: Nat,
   context: T
 ): ContextualServer[T]</code></pre>
@@ -107,17 +104,14 @@ async main(): Unit {
 <p><strong>Returns:</strong> A <code>ContextualServer[T]</code> configured to bind to <code>0.0.0.0</code>. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. Port errors are returned by <code>listen()</code> as <code>Error(ServerError)</code>.</p>
 <p>Each route handler receives the stored context as its first argument. All handlers on one contextual server use the same <code>T</code>; handlers are named async function references and do not capture closures.</p>
 <h3 id="create-bound-contextual-server"><code>create_bound_contextual_server</code></h3>
-<pre><code class="language-panack">create_bound_contextual_server[T](https://github.com/sproates/panackelty/blob/next/docs/reference/
+<pre><code class="language-panack">create_bound_contextual_server[T](
   address: Str,
   port: Nat,
   context: T
 ): ContextualServer[T]</code></pre>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><code>address</code>: Dotted-decimal IPv4 bind address. <code>&quot;127.0.0.1&quot;</code> keeps the</li>
-</ul>
-<p>listener local; <code>&quot;0.0.0.0&quot;</code> listens on all local IPv4 interfaces.</p>
-<ul>
+<li><code>address</code>: Dotted-decimal IPv4 bind address. <code>&quot;127.0.0.1&quot;</code> keeps the listener local; <code>&quot;0.0.0.0&quot;</code> listens on all local IPv4 interfaces.</li>
 <li><code>port</code>: Port from 1 through 65535.</li>
 <li><code>context</code>: Typed value retained for this server; its type determines <code>T</code>.</li>
 </ul>
@@ -139,9 +133,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code> and</li>
+<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</li>
 </ul>
-<p>request-scoped <code>ResponseWriter</code>.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching GET request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. A supported method on an unknown path invokes the fallback if registered, or returns 404 otherwise. A known path registered only for other methods returns 405 with an <code>Allow</code> header, without invoking fallback. Matching is case-sensitive and performs no decoding or normalization.</p>
 <h3 id="server-post"><code>Server.post</code></h3>
 <pre><code class="language-panack">post(
@@ -154,9 +147,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code>, including</li>
+<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code>, including the complete bounded request body on <code>request.body</code>.</li>
 </ul>
-<p>the complete bounded request body on <code>request.body</code>.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching POST request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. The complete request body is buffered before the handler runs.</p>
 <h3 id="server-put"><code>Server.put</code></h3>
 <pre><code class="language-panack">put(
@@ -195,9 +187,8 @@ async main(): Unit {
   ]
 ): Unit</code></pre>
 <ul>
-<li><code>handler</code>: Named async handler called for otherwise unmatched supported</li>
+<li><code>handler</code>: Named async handler called for otherwise unmatched supported methods and paths.</li>
 </ul>
-<p>methods and paths.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for an unmatched supported request. <strong>Errors:</strong> A second fallback is reported by <code>listen()</code>; registering after listening begins traps. Unsupported methods and 405 cases do not reach the fallback.</p>
 <h2 id="contextual-route-methods">Contextual route methods</h2>
 <p>See the <a href="../../playbook/http-server/#share-application-configuration">worked playbook guide</a>.</p>
@@ -217,9 +208,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async contextual handler; receives `(context, request,</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
 </ul>
-<p>response)`.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching GET request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
 <h3 id="contextualserver-post"><code>ContextualServer.post</code></h3>
 <pre><code class="language-panack">post(
@@ -233,9 +223,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async contextual handler; it receives the shared context</li>
+<li><code>handler</code>: Named async contextual handler; it receives the shared context first and the complete bounded request body on <code>request.body</code>.</li>
 </ul>
-<p>first and the complete bounded request body on <code>request.body</code>.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching POST request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. The complete request body is buffered before the handler runs.</p>
 <h3 id="contextualserver-put"><code>ContextualServer.put</code></h3>
 <pre><code class="language-panack">put(
@@ -249,9 +238,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async contextual handler; receives `(context, request,</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
 </ul>
-<p>response)`.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
 <h3 id="contextualserver-delete"><code>ContextualServer.delete</code></h3>
 <pre><code class="language-panack">delete(
@@ -265,9 +253,8 @@ async main(): Unit {
 ): Unit</code></pre>
 <ul>
 <li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
-<li><code>handler</code>: Named async contextual handler; receives `(context, request,</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
 </ul>
-<p>response)`.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
 <h3 id="contextualserver-fallback"><code>ContextualServer.fallback</code></h3>
 <pre><code class="language-panack">fallback(
@@ -279,9 +266,8 @@ async main(): Unit {
   ]
 ): Unit</code></pre>
 <ul>
-<li><code>handler</code>: Named async contextual handler for unmatched supported methods</li>
+<li><code>handler</code>: Named async contextual handler for unmatched supported methods and paths; receives <code>(context, request, response)</code>.</li>
 </ul>
-<p>and paths; receives <code>(context, request, response)</code>.</p>
 <p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for an unmatched supported request. <strong>Errors:</strong> A second fallback is reported by <code>listen()</code>; unsupported methods and 405 cases do not reach it.</p>
 <h2 id="lifecycle-methods">Lifecycle methods</h2>
 <p><code>ServerError</code> is a public record with one field:</p>
@@ -311,20 +297,14 @@ async main(): Unit {
 <li><code>method</code>: The HTTP method.</li>
 <li><code>path</code>: The raw request path.</li>
 <li><code>query</code>: The raw query string without the leading question mark.</li>
-<li><code>headers</code>: Headers in request order. <code>request.header(name)</code> returns the</li>
-</ul>
-<p>first case-insensitive match; <code>header_values(name)</code> preserves repeated values.</p>
-<ul>
+<li><code>headers</code>: Headers in request order. <code>request.header(name)</code> returns the first case-insensitive match; <code>header_values(name)</code> preserves repeated values.</li>
 <li><code>body</code>: The buffered request body bytes.</li>
 </ul>
 <h3 id="responsewriter">ResponseWriter</h3>
 <p><code>ResponseWriter</code> starts with status 200. A handler can:</p>
 <ul>
 <li>Set the status with <code>status</code>.</li>
-<li>Replace a header with <code>header</code>, or append a repeated header with</li>
-</ul>
-<p><code>add_header</code>.</p>
-<ul>
+<li>Replace a header with <code>header</code>, or append a repeated header with <code>add_header</code>.</li>
 <li>Finish the response once with <code>send</code> or <code>send_bytes</code>.</li>
 </ul>
 <p>Text responses default to UTF-8 plain text; byte responses default to <code>application/octet-stream</code>. The server supplies framing headers and closes each connection after one response.</p>
