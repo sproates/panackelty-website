@@ -98,24 +98,19 @@ test('HTTP API footer link is short and stays out of homepage Explore links', ()
   assert.doesNotMatch(footer, /HTTP Server reference · alpha\.14 development/);
 });
 
-test('HTTP Server reference index targets every unique API section', () => {
-  const html = fs.readFileSync('site/reference/http-server/index.html', 'utf8');
-  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
-  assert.equal(new Set(ids).size, ids.length, 'reference IDs are unique');
-  const index = html.match(/<nav class="capabilities-toc"[\s\S]*?<\/nav>/)?.[0];
-  assert(index, 'reference has a linked API index');
-  const targets = [...index.matchAll(/href="#([^"]+)"/g)].map(match => match[1]);
-  assert(targets.length >= 24, 'index includes constructors, methods and related sections');
-  assert.equal(new Set(targets).size, targets.length, 'index targets are unique');
-  for (const target of targets) assert(ids.includes(target), `missing API anchor: ${target}`);
-  const boundServer = html.match(/<section id="create-bound-server"[\s\S]*?<\/section>/)?.[0];
-  assert(boundServer, 'bound constructor has its own reference section');
-  assert.match(boundServer, /<dt><code>address<\/code><\/dt><dd>Dotted-decimal IPv4 bind address\.<\/dd>/);
-  assert.match(boundServer, /<dt><code>port<\/code><\/dt><dd>Port from 1 through 65535\.<\/dd>/);
-  assert.doesNotMatch(html, /<strong>Parameters:<\/strong>/);
-  assert.match(html, /Alpha\.14 development API — unreleased/);
-  assert.match(html, /examples\/network\/http_server/);
-  assert.match(html, /examples\/network\/http_contextual_server/);
+test('HTTP documents are synchronized and every local anchor resolves', () => {
+  const {run, documents} = require('../scripts/http_docs.cjs');
+  run(undefined, true);
+  for (const doc of documents) {
+    const html = fs.readFileSync(`site/${doc.route}/index.html`, 'utf8');
+    assert(!html.includes('\u0000'), 'rendered content contains no unresolved Markdown tokens');
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+    assert.equal(new Set(ids).size, ids.length, 'document IDs are unique');
+    for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) {
+      assert(ids.includes(target), `missing anchor: ${target}`);
+    }
+    assert.match(html, /Alpha\.14 development API — unreleased/);
+  }
 });
 
 test('homepage contributor links include the personal website', () => {

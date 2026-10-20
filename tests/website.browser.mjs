@@ -5,7 +5,7 @@ import path from 'node:path';
 const siteRoot=process.env.PLAYGROUND_SITE_DIR;
 if(!siteRoot) throw new Error('PLAYGROUND_SITE_DIR must point at the assembled website');
 const nativeVersion=fs.readFileSync(path.join(siteRoot,'native-release.txt'),'utf8').trim();
-const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/','/previous-releases/','/reference/http-server/'];
+const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/','/previous-releases/','/reference/http-server/','/playbook/http-server/'];
 test('editorial pages have consistent clean navigation at desktop and phone widths',async({page})=>{
   for(const width of [1280,390]){
     await page.setViewportSize({width,height:844});

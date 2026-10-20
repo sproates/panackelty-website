@@ -76,3 +76,24 @@ it within Roadmap. Future promotions move the previous current summary here.
 Release cards link to website walkthroughs with prerequisites, commands, expected
 results and limitations. Repository links are secondary references to specific
 files or planning sections; avoid folder listings and repeated generic issue links.
+
+## HTTP documentation alignment
+
+The core checkout owns `docs/reference/http-server.md` and
+`docs/guides/HTTP_PLAYBOOK.md`. The website keeps exact copies under `docs/http/`
+and renders both pages with `scripts/http_docs.cjs`, using the existing Markdown
+renderer. Do not independently edit the generated HTML or the snapshots.
+
+After editing the core documents, run from this repository:
+
+```sh
+node scripts/http_docs.cjs --core ../panackelty
+node scripts/http_docs.cjs --check --core ../panackelty
+make check
+```
+
+Commit the core documents and matching website snapshots/HTML in companion PRs.
+The core comparison catches cross-repository drift locally; website CI verifies
+that the committed pages match their snapshots without needing a sibling checkout.
+The playbook is the starting point; the reference is the lookup page. GitHub links
+are optional source evidence, not a prerequisite for following a guide.

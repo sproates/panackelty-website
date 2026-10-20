@@ -347,3 +347,17 @@ footer { color: var(--muted); }
   .capabilities-toc a { padding-block: .5rem; }
   .capability-detail { padding-block: 1.5rem; }
 }
+
+/* HTTP guides and reference share the same Markdown content as core. */
+.http-docs-content { min-width: 0; }
+.http-docs-content > h2 { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line, #39372f); }
+.http-docs-content > h3 { margin-top: 2rem; overflow-wrap: anywhere; }
+.http-docs-content pre { max-width: 100%; overflow-x: auto; font-size: .88rem; line-height: 1.6; }
+.http-docs-content p, .http-docs-content li { line-height: 1.8; }
+.http-docs-content li { margin-bottom: .5rem; }
+.http-docs .capabilities-toc { position: static; }
+.http-docs .toc-level-2 { margin-top: 1rem; font-weight: 600; }
+.http-docs .toc-level-3 { padding-left: .65rem; font-size: .85rem; }
+@media (max-width: 600px) {
+  .http-docs-content pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+}
