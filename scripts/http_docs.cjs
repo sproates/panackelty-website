@@ -50,7 +50,7 @@ function render(doc, sources) {
 <section class="capabilities-hero" aria-labelledby="page-title">
 <p class="eyebrow">${doc.label} · alpha.14 development</p>
 <h1 id="page-title">${doc.title}</h1><p class="lede">${doc.intro}</p>
-<p><a href="../../${companion.route}/">${doc === documents[0] ? 'Start here: HTTP server playbook →' : 'Looking up a method? HTTP Server reference →'}</a></p>
+<p>${doc === documents[0] ? `Want to get started quickly? See the <a href="../../${companion.route}/">HTTP Server Playbook</a>` : `<a href="../../${companion.route}/">Looking up a method? HTTP Server reference →</a>`}</p>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul>${toc}</ul></nav>
