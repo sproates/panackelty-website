@@ -17,7 +17,7 @@
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#your-first-server">Your first server</a></li>
-<li class="toc-level-3"><a href="#get-the-matching-toolchain">Get the matching toolchain</a></li>
+<li class="toc-level-3"><a href="#open-your-alpha-14-release-package">Open your alpha.14 release package</a></li>
 <li class="toc-level-3"><a href="#run-it-before-changing-anything">Run it before changing anything</a></li>
 <li class="toc-level-3"><a href="#the-complete-program">The complete program</a></li>
 <li class="toc-level-3"><a href="#the-project-manifest">The project manifest</a></li>
@@ -28,13 +28,11 @@
 <li class="toc-level-2"><a href="#before-building-a-larger-service">Before building a larger service</a></li></ul></nav>
 <article class="capabilities-content http-docs-content"><p>Build a local server, try real requests, and then adapt the handlers to your application. The <a href="../../reference/http-server/">API reference</a> lists signatures, return values and limits.</p>
 <h2 id="your-first-server">Your first server</h2>
-<h3 id="get-the-matching-toolchain">Get the matching toolchain</h3>
-<p>Use Linux or macOS with Git, Make, a C compiler and libcurl development headers (including <code>curl-config</code>). On Ubuntu, install <code>build-essential</code>, <code>git</code>, <code>curl</code> and <code>libcurl4-openssl-dev</code>. On macOS, install the Xcode command-line tools; check that <code>cc</code>, <code>make</code> and <code>curl-config</code> are available in your terminal.</p>
-<p>In a new working directory:</p>
-<pre><code class="language-sh">git clone --branch next https://github.com/sproates/panackelty.git
-cd panackelty
-make</code></pre>
-<p>All commands below run from this checkout&#39;s root. If you already have a matching checkout, use that instead. Use <code>./bin/panack</code>, so a different installed release cannot accidentally run the examples.</p>
+<h3 id="open-your-alpha-14-release-package">Open your alpha.14 release package</h3>
+<p>Use the alpha.14 release package for your operating system and processor. Unpack it and open a terminal in the extracted <code>panackelty</code> directory. The package includes the compiler, runtime, standard library, HTTP package and the examples used in this playbook. You do not need Git, Make, a C compiler or Xcode tools.</p>
+<p>Check that you are using the supplied compiler:</p>
+<pre><code class="language-sh">./bin/panack --version</code></pre>
+<p>The version should be <code>0.1.0-alpha.14</code>. All commands below run from this extracted directory, which contains <code>bin</code>, <code>examples</code> and <code>packages</code>. Using <code>./bin/panack</code> keeps the compiler and bundled packages together, even if another version is installed on your machine. Use <code>curl</code> in a second terminal to try the requests.</p>
 <h3 id="run-it-before-changing-anything">Run it before changing anything</h3>
 <pre><code class="language-sh">./bin/panack run --project examples/network/http_server/panack.json 8080</code></pre>
 <p>The terminal prints <code>Listening on http://127.0.0.1:8080/</code> and stays running. In a second terminal:</p>
@@ -92,8 +90,8 @@ async main(): Unit {
 <p>Register the routes first, then <code>await server.listen()</code>. That call resolves once the listener is ready; it does not wait until the server stops. The active listener keeps the process alive after <code>main</code> returns.</p>
 <h3 id="the-project-manifest">The project manifest</h3>
 <p>The existing file is <code>examples/network/http_server/panack.json</code>:</p>
-<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.13&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
-<p><code>source</code> and <code>entry</code> locate the program. The <code>http</code> dependency resolves relative to this manifest to the checkout&#39;s <code>packages/http</code> directory. If you move the project, update that relative dependency path. Copying just <code>main.panack</code> into an arbitrary directory is not sufficient to resolve the package import.</p>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
+<p><code>source</code> and <code>entry</code> locate the program. The <code>http</code> dependency resolves relative to this manifest to the release package&#39;s <code>packages/http</code> directory. If you move the project, update that relative dependency path. Copying just <code>main.panack</code> into an arbitrary directory is not sufficient to resolve the package import.</p>
 <h2 id="handle-requests-and-responses">Handle requests and responses</h2>
 <p>Start the ordinary program from the first guide. Its <code>/echo</code> handler receives <code>request.body</code> as bytes and sends the same bytes back:</p>
 <pre><code class="language-sh">curl -i --data &#39;Hello, Ada&#39; http://127.0.0.1:8080/echo</code></pre>
@@ -163,7 +161,7 @@ async main(): Unit {
   }
 }</code></pre>
 <p>Its manifest, <code>examples/network/http_contextual_server/panack.json</code>:</p>
-<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_contextual_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.13&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
+<pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_contextual_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
 <p>Every registered handler receives <code>AppContext</code> first, then the request and response writer. The compiler infers the context type from the value passed to <code>create_bound_contextual_server</code>; all handlers on that server must accept it. The explicit address keeps this example on loopback. The shorter <code>create_contextual_server(port, context)</code> uses all local IPv4 interfaces.</p>
 <p>This example uses configuration values. It does not demonstrate a mutable shared store or a concurrent database pool; passing context alone does not establish a synchronization policy for those use cases.</p>
 <h2 id="own-the-listener-lifecycle">Own the listener lifecycle</h2>
@@ -222,7 +220,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_server_lifecycle&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.13&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},

@@ -113,7 +113,7 @@ test('HTTP documents are synchronized and every local anchor resolves', () => {
     for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) {
       assert(ids.includes(target), `missing anchor: ${target}`);
     }
-    assert.match(html, /Alpha\.14 development API — unreleased/);
+    assert.doesNotMatch(html, /Alpha\.14 development API — unreleased/);
   }
 });
 
