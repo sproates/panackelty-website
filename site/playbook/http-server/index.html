@@ -26,7 +26,7 @@
 <li class="toc-level-2"><a href="#share-application-configuration">Share application configuration</a></li>
 <li class="toc-level-2"><a href="#own-the-listener-lifecycle">Own the listener lifecycle</a></li>
 <li class="toc-level-2"><a href="#before-building-a-larger-service">Before building a larger service</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>Build a local server, try real requests, and then adapt the handlers to your application. The <a href="../../reference/http-server/">API reference</a> lists signatures, return values and limits.</p>
+<article class="capabilities-content http-docs-content"><p>This playbook walks through a working HTTP server, from sending your first request to sharing settings between handlers and shutting the server down. Each example includes the complete code, so you can read it here or try it with your alpha.14 release package. For individual methods and their options, see the <a href="../../reference/http-server/">API reference</a>.</p>
 <h2 id="your-first-server">Your first server</h2>
 <h3 id="open-your-alpha-14-release-package">Open your alpha.14 release package</h3>
 <p>Use the alpha.14 release package for your operating system and processor. Unpack it and open a terminal in the extracted <code>panackelty</code> directory. The package includes the compiler, runtime, standard library, HTTP package and the examples used in this playbook. You do not need Git, Make, a C compiler or Xcode tools.</p>
@@ -88,22 +88,27 @@ async main(): Unit {
     Error(problem) =&gt; { ignored = await host.stderr(problem.message); await host.exit(1) }
   }
 }</code></pre>
-<p><code>import http/server as http</code> names the HTTP module. <code>@home</code> passes a named function as a handler; the server calls it when a matching request arrives. <code>response.send(...)</code> finishes the response. <code>Ok(())</code> reports successful handler completion: <code>()</code> is the Unit value, not the HTTP response body.</p>
-<p>Register the routes first, then <code>await server.listen()</code>. That call resolves once the listener is ready; it does not wait until the server stops. The active listener keeps the process alive after <code>main</code> returns.</p>
+<p>The import lets us refer to the HTTP module as <code>http</code>. In <code>server.get(&quot;/&quot;, @home)</code>, <code>@home</code> tells the server which function to call when a GET request arrives at <code>/</code>. That function sends the response with <code>response.send(...)</code>, then returns <code>Ok(())</code> to report that it finished successfully. The <code>()</code> inside <code>Ok</code> is the Unit value; the response body is the text passed to <code>send</code>.</p>
+<p>Once the routes are registered, <code>await server.listen()</code> starts the listener and returns when it&#39;s ready to accept connections. The server continues running after <code>main</code> finishes, so it can keep answering requests.</p>
 <h3 id="the-project-manifest">The project manifest</h3>
-<p>The existing file is <code>examples/network/http_server/panack.json</code>:</p>
+<p>The example also includes a <code>panack.json</code> file, which tells Panackelty where to find the program and its dependencies. Here&#39;s the manifest from <code>examples/network/http_server/panack.json</code>:</p>
 <pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
-<p><code>source</code> and <code>entry</code> locate the program. The <code>http</code> dependency resolves relative to this manifest to the release package&#39;s <code>packages/http</code> directory. If you move the project, update that relative dependency path. Copying just <code>main.panack</code> into an arbitrary directory is not sufficient to resolve the package import.</p>
+<p>Together, <code>source</code> and <code>entry</code> point to <code>src/main.panack</code>. The <code>http</code> dependency points to the HTTP package bundled with the release. Its path is relative to <code>panack.json</code>, so if you copy the example to another directory, copy the manifest too and update the dependency path to match the HTTP package&#39;s location.</p>
 <h2 id="handle-requests-and-responses">Handle requests and responses</h2>
-<p>Start the ordinary program from the first guide. Its <code>/echo</code> handler receives <code>request.body</code> as bytes and sends the same bytes back:</p>
+<p>The first server includes an <code>/echo</code> route that sends back whatever you put in the request body. To try it, leave that server running and send this request from a second terminal:</p>
 <pre><code class="language-sh">curl -i --data &#39;Hello, Ada&#39; http://127.0.0.1:8080/echo</code></pre>
-<p>Expect status <code>200 OK</code>, content type <code>application/octet-stream</code>, and body <code>Hello, Ada</code>. <code>send_bytes</code> preserves bytes; <code>send</code> accepts a <code>Str</code> and defaults to <code>text/plain; charset=utf-8</code>. Bodies are fully buffered, not streamed.</p>
-<p>The <code>/inspect</code> handler reads an optional header and the raw query string:</p>
+<p>You&#39;ll get a <code>200 OK</code> response with <code>Hello, Ada</code> as its body and <code>application/octet-stream</code> as its content type. The handler uses <code>send_bytes</code> to return the bytes unchanged. For text, use <code>send</code>, which takes a <code>Str</code> and uses <code>text/plain; charset=utf-8</code> unless you set another content type.</p>
+<p>The server holds each request and response body in memory in full. It doesn&#39;t stream the body in chunks.</p>
+<p>The <code>/inspect</code> route shows how to read a header and the query string. This request supplies an <code>X-Caller</code> header and puts <code>name=Ada</code> after the <code>?</code> in the URL:</p>
 <pre><code class="language-sh">curl -i -H &#39;X-Caller: guide&#39; &#39;http://127.0.0.1:8080/inspect?name=Ada&#39;</code></pre>
-<p>Expect status <code>200 OK</code>, header <code>X-Query: name=Ada</code>, and body <code>Caller: guide</code>. Without <code>X-Caller</code>, the body is <code>Caller: anonymous</code>. Header lookup is case-insensitive and returns <code>Option[Str]</code>, so the handler handles <code>Some</code> and <code>None</code>. <code>request.query</code> excludes the <code>?</code> and is not a decoded parameter map. For repeated request headers, <code>request.header_values(name)</code> returns all matches.</p>
-<p>Set status and headers before calling <code>send</code> or <code>send_bytes</code>. Use <code>response.header(name, value)</code> to replace a header and <code>response.add_header(name, value)</code> to append one. Send exactly once. The server supplies <code>Content-Length</code>, <code>Transfer-Encoding</code> and <code>Connection</code>; applications must not set these framing headers. A handler that returns without sending produces a generic 500.</p>
+<p>The response has status <code>200 OK</code>, an <code>X-Query: name=Ada</code> header and the body <code>Caller: guide</code>. Leave out <code>X-Caller</code> and the body becomes <code>Caller: anonymous</code>.</p>
+<p>A header may be missing, so <code>request.header(...)</code> returns <code>Option[Str]</code>. The handler uses <code>Some</code> for a supplied value and <code>None</code> for the default greeting. Header names aren&#39;t case-sensitive. If a request contains the same header more than once, use <code>request.header_values(name)</code> to get all its values.</p>
+<p><code>request.query</code> contains the text after the <code>?</code>, without the <code>?</code> itself. It doesn&#39;t split that text into named parameters or decode escaped characters.</p>
+<p>Set the response status and headers before you call <code>send</code> or <code>send_bytes</code>. <code>response.header(name, value)</code> replaces any existing value for that header; <code>response.add_header(name, value)</code> adds another value without replacing it.</p>
+<p>Each handler must send one response. If it returns without sending anything, the server returns a generic 500 error. Leave <code>Content-Length</code>, <code>Transfer-Encoding</code> and <code>Connection</code> to the server; these headers control how the response is delivered and mustn&#39;t be set by your handler.</p>
 <h2 id="routes-and-fallbacks">Routes and fallbacks</h2>
-<p>The ordinary program registers POST, PUT and DELETE on <code>/echo</code>. All three use the same byte-echo handler; this demonstrates dispatch, <strong>not persistence or a resource store</strong>. The HTTP verb does not automatically update or delete data.</p>
+<p>A route matches both an HTTP method and a path. In the first example, POST, PUT and DELETE requests to <code>/echo</code> all call the same handler, which sends back the request body. Using PUT or DELETE doesn&#39;t change any data by itself: your handler decides what each request does.</p>
+<p>With the first server running, try these requests in another terminal:</p>
 <pre><code class="language-sh">curl -i -X PUT --data &#39;replacement&#39; http://127.0.0.1:8080/echo
 curl -i -X DELETE http://127.0.0.1:8080/echo
 curl -i http://127.0.0.1:8080/missing
@@ -114,16 +119,16 @@ curl -i http://127.0.0.1:8080/echo</code></pre>
 <li>GET <code>/missing</code> invokes <code>not_found</code>, which sets 404 and sends <code>No route for /missing</code>.</li>
 <li>GET <code>/echo</code> returns 405 and <code>Allow: POST, PUT, DELETE</code>. The path exists, but GET is not registered. The fallback is not called.</li>
 </ul>
-<p>A fallback is an application handler, so it must choose its own status; registering one does not automatically make its response a 404. Without a fallback, an unknown path receives the server&#39;s default 404. Unsupported methods such as PATCH receive 405 and never enter a fallback.</p>
-<p>Paths are exact and case-sensitive. <code>/echo/</code> differs from <code>/echo</code>. Query strings do not affect route selection; no wildcard or <code>:id</code> route parameters are supported. Registering the same method/path twice is a setup error reported by <code>listen()</code>.</p>
+<p>The fallback decides what to send when no route matches the path. In this example, <code>not_found</code> explicitly sets status 404. Registering a fallback doesn&#39;t set that status for you. If you don&#39;t register one, the server sends its own 404 response for an unknown path. Unsupported methods, such as PATCH, receive 405 without calling the fallback.</p>
+<p>Paths must match exactly, including capitalisation and trailing slashes, so <code>/echo/</code> is a different path from <code>/echo</code>. The query string doesn&#39;t affect which route is chosen. Wildcards and parameters such as <code>:id</code> aren&#39;t supported. If you register the same method and path twice, <code>listen()</code> reports the error when you start the server.</p>
 <h2 id="share-application-configuration">Share application configuration</h2>
-<p>Use a contextual server when several handlers need application values. For example, a preview service needs a greeting and a service name. Put both in one record; one context argument can contain multiple settings.</p>
-<p>The context is supplied by your application. The <code>Request</code> is supplied for each incoming request. Keeping these separate avoids relying on globals for configuration.</p>
-<p>Run the complete example:</p>
+<p>Handlers often need settings that belong to the application, such as a greeting or a service name. A contextual server lets you pass those settings to every handler. You can put several values in a record and pass that record as the context, so you aren&#39;t limited to one setting.</p>
+<p>The example below uses an <code>AppContext</code> record with a greeting and a service name. Each handler receives this context alongside the incoming request and the response writer. There&#39;s no need to store the settings in global variables.</p>
+<p>To try the bundled example, start it with the following command, then run the curl request in a second terminal:</p>
 <pre><code class="language-sh">./bin/panack run --project examples/network/http_contextual_server/panack.json 8081
 curl -i &#39;http://127.0.0.1:8081/health?probe=1&#39;</code></pre>
-<p>Run curl in a second terminal. Expect status 200, <code>X-Service: preview</code>, <code>X-Query: probe=1</code>, and body <code>OK: Hello</code>. GET <code>/</code> returns <code>Hello</code>. Stop the server with Ctrl-C.</p>
-<p>The file is <code>examples/network/http_contextual_server/src/main.panack</code>:</p>
+<p>The response has status 200, headers <code>X-Service: preview</code> and <code>X-Query: probe=1</code>, and the body <code>OK: Hello</code>. A GET request to <code>/</code> returns <code>Hello</code>. Press Ctrl-C in the server terminal when you&#39;ve finished.</p>
+<p>Here&#39;s the full program. To edit it, look for <code>examples/network/http_contextual_server/src/main.panack</code> in your release package:</p>
 <pre><code class="language-panack">import http/server as http
 import stdlib/async_host as host
 
@@ -162,19 +167,20 @@ async main(): Unit {
     Error(problem) =&gt; { ignored = await host.stderr(problem.message); await host.exit(1) }
   }
 }</code></pre>
-<p>Its manifest, <code>examples/network/http_contextual_server/panack.json</code>:</p>
+<p>The accompanying manifest is shown below. It&#39;s included at <code>examples/network/http_contextual_server/panack.json</code>:</p>
 <pre><code class="language-json">{&quot;schema&quot;:1,&quot;package&quot;:&quot;examples.http_contextual_server&quot;,&quot;version&quot;:&quot;0.1.0&quot;,&quot;language&quot;:&quot;modules-v1&quot;,&quot;toolchain&quot;:&quot;0.1.0-alpha.14&quot;,&quot;source&quot;:&quot;src&quot;,&quot;entry&quot;:&quot;main.panack&quot;,&quot;exports&quot;:{},&quot;dependencies&quot;:{&quot;http&quot;:{&quot;path&quot;:&quot;../../../packages/http&quot;}}}</code></pre>
-<p>Every registered handler receives <code>AppContext</code> first, then the request and response writer. The compiler infers the context type from the value passed to <code>create_bound_contextual_server</code>; all handlers on that server must accept it. The explicit address keeps this example on loopback. The shorter <code>create_contextual_server(port, context)</code> uses all local IPv4 interfaces.</p>
-<p>This example uses configuration values. It does not demonstrate a mutable shared store or a concurrent database pool; passing context alone does not establish a synchronization policy for those use cases.</p>
+<p>Every handler on this server takes <code>AppContext</code> as its first argument, followed by the request and response writer. The compiler works out the context type from the value passed to <code>create_bound_contextual_server</code> and checks that the handlers accept it.</p>
+<p>The address <code>127.0.0.1</code> keeps this example accessible only from the same machine. You can also use <code>create_contextual_server(port, context)</code>, which listens on all local IPv4 interfaces.</p>
+<p>These settings stay unchanged while the server runs. If you need handlers to update shared data or use a database connection pool, you&#39;ll also need to decide how concurrent access is managed. Passing a context doesn&#39;t handle that for you.</p>
 <h2 id="own-the-listener-lifecycle">Own the listener lifecycle</h2>
-<p>For a normal service, keep the listener running and use Ctrl-C to stop it. For a test or an embedding application that owns the listener lifetime, explicitly await shutdown when its work is done:</p>
+<p>For the examples above, Ctrl-C is enough to stop the server. Sometimes your program needs to stop a server itself, perhaps because a test has finished or a larger application is shutting down. There are two methods for this:</p>
 <ul>
-<li><code>close()</code> stops accepting new work and allows active handlers and writes up to one second to finish, then cancels what remains.</li>
-<li><code>destroy()</code> cancels active work immediately. Use it when graceful draining is not appropriate.</li>
-<li>Both are idempotent. A stopped handle cannot restart; create a new server instead.</li>
+<li><code>close()</code> stops accepting new work and gives running handlers and response writes up to one second to finish. It then cancels anything still running.</li>
+<li><code>destroy()</code> cancels active work immediately, without waiting for it to finish.</li>
 </ul>
-<p>Here is a complete lifecycle demonstration. It starts and immediately stops a server, as a test might do. It deliberately does not wait for browser requests. The final <code>destroy()</code> demonstrates an idempotent call after <code>close()</code>; ordinary applications normally choose one shutdown method.</p>
-<p><code>examples/network/http_server_lifecycle/src/main.panack</code>:</p>
+<p>You can call either method again after the server has stopped. These repeated calls are safe, but they don&#39;t restart the server. To listen again, create a new server.</p>
+<p>The following program starts a server and immediately closes it, as you might do in a test. It won&#39;t stay running for you to visit in a browser. It also calls <code>destroy()</code> after <code>close()</code> to show that calling it on a stopped server is safe; in your own application, you&#39;d normally choose one or the other.</p>
+<p>The full code is below. You&#39;ll also find it in the release package at <code>examples/network/http_server_lifecycle/src/main.panack</code>:</p>
 <pre><code class="language-panack">import http/server as http
 import stdlib/async_host as host
 
@@ -216,7 +222,7 @@ async main(): Unit {
     Ok(done) =&gt; { ignored = await host.stdout(&quot;Server destroyed&quot;); () }
   }
 }</code></pre>
-<p><code>examples/network/http_server_lifecycle/panack.json</code>:</p>
+<p>Here&#39;s the accompanying manifest, included at <code>examples/network/http_server_lifecycle/panack.json</code>:</p>
 <pre><code class="language-json">{
   &quot;schema&quot;: 1,
   &quot;package&quot;: &quot;examples.http_server_lifecycle&quot;,
@@ -233,12 +239,15 @@ async main(): Unit {
   }
 }</code></pre>
 <pre><code class="language-sh">./bin/panack run --project examples/network/http_server_lifecycle/panack.json 8082</code></pre>
-<p>Expected output, followed by process exit:</p>
+<p>The program prints these messages and then exits:</p>
 <pre><code class="language-text">Server closed
 Server destroyed</code></pre>
-<p>Use the same result-handling pattern with <code>await server.destroy()</code> instead of <code>close()</code> when immediate cancellation is required. The contextual server has the same lifecycle methods and return types. A failure to start or shut down returns <code>Error(ServerError)</code>; inspect its <code>message</code>, rather than matching exact error text.</p>
+<p>If you need to stop immediately, use <code>await server.destroy()</code> and handle its result in the same way as <code>close()</code>. Contextual servers use these same methods and return types.</p>
+<p>If starting or stopping the server fails, the result is <code>Error(ServerError)</code>. Use its <code>message</code> to explain the problem to the user, but don&#39;t make your program&#39;s behaviour depend on the exact wording of that message.</p>
 <h2 id="before-building-a-larger-service">Before building a larger service</h2>
-<p>This first version has fixed limits: 16 open connections, 4 admitted requests, 16 KiB request and response headers, 1 MiB request and response bodies, and a 10-second accept-to-completion deadline. It closes each connection after one response. It has no TLS server, WebSocket, middleware, streaming responses or HTTP/2 support. See the <a href="../../reference/http-server/#fixed-limits">reference</a> for errors and bounds before adapting these examples to production traffic.</p></article>
+<p>Before using these examples in a larger service, check that the server&#39;s limits fit what you need. It allows up to 16 open connections and handles up to four requests at a time. Request and response headers are limited to 16 KiB each, and request and response bodies to 1 MiB each.</p>
+<p>Each connection has ten seconds from being accepted to completing its response, and closes after that one response. The server doesn&#39;t yet support TLS, WebSocket, middleware, streaming responses or HTTP/2.</p>
+<p>The <a href="../../reference/http-server/#fixed-limits">reference</a> explains these limits and the errors you&#39;ll receive when they&#39;re exceeded.</p></article>
 </div>
 <!-- SITE_CLOSING -->
 </main>
