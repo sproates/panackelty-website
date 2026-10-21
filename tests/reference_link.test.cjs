@@ -14,3 +14,13 @@ test('pinned playground artifacts link to the relocated language reference', () 
   assert.ok(!result.includes(old));
   assert.ok(render(home, artifact.replace(old, current), 'playground').includes(`href="${current}"`));
 });
+
+test('HTTP reference and playbook pages identify API Docs as their navigation section', () => {
+  const home = fs.readFileSync(path.join(__dirname, '../site/index.html'), 'utf8');
+  for (const route of ['reference/http-client', 'reference/http-server', 'playbook/http-server']) {
+    const source = fs.readFileSync(path.join(__dirname, '../site', route, 'index.html'), 'utf8');
+    const result = render(home, source, route);
+    assert.match(result, /href="..\/..\/api\/" aria-current="page"/);
+    assert.equal((result.match(/aria-current="page"/g) || []).length, 1);
+  }
+});

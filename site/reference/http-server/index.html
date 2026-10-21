@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Signatures, behaviour and limits for the routed HTTP server.">
+<link rel="canonical" href="https://panackelty.com/reference/http-server/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>HTTP Server — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">API reference · alpha.14</p>
+<h1 id="page-title">HTTP Server</h1><p class="lede">Signatures, behaviour and limits for the routed HTTP server.</p>
+<p>Want to get started quickly? See the <a href="../../playbook/http-server/">HTTP Server Playbook</a></p>
+</section>
+<div class="capabilities-layout">
+<nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import-and-first-server">Import and first server</a></li>
+<li class="toc-level-2"><a href="#constructors">Constructors</a></li>
+<li class="toc-level-3"><a href="#create-server">create_server</a></li>
+<li class="toc-level-3"><a href="#create-bound-server">create_bound_server</a></li>
+<li class="toc-level-3"><a href="#create-contextual-server">create_contextual_server</a></li>
+<li class="toc-level-3"><a href="#create-bound-contextual-server">create_bound_contextual_server</a></li>
+<li class="toc-level-2"><a href="#ordinary-route-methods">Ordinary route methods</a></li>
+<li class="toc-level-3"><a href="#server-get">Server.get</a></li>
+<li class="toc-level-3"><a href="#server-post">Server.post</a></li>
+<li class="toc-level-3"><a href="#server-put">Server.put</a></li>
+<li class="toc-level-3"><a href="#server-delete">Server.delete</a></li>
+<li class="toc-level-3"><a href="#server-fallback">Server.fallback</a></li>
+<li class="toc-level-2"><a href="#contextual-route-methods">Contextual route methods</a></li>
+<li class="toc-level-3"><a href="#contextualserver-get">ContextualServer.get</a></li>
+<li class="toc-level-3"><a href="#contextualserver-post">ContextualServer.post</a></li>
+<li class="toc-level-3"><a href="#contextualserver-put">ContextualServer.put</a></li>
+<li class="toc-level-3"><a href="#contextualserver-delete">ContextualServer.delete</a></li>
+<li class="toc-level-3"><a href="#contextualserver-fallback">ContextualServer.fallback</a></li>
+<li class="toc-level-2"><a href="#lifecycle-methods">Lifecycle methods</a></li>
+<li class="toc-level-3"><a href="#server-listen">Server.listen</a></li>
+<li class="toc-level-3"><a href="#contextualserver-listen">ContextualServer.listen</a></li>
+<li class="toc-level-3"><a href="#server-close">Server.close</a></li>
+<li class="toc-level-3"><a href="#contextualserver-close">ContextualServer.close</a></li>
+<li class="toc-level-3"><a href="#server-destroy">Server.destroy</a></li>
+<li class="toc-level-3"><a href="#contextualserver-destroy">ContextualServer.destroy</a></li>
+<li class="toc-level-2"><a href="#handler-inputs-and-responses">Handler inputs and responses</a></li>
+<li class="toc-level-3"><a href="#request-fields">Request fields</a></li>
+<li class="toc-level-3"><a href="#responsewriter">ResponseWriter</a></li>
+<li class="toc-level-2"><a href="#routing-and-errors">Routing and errors</a></li>
+<li class="toc-level-2"><a href="#fixed-limits">Fixed limits</a></li>
+<li class="toc-level-2"><a href="#runnable-programs">Runnable programs</a></li>
+<li class="toc-level-2"><a href="#source-and-test-evidence">Source and test evidence</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><strong>API stability during alpha:</strong> APIs may change between alpha releases without advance notice. This reference follows the latest release; documentation for earlier alpha versions isn&#39;t maintained. From the first non-alpha release, documentation will be versioned and breaking changes managed through the release process.</p>
+<p>Signatures and behaviour are checked against the package source and integration tests linked in <a href="../../reference/http-server/#source-and-test-evidence">Source and test evidence</a>.</p>
+<p>Use <a href="https://github.com/sproates/panackelty/blob/next/packages/http/README.md">http/server</a> for routed handlers. The packaged HTTP client is a separate API. For directory serving, see the <a href="https://github.com/sproates/panackelty/blob/next/tools/http-server/README.md">static HTTP server tool</a>.</p>
+<p>New to this API? Start with <a href="../../playbook/http-server/">the HTTP playbook</a>. It includes complete programs, setup steps, requests to try and expected results.</p>
+<h2 id="import-and-first-server">Import and first server</h2>
+<pre><code class="language-panack">import http/server as http</code></pre>
+<p>The module exports the constructors and <code>ServerError</code>. It also re-exports <code>Request</code>, <code>Header</code>, and <code>ResponseWriter</code>.</p>
+<pre><code class="language-panack">async home(request: http.Request,
+    response: http.ResponseWriter): Result[Unit,Str] {
+  response.send(&quot;Hello&quot;)
+  Ok(())
+}
+
+async main(): Unit {
+  server = http.create_bound_server(&quot;127.0.0.1&quot;, 8080)
+  server.get(&quot;/&quot;, @home)
+  match await server.listen() {
+    Ok(done) =&gt; (),
+    Error(problem) =&gt; { message = problem.message; () }
+  }
+}</code></pre>
+<p>Create the handle and register routes before awaiting <code>listen()</code>. The listener binds when <code>listen()</code> runs and resolves when the socket is ready. An active listener keeps the native process alive. The <a href="../../reference/http-server/#runnable-programs">ordinary runnable program</a> also accepts a port argument, registers GET and POST routes, and reports startup errors.</p>
+<h2 id="constructors">Constructors</h2>
+<p>All constructors are synchronous and return a server handle. They do not open a socket; <code>listen()</code> performs the bind and reports address or port errors. Ports must be in <code>1..65535</code>. Addresses must be dotted-decimal IPv4 literals; hostnames and IPv6 addresses are unsupported.</p>
+<h3 id="create-server"><code>create_server</code></h3>
+<pre><code class="language-panack">create_server(
+  port: Nat
+): Server</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>port</code>: Port from 1 through 65535.</li>
+</ul>
+<p><strong>Returns:</strong> A new <code>Server</code> configured to bind to <code>0.0.0.0</code>, all local IPv4 interfaces. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. An invalid port is returned by <code>listen()</code> as <code>Error(ServerError)</code>.</p>
+<h3 id="create-bound-server"><code>create_bound_server</code></h3>
+<pre><code class="language-panack">create_bound_server(
+  address: Str,
+  port: Nat
+): Server</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address</code>: Dotted-decimal IPv4 bind address. Use <code>&quot;127.0.0.1&quot;</code> for connections from the local machine only.</li>
+<li><code>port</code>: Port from 1 through 65535.</li>
+</ul>
+<p><strong>Returns:</strong> A new <code>Server</code> for that address. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. Invalid address and port values are returned by <code>listen()</code> as <code>Error(ServerError)</code>.</p>
+<h3 id="create-contextual-server"><code>create_contextual_server</code></h3>
+<pre><code class="language-panack">create_contextual_server[T](
+  port: Nat,
+  context: T
+): ContextualServer[T]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>port</code>: Port from 1 through 65535.</li>
+<li><code>context</code>: Typed value retained for this server; its type determines <code>T</code>.</li>
+</ul>
+<p><strong>Returns:</strong> A <code>ContextualServer[T]</code> configured to bind to <code>0.0.0.0</code>. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. Port errors are returned by <code>listen()</code> as <code>Error(ServerError)</code>.</p>
+<p>Each route handler receives the stored context as its first argument. All handlers on one contextual server use the same <code>T</code>; handlers are named async function references and do not capture closures.</p>
+<h3 id="create-bound-contextual-server"><code>create_bound_contextual_server</code></h3>
+<pre><code class="language-panack">create_bound_contextual_server[T](
+  address: Str,
+  port: Nat,
+  context: T
+): ContextualServer[T]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address</code>: Dotted-decimal IPv4 bind address. <code>&quot;127.0.0.1&quot;</code> keeps the listener local; <code>&quot;0.0.0.0&quot;</code> listens on all local IPv4 interfaces.</li>
+<li><code>port</code>: Port from 1 through 65535.</li>
+<li><code>context</code>: Typed value retained for this server; its type determines <code>T</code>.</li>
+</ul>
+<p><strong>Returns:</strong> A contextual server configured for the specified address. <strong>Async:</strong> No; binding happens when <code>await server.listen()</code> runs. Invalid address and port values are returned by <code>listen()</code> as <code>Error(ServerError)</code>. Hostnames and IPv6 are unsupported.</p>
+<h2 id="ordinary-route-methods">Ordinary route methods</h2>
+<p>See the <a href="../../playbook/http-server/#handle-requests-and-responses">worked playbook guide</a>.</p>
+<p>Register routes before starting the listener. Each handler is a named async function with this signature:</p>
+<pre><code class="language-panack">async handler(request: Request,
+    response: ResponseWriter): Result[Unit,Str]</code></pre>
+<p>Registration is synchronous and returns <code>Unit</code>; the handler runs asynchronously for a matching request.</p>
+<h3 id="server-get"><code>Server.get</code></h3>
+<pre><code class="language-panack">get(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code> and request-scoped <code>ResponseWriter</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching GET request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. A supported method on an unknown path invokes the fallback if registered, or returns 404 otherwise. A known path registered only for other methods returns 405 with an <code>Allow</code> header, without invoking fallback. Matching is case-sensitive and performs no decoding or normalization.</p>
+<h3 id="server-post"><code>Server.post</code></h3>
+<pre><code class="language-panack">post(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async handler; receives the parsed <code>Request</code>, including the complete bounded request body on <code>request.body</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching POST request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. The complete request body is buffered before the handler runs.</p>
+<h3 id="server-put"><code>Server.put</code></h3>
+<pre><code class="language-panack">put(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async handler with the ordinary handler signature.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. A path registered for another method receives 405 and an <code>Allow</code> header.</p>
+<h3 id="server-delete"><code>Server.delete</code></h3>
+<pre><code class="language-panack">delete(
+  path: Str,
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async handler with the ordinary handler signature.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; registering after listening begins traps. A path registered for another method receives 405 and an <code>Allow</code> header.</p>
+<h3 id="server-fallback"><code>Server.fallback</code></h3>
+<pre><code class="language-panack">fallback(
+  handler: AsyncFn[
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>handler</code>: Named async handler called for otherwise unmatched supported methods and paths.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for an unmatched supported request. <strong>Errors:</strong> A second fallback is reported by <code>listen()</code>; registering after listening begins traps. Unsupported methods and 405 cases do not reach the fallback.</p>
+<h2 id="contextual-route-methods">Contextual route methods</h2>
+<p>See the <a href="../../playbook/http-server/#share-application-configuration">worked playbook guide</a>.</p>
+<p>Contextual routes use the same matching and registration rules as ordinary routes. The stored context is passed to the handler first:</p>
+<pre><code class="language-panack">async handler(context: AppConfig, request: Request,
+    response: ResponseWriter): Result[Unit,Str]</code></pre>
+<p>The handler type is <code>AsyncFn[T,Request,ResponseWriter,Result[Unit,Str]]</code>.</p>
+<h3 id="contextualserver-get"><code>ContextualServer.get</code></h3>
+<pre><code class="language-panack">get(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching GET request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
+<h3 id="contextualserver-post"><code>ContextualServer.post</code></h3>
+<pre><code class="language-panack">post(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async contextual handler; it receives the shared context first and the complete bounded request body on <code>request.body</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching POST request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps. The complete request body is buffered before the handler runs.</p>
+<h3 id="contextualserver-put"><code>ContextualServer.put</code></h3>
+<pre><code class="language-panack">put(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching PUT request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
+<h3 id="contextualserver-delete"><code>ContextualServer.delete</code></h3>
+<pre><code class="language-panack">delete(
+  path: Str,
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>path</code>: Exact URI-reference path beginning with <code>/</code>.</li>
+<li><code>handler</code>: Named async contextual handler; receives <code>(context, request, response)</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for a matching DELETE request. <strong>Errors:</strong> Invalid or duplicate routes are reported by <code>listen()</code>; late registration traps.</p>
+<h3 id="contextualserver-fallback"><code>ContextualServer.fallback</code></h3>
+<pre><code class="language-panack">fallback(
+  handler: AsyncFn[
+    T,
+    Request,
+    ResponseWriter,
+    Result[Unit, Str]
+  ]
+): Unit</code></pre>
+<ul>
+<li><code>handler</code>: Named async contextual handler for unmatched supported methods and paths; receives <code>(context, request, response)</code>.</li>
+</ul>
+<p><strong>Returns / async:</strong> Returns <code>Unit</code>; registration is synchronous and the handler runs asynchronously for an unmatched supported request. <strong>Errors:</strong> A second fallback is reported by <code>listen()</code>; unsupported methods and 405 cases do not reach it.</p>
+<h2 id="lifecycle-methods">Lifecycle methods</h2>
+<p><code>ServerError</code> is a public record with one field:</p>
+<pre><code class="language-panack">record ServerError { message: Str }</code></pre>
+<p>Its message is for people, not a stable machine-readable error code. All lifecycle methods below are async and return <code>Result[Unit,ServerError]</code>; await them and handle both result cases.</p>
+<h3 id="server-listen"><code>Server.listen</code></h3>
+<pre><code class="language-panack">async listen(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> <code>Ok(())</code> when the listener is bound, or <code>Error(ServerError)</code> if route setup, address, port, or listener setup fails. <strong>Lifecycle:</strong> Resolves when ready, not when the server stops. An active listener keeps the native process alive. A closed or destroyed server cannot be restarted.</p>
+<h3 id="contextualserver-listen"><code>ContextualServer.listen</code></h3>
+<pre><code class="language-panack">async listen(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> The same result as <code>Server.listen</code>; recorded route, address and port errors and listener failures are returned as <code>Error(ServerError)</code>. <strong>Lifecycle:</strong> Resolves when ready. An active listener keeps the native process alive, and a stopped server cannot be restarted.</p>
+<h3 id="server-close"><code>Server.close</code></h3>
+<pre><code class="language-panack">async close(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> <code>Ok(())</code> when shutdown completes, or <code>Error(ServerError)</code> on an operation failure. <strong>Lifecycle:</strong> Stops new requests and allows active work to drain for up to one second, then cancels remaining work and releases resources. Idempotent. Normal process exit and termination signals also use bounded cleanup.</p>
+<h3 id="contextualserver-close"><code>ContextualServer.close</code></h3>
+<pre><code class="language-panack">async close(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> <code>Ok(())</code> when shutdown completes, or <code>Error(ServerError)</code> on an operation failure. <strong>Lifecycle:</strong> Stops new requests, drains active contextual handlers and response writes for up to one second, then cancels remaining work and releases resources. Idempotent. Normal process exit and termination signals also use bounded cleanup.</p>
+<h3 id="server-destroy"><code>Server.destroy</code></h3>
+<pre><code class="language-panack">async destroy(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> <code>Ok(())</code> when resources are released, or <code>Error(ServerError)</code> on an operation failure. <strong>Lifecycle:</strong> Stops new requests and cancels active work immediately without a graceful drain. Idempotent; a destroyed server cannot be restarted.</p>
+<h3 id="contextualserver-destroy"><code>ContextualServer.destroy</code></h3>
+<pre><code class="language-panack">async destroy(): Result[Unit,ServerError]</code></pre>
+<p><strong>Returns:</strong> <code>Ok(())</code> when resources are released, or <code>Error(ServerError)</code> on an operation failure. <strong>Lifecycle:</strong> Stops new requests and immediately cancels active contextual handlers. Idempotent; a destroyed server cannot be restarted.</p>
+<h2 id="handler-inputs-and-responses">Handler inputs and responses</h2>
+<h3 id="request-fields">Request fields</h3>
+<ul>
+<li><code>method</code>: The HTTP method.</li>
+<li><code>path</code>: The raw request path.</li>
+<li><code>query</code>: The raw query string without the leading question mark.</li>
+<li><code>headers</code>: Headers in request order. <code>request.header(name)</code> returns the first case-insensitive match; <code>header_values(name)</code> preserves repeated values.</li>
+<li><code>body</code>: The buffered request body bytes.</li>
+</ul>
+<h3 id="responsewriter">ResponseWriter</h3>
+<p><code>ResponseWriter</code> starts with status 200. A handler can:</p>
+<ul>
+<li>Set the status with <code>status</code>.</li>
+<li>Replace a header with <code>header</code>, or append a repeated header with <code>add_header</code>.</li>
+<li>Finish the response once with <code>send</code> or <code>send_bytes</code>.</li>
+</ul>
+<p>Text responses default to UTF-8 plain text; byte responses default to <code>application/octet-stream</code>. The server supplies framing headers and closes each connection after one response.</p>
+<pre><code class="language-panack">async echo(request: http.Request,
+    response: http.ResponseWriter): Result[Unit,Str] {
+  response.send_bytes(request.body)
+  Ok(())
+}</code></pre>
+<h2 id="routing-and-errors">Routing and errors</h2>
+<p>See the <a href="../../playbook/http-server/#routes-and-fallbacks">worked playbook guide</a>.</p>
+<p>Paths must begin with <code>/</code> and be valid URI references. Query and fragment components are validated but ignored during matching. Matching is case-sensitive and uses the raw path: percent escapes, repeated slashes and dot segments are not decoded or normalized. A repeated method/path pair, an invalid route, or a second fallback records a setup error; the original route remains in place. <code>listen()</code> reports setup errors without binding. Registering routes after listening starts is a runtime error.</p>
+<p>Only GET, POST, PUT and DELETE reach handlers. Unsupported methods receive 405; for paths with registered routes, <code>Allow</code> lists supported methods in canonical order. A supported method with no exact route on a path that has other methods also receives 405. An unmatched path invokes the fallback when present, or returns 404 otherwise. Unsupported methods never reach fallback.</p>
+<p>A handler returning <code>Error(message)</code>, returning without sending, or trapping with a recoverable request-scoped fault is logged and produces a generic 500 unless the response has already been sent. The diagnostic is not returned as a <code>ServerError</code> or exposed in the response. A failed request does not stop healthy requests.</p>
+<h2 id="fixed-limits">Fixed limits</h2>
+<p>The API has no tuning parameters. The implementation enforces these bounds:</p>
+<ul>
+<li>At most 16 open connections and 4 admitted requests at once.</li>
+<li>Request and response headers are limited to 16 KiB each.</li>
+<li>Request and response bodies are limited to 1 MiB each.</li>
+<li>A request has a 10-second accept-to-completion deadline.</li>
+<li><code>close()</code> drains active work for up to one second before cancellation.</li>
+</ul>
+<p>Request bodies are buffered before handlers run. Capacity overflow receives 503, oversized request bodies receive 413, and oversized request headers receive 431. Invalid or oversized application responses become a generic 500 if no response has been committed.</p>
+<p>This API has no TLS server, WebSocket, HTTP/2, streaming response, keep-alive, route parameters, middleware, or closure-capture support.</p>
+<h2 id="runnable-programs">Runnable programs</h2>
+<p>Both examples are complete Panackelty packages with manifests and use the matching toolchain version. Run from the repository root; both bind to loopback and accept Ctrl-C for shutdown:</p>
+<pre><code class="language-sh">./bin/panack run --project examples/network/http_server/panack.json 8080
+./bin/panack run --project examples/network/http_contextual_server/panack.json 8081</code></pre>
+<p>The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_server/README.md">ordinary example README</a> shows GET and POST routes, requests to try, expected responses, and links to the source and manifest. The <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_contextual_server/README.md">contextual example README</a> demonstrates typed shared configuration and fallback routing. The integration suite runs both checked-in examples from source and saved bytecode.</p>
+<h2 id="source-and-test-evidence">Source and test evidence</h2>
+<p>This reference follows the exported declarations in <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/server.panack">packages/http/src/server.panack</a>, route policy in <a href="https://github.com/sproates/panackelty/blob/next/packages/http/src/routing.panack">routing.panack</a>, and runtime limits in <a href="https://github.com/sproates/panackelty/blob/next/src/vm/tcp_server.c">tcp_server.c</a>. Behaviour is checked by <a href="https://github.com/sproates/panackelty/blob/next/tests/http_package.sh">tests/http_package.sh</a>, <a href="https://github.com/sproates/panackelty/blob/next/tests/unit/vm/http_state.c">http_state.c</a>, and the HTTP package tests described in the <a href="https://github.com/sproates/panackelty/blob/next/tests/README.md">test guide</a>.</p>
+<p>This is the first Server reference page for review. It does not extend the format to other HTTP types or the wider standard library.</p></article>
+</div>
+<!-- SITE_CLOSING -->
+</main>
+<!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

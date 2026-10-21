@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: sproates/panackelty-browser
-          ref: acf15fe373230a8c7fdc22464a930a19c96dae17
+          ref: 92a55e2e96807eae2e8102c3497c5c0136e3d2ff
           path: build/browser-tests
           persist-credentials: false
 
@@ -56,17 +56,6 @@ jobs:
           echo "PANACK_HTTP_SERVER=$GITHUB_WORKSPACE/build/preview-tool/bin/panack-http-server" >> "$GITHUB_ENV"
           echo "PANACK_PREVIEW_SCRIPT=$GITHUB_WORKSPACE/build/website-tests/scripts/preview.cjs" >> "$GITHUB_ENV"
           cp build/website-tests/tests/preview.playwright.config.mjs build/browser-tests/
-          # Website assembly relocates this link in the pinned browser artifact.
-          # Keep the imported exact-destination assertion aligned with that override.
-          node - <<'JS'
-          const fs = require('node:fs');
-          const file = 'build/browser-tests/tests/browser.test.mjs';
-          const source = fs.readFileSync(file, 'utf8');
-          const old = 'https://github.com/sproates/panackelty/blob/main/SPEC.md';
-          const current = 'https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md';
-          if (source.split(old).length !== 2) throw new Error('Review the pinned reference-link assertion');
-          fs.writeFileSync(file, source.replace(old, current));
-          JS
 
       - name: Install locked test package and verify prepared browsers
         run: |

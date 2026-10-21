@@ -5,7 +5,7 @@ import path from 'node:path';
 const siteRoot=process.env.PLAYGROUND_SITE_DIR;
 if(!siteRoot) throw new Error('PLAYGROUND_SITE_DIR must point at the assembled website');
 const nativeVersion=fs.readFileSync(path.join(siteRoot,'native-release.txt'),'utf8').trim();
-const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/','/previous-releases/'];
+const routes=['/','/capabilities/','/get-started/','/examples/','/explain/','/under-the-hood/','/roadmap/','/releases/','/previous-releases/','/api/','/reference/http-client/','/reference/http-server/','/playbook/http-server/'];
 test('editorial pages have consistent clean navigation at desktop and phone widths',async({page})=>{
   for(const width of [1280,390]){
     await page.setViewportSize({width,height:844});
@@ -14,7 +14,9 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('[aria-current="page"]')).toHaveCount(1);
       await expect(page.getByRole('link',{name:'Try it online',exact:true})).toBeVisible();
-      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+      const dimensions=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth,offenders:[...document.body.querySelectorAll('*')].map(element=>{const rect=element.getBoundingClientRect();return {tag:element.tagName,className:typeof element.className==='string'?element.className:'',text:element.innerText?.slice(0,60),left:Math.round(rect.left),right:Math.round(rect.right)}}).filter(element=>element.right>innerWidth+1).sort((a,b)=>b.right-a.right).slice(0,8)}));
+      expect(dimensions.page,`${route} overflows at ${dimensions.viewport}px: ${JSON.stringify(dimensions.offenders)}`).toBeLessThanOrEqual(dimensions.viewport);
+      if(route==='/reference/http-server/') await expect(page.locator('.capabilities-toc')).toHaveCSS('position','static');
       await expect(page.getByRole('navigation',{name:'Primary navigation'})).toBeVisible();
       await expect(page.getByRole('button',{name:'Menu',exact:true})).toHaveCount(0);
       await expect(page.locator('.closing .closing-links')).toHaveCount(1);
@@ -34,10 +36,10 @@ test('release availability and copy controls remain explicit',async({page,contex
   await page.goto('/roadmap/');
   await expect(page.locator('#next-release')).toContainText('not released');
   await expect(page.locator('#first-non-alpha')).toContainText('not released');
-  await expect(page.locator('#alpha-13')).toContainText('Released');
-  await expect(page.locator('#alpha-14')).toContainText('not released');
+  await expect(page.locator('#alpha-13 a')).toHaveAttribute('href', '../previous-releases/#alpha-13');
+  await expect(page.locator('#alpha-14')).toContainText('Released');
+  await page.getByRole('link', {name:'Previous releases: explore alpha.13 and earlier →'}).click();
   await expect(page.locator('#alpha-13')).toContainText('HTTP client and server');
-  await page.getByRole('link', {name:'Previous releases: explore what alpha.12 delivered →'}).click();
   await expect(page.locator('#alpha-12')).toBeVisible();
   await expect(page.locator('#alpha-12')).toContainText('Executable namespaces');
   await expect(page.locator('#alpha-12 a[href$="/releases/tag/v0.1.0-alpha.12"]')).toHaveCount(1);

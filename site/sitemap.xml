@@ -10,4 +10,8 @@
   <url><loc>https://panackelty.com/playground/</loc></url>
   <url><loc>https://panackelty.com/releases/</loc></url>
   <url><loc>https://panackelty.com/previous-releases/</loc></url>
+  <url><loc>https://panackelty.com/api/</loc></url>
+  <url><loc>https://panackelty.com/reference/http-client/</loc></url>
+  <url><loc>https://panackelty.com/reference/http-server/</loc></url>
+  <url><loc>https://panackelty.com/playbook/http-server/</loc></url>
 </urlset>

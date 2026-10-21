@@ -14,6 +14,15 @@ Standalone validation/staging is delivered by website PR#1. Production cutover,
 core retirement and live acceptance remain pending. Migrating the backlog does
 not start its individual features or change their agreed priorities.
 
+## Release rebalance: alpha.14 through alpha.19
+
+Prepared 20 October 2026: align homepage and roadmap with the owner's narrowed
+alpha.14 scope and shifted release sequence. Keep test-speed work in alpha.15;
+add the HTTP reference/examples as alpha.14's final required feature slice and
+keep colours optional. Add a dated methods-article completion note rather than
+rewriting its historical migration account. Preserve alpha.13 download/browser
+pins. Core scope merge, preview approval, CI and publication remain pending.
+
 ## Alpha.14 through alpha.18 release direction
 
 Owner-selected general scope, 20 October 2026. Update the homepage release rows,

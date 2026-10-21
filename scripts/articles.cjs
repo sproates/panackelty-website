@@ -15,9 +15,10 @@ function inline(text, root = '') {
 }
 function markdown(source, root = '') {
   const lines = source.replace(/\r\n/g, '\n').split('\n');
-  const out = []; let paragraph = [], list = '', code = false, language = '', codeLines = [];
+  const out = []; let paragraph = [], list = '', itemLines = [], code = false, language = '', codeLines = [];
   const flush = () => { if (paragraph.length) { out.push(`<p>${inline(paragraph.join(' '), root)}</p>`); paragraph = []; } };
-  const closeList = () => { if (list) { out.push(`</${list}>`); list = ''; } };
+  const flushItem = () => { if (itemLines.length) { out.push(`<li>${inline(itemLines.join(' '), root)}</li>`); itemLines = []; } };
+  const closeList = () => { flushItem(); if (list) { out.push(`</${list}>`); list = ''; } };
   for (const line of lines) {
     const fence = line.match(/^```([\w-]*)\s*$/);
     if (fence) {
@@ -32,9 +33,10 @@ function markdown(source, root = '') {
     const quote = line.match(/^>\s?(.*)$/);
     if (!line.trim()) { flush(); closeList(); continue; }
     if (heading) { flush(); closeList(); const level = heading[1].length; const slug = heading[2].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); out.push(`<h${level} id="${slug}">${inline(heading[2], root)}</h${level}>`); continue; }
-    if (item) { flush(); const next = /^\d+\./.test(item[1]) ? 'ol' : 'ul'; if (list && list !== next) closeList(); if (!list) { list = next; out.push(`<${list}>`); } out.push(`<li>${inline(item[2], root)}</li>`); continue; }
+    if (item) { flush(); const next = /^\d+\./.test(item[1]) ? 'ol' : 'ul'; if (list && list !== next) closeList(); else flushItem(); if (!list) { list = next; out.push(`<${list}>`); } itemLines = [item[2]]; continue; }
     if (quote) { flush(); closeList(); out.push(`<blockquote><p>${inline(quote[1], root)}</p></blockquote>`); continue; }
     if (/^---+$/.test(line.trim())) { flush(); closeList(); out.push('<hr>'); continue; }
+    if (list && /^\s+\S/.test(line)) { itemLines.push(line.trim()); continue; }
     closeList(); paragraph.push(line.trim());
   }
   flush(); closeList();

@@ -2,11 +2,44 @@
 
 Notable changes to Panackelty are recorded here. Preview releases may change
 source syntax, checking behavior, standard-library APIs, and bytecode as described
-in `RELEASE_POLICY.md`.
+in `docs/releases/RELEASE_POLICY.md`.
 
 ## Unreleased
 
-No unreleased changes.
+## 0.1.0-alpha.14 — 2026-10-21
+
+### Features and fixes
+
+- Add HTTP Server and Client API references and a practical HTTP playbook, with
+  complete examples, request/response transcripts, static serving and explicit
+  alpha compatibility guidance.
+
+- Add the routed HTTP server framework for alpha.14: ordinary/contextual servers,
+  named handlers, owned route and response methods, fixed request limits,
+  request-local fault recovery and bounded shutdown. Replace the old finite HTTP
+  and `http/service` exports; the HTTP client is unchanged. The static preview
+  tool now uses a contextual fallback, retaining loopback/`--host` and confined
+  file access. Add ordinary/contextual runnable examples and migration guidance.
+
+- Detect stale example inventories and smoke transcript totals before canonical
+  validation starts compiler builds; preserve all executable fixture checks.
+
+- Add runnable owned-method and generic-method examples, with exact-output
+  source and saved-bytecode checks. These demonstrate custom APIs alongside Map
+  methods, persistent updates, chaining and typed callbacks.
+
+- Complete the source syntax cutover to type-owned dot methods for
+  alpha.14. A receiver call selects a method owned by its checked type; globals
+  with matching names do not supply methods. Namespace calls and record fields
+  retain their distinct meanings. Invoke callable fields explicitly through
+  `(value.field).call(...)`.
+- Remove temporary receiver-arrow syntax. Change `value->method(...)` to
+  `value.method(...)`; the old spelling now reports a migration diagnostic.
+  Use owned methods instead of the removed receiver-global APIs and wrappers.
+  Compiler, library, packages, tools, examples and maintained tests use dots.
+  Saved bytecode retains its existing VM contract. Native package and browser-consumer acceptance is recorded in
+  [P15](docs/design/type-owned-dispatch/p15-consumer-acceptance.md). See the [migration guide](docs/guides/METHOD_MIGRATION.md)
+  for removed globals, namespace wrappers and matching-toolchain requirements.
 
 ## 0.1.0-alpha.13 — 2026-10-15
 
@@ -332,7 +365,7 @@ No unreleased changes.
   return types, and record fields still require annotations. Incomplete local
   types cannot be resolved from later assignments or uses.
 - Bytecode remains version 7. This is an experimental preview for Linux x86-64
-  and macOS arm64 under the compatibility policy in `RELEASE_POLICY.md`.
+  and macOS arm64 under the compatibility policy in `docs/releases/RELEASE_POLICY.md`.
 
 ## 0.1.0-alpha.2 — 2026-09-15
 
@@ -353,7 +386,7 @@ No unreleased changes.
 - Diagnostic output now includes source lines and carets after positioned
   headers. Tools that consume compiler stderr should allow these extra lines.
 - This remains an experimental preview for Linux x86-64 and macOS arm64,
-  subject to the compatibility policy in `RELEASE_POLICY.md`.
+  subject to the compatibility policy in `docs/releases/RELEASE_POLICY.md`.
 
 ## 0.1.0-alpha.1 — 2026-09-04
 
@@ -387,7 +420,7 @@ The first public developer preview.
 - Diagnostics outside the primary lexer, parser, name, and type failures do not
   yet consistently include source locations; source excerpts are not rendered
 
-See `RELEASE_POLICY.md`, `SPEC.md`, and `ROADMAP.md` for the complete preview
+See `docs/releases/RELEASE_POLICY.md`, `docs/reference/SPEC.md`, and `ROADMAP.md` for the complete preview
 contract and remaining work.
 
 ### Release verification
