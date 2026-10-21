@@ -105,10 +105,24 @@ PR artifacts contain review previews with source identity and no-index metadata.
 
 ## Publish and promote releases
 
+On a push to `main`, CI looks for a successful PR run from this repository whose
+candidate artifact matches the complete merged Git tree, including workflows and
+release pins. A match reuses the tested site: assembly, release-integrity checks
+and browser tests are not repeated. The artifact name also identifies the run
+attempt, so a partial rerun cannot reuse an older attempt's candidate. Lookup is
+bounded to the 30 most recent successful PR runs; missing, expired or mismatched
+artifacts and lookup errors fall back to fresh validation. Manual workflow runs
+always validate afresh.
+
+Before downloading a reused candidate, publication rechecks that its validation
+run and artifact are still valid. If they changed or expired in the meantime,
+publication stops; a new run can validate afresh. The current-main deployment
+gate and verification of deployed bytes still run for every publication.
+
 A successful main-branch run publishes its tested artifact to this repository's
 configured GitHub Pages target. Immediately before deployment, an authenticated main
 lookup rejects stale reruns and fails closed on API errors. `publication.json` identifies the website source
-commit and validation run. Domain ownership is configured in Pages settings;
+commit, validation run and attempt, and publication run. Domain ownership is configured in Pages settings;
 no production CNAME file is committed. Coverage remains independently published; coverage
 entry pages link to the independently published report from `/coverage/` and `/coverage/html/` paths.
 

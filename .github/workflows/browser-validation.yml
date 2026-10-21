@@ -3,6 +3,9 @@ name: Browser validation
 on:
   workflow_call:
     inputs:
+      artifact_name:
+        type: string
+        required: true
       mode:
         type: string
         default: full
@@ -25,7 +28,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          name: pages-candidate
+          name: ${{ inputs.artifact_name }}
           path: build/website
 
       - name: Check out the reviewed browser integration suite
