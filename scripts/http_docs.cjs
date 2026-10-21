@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const {markdown} = require('./articles.cjs');
 const root = path.resolve(__dirname, '..');
 const documents = [
+  {source:'docs/reference/http-client.md', name:'http-client.md', route:'reference/http-client', title:'HTTP Client', label:'API reference', intro:'GET requests, response types and errors for the native HTTP client.'},
   {source:'docs/reference/http-server.md', name:'http-server.md', route:'reference/http-server', title:'HTTP Server', label:'API reference', intro:'Signatures, behaviour and limits for the routed HTTP server.'},
   {source:'docs/guides/HTTP_PLAYBOOK.md', name:'HTTP_PLAYBOOK.md', route:'playbook/http-server', title:'HTTP server playbook', label:'Playbook', intro:'Start a server. Send a request. Build from a working example.'},
 ];
@@ -34,7 +35,7 @@ function render(doc, sources) {
   })).join('');
   const toc = headings(source).map(h => `<li class="toc-level-${h.level}"><a href="#${h.id}">${escape(h.text)}</a></li>`).join('\n');
   const body = markdown(source, '../../');
-  const companion = documents.find(d => d !== doc);
+  const companion = documents.find(d => d.route === (doc.label === 'Playbook' ? 'reference/http-server' : 'playbook/http-server')); 
   return `<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,7 +51,7 @@ function render(doc, sources) {
 <section class="capabilities-hero" aria-labelledby="page-title">
 <p class="eyebrow">${doc.label} · alpha.14</p>
 <h1 id="page-title">${doc.title}</h1><p class="lede">${doc.intro}</p>
-<p>${doc === documents[0] ? `Want to get started quickly? See the <a href="../../${companion.route}/">HTTP Server Playbook</a>` : `Looking up a method? See the <a href="../../${companion.route}/">HTTP Server Reference</a>`}</p>
+<p>${doc.label === 'API reference' ? `Want to get started quickly? See the <a href="../../${companion.route}/">HTTP Server Playbook</a>` : `Looking up a method? See the <a href="../../${companion.route}/">HTTP Server Reference</a>`}</p>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul>${toc}</ul></nav>

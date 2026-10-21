@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="GET requests, response types and errors for the native HTTP client.">
+<link rel="canonical" href="https://panackelty.com/reference/http-client/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>HTTP Client — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">API reference · alpha.14</p>
+<h1 id="page-title">HTTP Client</h1><p class="lede">GET requests, response types and errors for the native HTTP client.</p>
+<p>Want to get started quickly? See the <a href="../../playbook/http-server/">HTTP Server Playbook</a></p>
+</section>
+<div class="capabilities-layout">
+<nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import-and-dependency">Import and dependency</a></li>
+<li class="toc-level-2"><a href="#get">get</a></li>
+<li class="toc-level-2"><a href="#get-with-limits">get_with_limits</a></li>
+<li class="toc-level-2"><a href="#clientlimits">ClientLimits</a></li>
+<li class="toc-level-2"><a href="#response-and-header">Response and Header</a></li>
+<li class="toc-level-2"><a href="#supported-urls-and-http-behaviour">Supported URLs and HTTP behaviour</a></li>
+<li class="toc-level-2"><a href="#httperror">HttpError</a></li>
+<li class="toc-level-2"><a href="#try-a-complete-client">Try a complete client</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><strong>API stability during alpha:</strong> APIs may change between alpha releases without advance notice. This reference follows the latest release; earlier alpha versions aren&#39;t maintained. Versioned documentation starts with the first non-alpha release.</p>
+<p>Use <code>http/client</code> to make HTTP or HTTPS GET requests from a native Panackelty program. The client checks TLS certificates and hostnames, limits response sizes and returns errors as values. It isn&#39;t available in the browser playground.</p>
+<p>For incoming requests, see the <a href="../../reference/http-server/">Server Reference</a> and <a href="../../playbook/http-server/">Server Playbook</a>.</p>
+<h2 id="import-and-dependency">Import and dependency</h2>
+<pre><code class="language-panack">import http/client as client</code></pre>
+<p>Add an <code>http</code> dependency pointing to the release package&#39;s <code>packages/http</code> directory. Dependency paths are relative to your application&#39;s <code>panack.json</code>. The client re-exports <code>Header</code>, <code>Response</code> and <code>HttpError</code> from <code>http/types</code>.</p>
+<h2 id="get">get</h2>
+<pre><code class="language-panack">async get(url: Str): Result[Response,HttpError]</code></pre>
+<p>Send one GET request and wait for the response. Call it with <code>await</code> from an async function. <code>url</code> must be a supported absolute HTTP or HTTPS URL.</p>
+<p>The default timeout is 10 seconds, with up to 64 KiB of response headers and 1 MiB of response body. A valid response returns <code>Ok(Response)</code>, including HTTP errors such as 404 or 500. Check <code>response.status</code> to decide what those mean for your application. Network, URL and protocol failures return <code>Error(HttpError)</code>.</p>
+<h2 id="get-with-limits">get_with_limits</h2>
+<pre><code class="language-panack">async get_with_limits(url: Str, limits: ClientLimits): Result[Response,HttpError]</code></pre>
+<p>Make the same GET request with your own timeout and response limits. All three limits must be positive and within the maximum values below; otherwise the call returns <code>Error(InvalidLimits())</code> before making a request.</p>
+<pre><code class="language-panack">client.ClientLimits(5000, 16384, 65536)</code></pre>
+<p>This allows five seconds, 16 KiB of headers and 64 KiB of body data. The timeout covers the transport operation, including DNS, connection, TLS and data transfer. A limit or timeout failure returns an error rather than a partial response.</p>
+<h2 id="clientlimits">ClientLimits</h2>
+<pre><code class="language-panack">record ClientLimits {
+  timeout_ms: Nat,
+  header_limit: Nat,
+  body_limit: Nat
+}</code></pre>
+<p>| Field | Unit | Default used by get | Maximum | | --- | --- | --- | --- | | <code>timeout_ms</code> | Milliseconds | 10000 | 60000 | | <code>header_limit</code> | Bytes | 65536 | 65536 | | <code>body_limit</code> | Bytes | 1048576 | 1048576 |</p>
+<h2 id="response-and-header">Response and Header</h2>
+<pre><code class="language-panack">record Header {
+  name: Str,
+  value: Str
+}
+
+record Response {
+  status: Nat,
+  headers: [Header],
+  body: Bytes
+}</code></pre>
+<p><code>status</code> is the HTTP status code. <code>headers</code> keeps the received order and repeated fields, so don&#39;t assume that a header name occurs only once. <code>body</code> contains the response bytes after HTTP framing has been removed. Decode it as UTF-8 only when you know the response contains UTF-8 text. These records have no client-specific methods; read their fields directly.</p>
+<h2 id="supported-urls-and-http-behaviour">Supported URLs and HTTP behaviour</h2>
+<p>Use lowercase <code>http://</code> or <code>https://</code>, followed by an ASCII DNS name or dotted IPv4 address. An optional port must be between 1 and 65535. The default ports are 80 and 443. An omitted path becomes <code>/</code>; a query string is allowed.</p>
+<p>URLs are limited to 8192 bytes. IPv6 addresses, credentials in the URL, fragments, spaces, control characters and other schemes aren&#39;t supported. Encode non-ASCII characters in paths and query strings before passing the URL.</p>
+<p>The client sends HTTP/1.1 GET with <code>Accept-Encoding: identity</code> and <code>Connection: close</code>. It handles fixed-length, chunked and connection-close response bodies. It doesn&#39;t follow redirects, decompress content, reuse connections or provide cookies, proxies, authentication helpers, custom request headers or request bodies. A redirect is returned as an ordinary response.</p>
+<p>HTTPS uses the platform libcurl trust configuration and verifies both the certificate chain and hostname. <code>CURL_CA_BUNDLE</code> can select a PEM CA bundle; there is no option to disable verification. Linux release users need the libcurl runtime library; macOS uses the system library. No C build tools are needed to use an extracted release package.</p>
+<h2 id="httperror">HttpError</h2>
+<p>The shared <code>HttpError</code> enum is available through <code>http/client</code> and <code>http/types</code>. Its string payloads explain the failure; don&#39;t depend on their exact wording.</p>
+<p>| Variant | Meaning | | --- | --- | | <code>InvalidUrl(Str)</code> | The URL is malformed or uses an unsupported form. | | <code>InvalidLimits</code> | A supplied limit is zero or exceeds the supported maximum. | | <code>UnsupportedHost</code> | The hostname or address isn&#39;t supported, including IPv6. | | <code>DnsFailure</code> | The hostname couldn&#39;t be resolved. | | <code>ConnectFailure</code> | A connection couldn&#39;t be established. | | <code>TlsFailure</code> | TLS negotiation or certificate verification failed. | | <code>Timeout</code> | The operation exceeded its deadline. | | <code>ProtocolError(Str)</code> | The response is malformed, incomplete or ambiguously framed. | | <code>LimitExceeded(Str)</code> | A response exceeded a size limit. | | <code>UnsupportedVersion(Str)</code> | The HTTP version isn&#39;t supported. | | <code>UnsupportedTransferEncoding</code> | The response uses an unsupported transfer encoding. | | <code>InvalidResponse</code> | The response couldn&#39;t be represented as a valid result. | | <code>TransportFailure(Str)</code> | Another transport failure occurred. | | <code>Cancelled</code> | Shared enum variant; the GET facade doesn&#39;t expose a cancellation method. | | <code>UnsupportedMethod(Str)</code> | Shared protocol variant; the GET facade doesn&#39;t accept a method argument. | | <code>InvalidRequest</code> | Shared protocol variant; the GET facade constructs the request itself. |</p>
+<p>Import variants explicitly when matching a particular failure, for example <code>import http/client::{HttpError.Timeout}</code>. Handle other failures too. Task cancellation is governed by the async runtime; the presence of <code>Cancelled</code> in the shared enum doesn&#39;t promise that cancelling a task returns a normal result.</p>
+<h2 id="try-a-complete-client">Try a complete client</h2>
+<p>Start the server from the <a href="../../playbook/http-server/#your-first-server">playbook</a>. Create a directory called <code>http-client-example</code> beside your extracted <code>panackelty</code> directory, then save this as <code>http-client-example/src/main.panack</code>:</p>
+<pre><code class="language-panack">import http/client as client
+import stdlib/async_host as host
+
+async main(): Unit {
+  match await client.get(&quot;http://127.0.0.1:8080/&quot;) {
+    Ok(response) =&gt; {
+      status = response.status
+      ignored = await host.stdout(&quot;Status: ${status}&quot;)
+      body_written = await host.stdout(response.body.decode_utf8())
+      ()
+    },
+    Error(problem) =&gt; {
+      ignored = await host.stderr(&quot;The HTTP request failed&quot;)
+      await host.exit(1)
+    }
+  }
+}</code></pre>
+<p>Save this as <code>http-client-example/panack.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;schema&quot;: 1,
+  &quot;package&quot;: &quot;examples.http_client&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;language&quot;: &quot;modules-v1&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;source&quot;: &quot;src&quot;,
+  &quot;entry&quot;: &quot;main.panack&quot;,
+  &quot;exports&quot;: {},
+  &quot;dependencies&quot;: {
+    &quot;http&quot;: { &quot;path&quot;: &quot;../panackelty/packages/http&quot; }
+  }
+}</code></pre>
+<p>From the directory containing both folders, run:</p>
+<pre><code class="language-sh">./panackelty/bin/panack run --project http-client-example/panack.json</code></pre>
+<p>The output starts with <code>Status: 200</code>, followed by <code>hello from Panackelty HTTP server</code>. The body already ends with a newline, so printing it adds a blank line. To try custom limits, replace <code>client.get(...)</code> with <code>client.get_with_limits(&quot;http://127.0.0.1:8080/&quot;, client.ClientLimits(5000, 16384, 65536))</code>.</p></article>
+</div>
+<!-- SITE_CLOSING -->
+</main>
+<!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

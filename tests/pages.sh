@@ -42,7 +42,7 @@ grep -q 'href="../capabilities/"' "$work/pages/playground/index.html"
 # Shared footer includes branding, licence and valid page-relative navigation.
 for page in releases/index.html playground/index.html capabilities/index.html; do
     grep -q 'Experimental. Open source. Still evolving.' "$work/pages/$page"
-    grep -q 'LICENSE">MIT</a>' "$work/pages/$page"
+    grep -q 'LICENSE">Licence</a>' "$work/pages/$page"
     grep -q 'href="#main">Back to top</a>' "$work/pages/$page"
     grep -q 'id="main"' "$work/pages/$page"
 done

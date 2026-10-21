@@ -25,6 +25,8 @@
 <li class="toc-level-2"><a href="#routes-and-fallbacks">Routes and fallbacks</a></li>
 <li class="toc-level-2"><a href="#share-application-configuration">Share application configuration</a></li>
 <li class="toc-level-2"><a href="#own-the-listener-lifecycle">Own the listener lifecycle</a></li>
+<li class="toc-level-2"><a href="#serve-a-directory">Serve a directory</a></li>
+<li class="toc-level-3"><a href="#use-static-serving-in-your-application">Use static serving in your application</a></li>
 <li class="toc-level-2"><a href="#before-building-a-larger-service">Before building a larger service</a></li></ul></nav>
 <article class="capabilities-content http-docs-content"><p>This playbook walks through a working HTTP server, from sending your first request to sharing settings between handlers and shutting the server down. Each example includes the complete code, so you can read it here or try it with your alpha.14 release package. For individual methods and their options, see the <a href="../../reference/http-server/">API reference</a>.</p>
 <h2 id="your-first-server">Your first server</h2>
@@ -281,6 +283,26 @@ async main(): Unit {
 Server destroyed</code></pre>
 <p>If you need to stop immediately, use <code>await server.destroy()</code> and handle its result in the same way as <code>close()</code>. Contextual servers use these same methods and return types.</p>
 <p>If starting or stopping the server fails, the result is <code>Error(ServerError)</code>. Use its <code>message</code> to explain the problem to the user, but don&#39;t make your program&#39;s behaviour depend on the exact wording of that message.</p>
+<h2 id="serve-a-directory">Serve a directory</h2>
+<p>If you want to serve HTML, stylesheets or other files, the release includes <code>panack-http-server</code>. It uses the same routed server framework, with a static file handler that keeps requests inside the directory you choose.</p>
+<p>From your extracted release directory, create a small page and start the tool:</p>
+<pre><code class="language-sh">mkdir -p demo-site
+printf &#39;&lt;h1&gt;Hello from Panackelty&lt;/h1&gt;\n&#39; &gt; demo-site/index.html
+./bin/panack-http-server --root ./demo-site --port 8084 --no-cache --noindex</code></pre>
+<p>Once it prints <code>Serving http://127.0.0.1:8084/</code>, open that address in a browser. You&#39;ll see “Hello from Panackelty”. You can also request the page from another terminal:</p>
+<pre><code class="language-sh">curl http://127.0.0.1:8084/</code></pre>
+<pre><code class="language-html">&lt;h1&gt;Hello from Panackelty&lt;/h1&gt;</code></pre>
+<p>Changes to the file appear on the next request. Press Ctrl-C in the server terminal to stop it. The tool waits up to one second for active requests to finish before cancelling any that remain.</p>
+<p>The default address is <code>127.0.0.1</code>. Add <code>--host 0.0.0.0</code> to accept connections from other devices, using your machine&#39;s network address to connect. <code>--no-cache</code> adds <code>Cache-Control: no-store</code>; <code>--noindex</code> asks search engines not to index the pages. Neither option is an access control.</p>
+<p>The tool serves regular files with appropriate content types and uses <code>index.html</code> for directories. It doesn&#39;t list directory contents. Missing files return 404, and paths that escape the chosen root are rejected. GET is supported; other methods don&#39;t serve file content. Responses, including their headers, must fit within 1 MiB. Larger files return 503. There is no TLS, compression, range support or automatic browser reload.</p>
+<h3 id="use-static-serving-in-your-application">Use static serving in your application</h3>
+<p>For a program that needs to start its own directory server, add a <code>static_http</code> dependency pointing to <code>packages/static_http</code> in the release and import <code>static_http/service</code>. Its <code>serve</code> function registers a contextual fallback on the routed HTTP server. The command above is the ready-to-run version of this integration.</p>
+<pre><code class="language-panack">async serve(
+  configuration: Config,
+  ready: AsyncFn[Endpoint,Result[Unit,Str]]
+): Result[Unit,Str]</code></pre>
+<p><code>Config</code> contains <code>root: Path</code>, <code>address: Str</code>, <code>port: Nat</code>, <code>request_body_limit: Nat</code>, <code>response_limit: Nat</code> and <code>headers: [Header]</code>. <code>Endpoint</code> contains the bound <code>address: Str</code> and <code>port: Nat</code>. The ready callback runs after the root has been validated and the socket bound; returning an error stops the server. A successful call returns after readiness, while the listener keeps the process running. The public function doesn&#39;t return a server handle.</p>
+<p>The tool uses a 16 KiB request-body limit and a 1 MiB response limit. Application limits must fit within the framework&#39;s 1 MiB body limits; the response limit must be greater than 512 bytes and leave room for headers. Extra headers cannot override framing headers, <code>Content-Type</code>, <code>Location</code> or <code>Allow</code>. Invalid configuration returns an error before the listener starts.</p>
 <h2 id="before-building-a-larger-service">Before building a larger service</h2>
 <p>Before using these examples in a larger service, check that the server&#39;s limits fit what you need. It allows up to 16 open connections and handles up to four requests at a time. Request and response headers are limited to 16 KiB each, and request and response bodies to 1 MiB each.</p>
 <p>Each connection has ten seconds from being accepted to completing its response, and closes after that one response. The server doesn&#39;t yet support TLS, WebSocket, middleware, streaming responses or HTTP/2.</p>
