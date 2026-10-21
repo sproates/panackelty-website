@@ -21,6 +21,7 @@
 <li class="toc-level-2"><a href="#get-with-limits">get_with_limits</a></li>
 <li class="toc-level-2"><a href="#clientlimits">ClientLimits</a></li>
 <li class="toc-level-2"><a href="#response-and-header">Response and Header</a></li>
+<li class="toc-level-2"><a href="#shared-request-record">Shared Request record</a></li>
 <li class="toc-level-2"><a href="#supported-urls-and-http-behaviour">Supported URLs and HTTP behaviour</a></li>
 <li class="toc-level-2"><a href="#httperror">HttpError</a></li>
 <li class="toc-level-2"><a href="#try-a-complete-client">Try a complete client</a></li></ul></nav>
@@ -58,6 +59,15 @@ record Response {
   body: Bytes
 }</code></pre>
 <p><code>status</code> is the HTTP status code. <code>headers</code> keeps the received order and repeated fields, so don&#39;t assume that a header name occurs only once. <code>body</code> contains the response bytes after HTTP framing has been removed. Decode it as UTF-8 only when you know the response contains UTF-8 text. These records have no client-specific methods; read their fields directly.</p>
+<h2 id="shared-request-record">Shared Request record</h2>
+<p><code>http/types</code> also exports this plain data record:</p>
+<pre><code class="language-panack">record Request {
+  method: Str,
+  target: Str,
+  headers: [Header],
+  body: Bytes
+}</code></pre>
+<p><code>method</code> is the HTTP method, <code>target</code> is the request target, and <code>headers</code> and <code>body</code> hold the request data. The GET facade builds requests internally and doesn&#39;t accept this record as an argument. This is a different type from <code>http/server.Request</code>, which is the request passed to routed server handlers and has the accessors described in the Server Reference.</p>
 <h2 id="supported-urls-and-http-behaviour">Supported URLs and HTTP behaviour</h2>
 <p>Use lowercase <code>http://</code> or <code>https://</code>, followed by an ASCII DNS name or dotted IPv4 address. An optional port must be between 1 and 65535. The default ports are 80 and 443. An omitted path becomes <code>/</code>; a query string is allowed.</p>
 <p>URLs are limited to 8192 bytes. IPv6 addresses, credentials in the URL, fragments, spaces, control characters and other schemes aren&#39;t supported. Encode non-ASCII characters in paths and query strings before passing the URL.</p>

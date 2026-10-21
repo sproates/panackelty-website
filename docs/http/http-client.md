@@ -90,6 +90,25 @@ response bytes after HTTP framing has been removed. Decode it as UTF-8 only when
 you know the response contains UTF-8 text. These records have no client-specific
 methods; read their fields directly.
 
+## Shared Request record
+
+`http/types` also exports this plain data record:
+
+```panack
+record Request {
+  method: Str,
+  target: Str,
+  headers: [Header],
+  body: Bytes
+}
+```
+
+`method` is the HTTP method, `target` is the request target, and `headers` and
+`body` hold the request data. The GET facade builds requests internally and
+doesn't accept this record as an argument. This is a different type from
+`http/server.Request`, which is the request passed to routed server handlers
+and has the accessors described in the Server Reference.
+
 ## Supported URLs and HTTP behaviour
 
 Use lowercase `http://` or `https://`, followed by an ASCII DNS name or dotted

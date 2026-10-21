@@ -1,9 +1,25 @@
 # Deliberately bounded changelog Markdown: headings, paragraphs, bullets, inline code.
 function error(message) { print "release history: " message > "/dev/stderr"; failed=1; exit 1 }
+function plain(text) {
+    if(text ~ /\*|_[[:alnum:]]|\]\(/) error("unsupported inline Markdown")
+    return text
+}
+function prose(text, result,raw,separator,label,target) {
+    result=""
+    while(match(text, /\[[^][]+\]\([^()]+\)/)) {
+        result=result plain(substr(text,1,RSTART-1))
+        raw=substr(text,RSTART,RLENGTH); text=substr(text,RSTART+RLENGTH)
+        separator=index(raw,"]("); label=substr(raw,2,separator-2)
+        target=substr(raw,separator+2,length(raw)-separator-2)
+        if(target !~ /^docs\/[A-Za-z0-9_.\/-]+$/ || target ~ /\.\./) error("unsupported documentation link")
+        result=result "<a href=\"https://github.com/sproates/panackelty/blob/" source_commit "/" target "\">" plain(label) "</a>"
+    }
+    return result plain(text)
+}
 function inline(text, parts,n,i,result) {
     gsub(/\&/, "\\&amp;", text); gsub(/</, "\\&lt;", text); gsub(/>/, "\\&gt;", text)
     n=split(text,parts,"`"); if(n%2==0) error("unclosed inline code")
-    for(i=1;i<=n;i+=2) if(parts[i] ~ /\*|_[[:alnum:]]|\]\(/) error("unsupported inline Markdown")
+    for(i=1;i<=n;i+=2) parts[i]=prose(parts[i])
     result=parts[1]; for(i=2;i<=n;i++) result=result (i%2==0 ? "<code>" parts[i] "</code>" : parts[i])
     return result
 }
@@ -15,6 +31,7 @@ function close_list() { flush(); if(list) body=body "</ul>\n"; list=0 }
 function finish() {
     close_list()
     if(version=="") return
+    if(!entries && version=="Unreleased") return
     if(!entries) error("empty section " version)
     if(version=="Unreleased") {
         pending=pending "<details class=\"release-pending\"><summary>Unreleased · recorded source snapshot, not a download</summary><div class=\"release-body\"><p>Development notes recorded with this website snapshot. Unreleased compiler/runtime features are not in published downloads or the pinned playground; installation-tooling updates are identified separately.</p>" body "<p><a href=\"https://github.com/sproates/panackelty/blob/" source_commit "/CHANGELOG.md\">Recorded source notes</a></p></div></details>\n"
@@ -59,6 +76,7 @@ END {
     finish()
     if(!seen["Unreleased"] || !seen[published]) error("missing Unreleased or published version")
     print "<p class=\"release-availability\">Website-selected native preview: <a href=\"#v" published "\">" published "</a>. Browser playground: <a href=\"https://github.com/sproates/panackelty-browser/releases/tag/" browser "\">" browser "</a>, a separately pinned WebAssembly package with fewer host capabilities. Native release notes do not promise browser support.</p>"
+    print "<p><a href=\"https://github.com/sproates/panackelty/blob/" source_commit "/CHANGELOG.md\">Recorded source notes</a></p>"
     print pending
     print releases
 }
