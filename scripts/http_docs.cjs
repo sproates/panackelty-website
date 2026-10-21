@@ -35,7 +35,7 @@ function render(doc, sources) {
   })).join('');
   const toc = headings(source).map(h => `<li class="toc-level-${h.level}"><a href="#${h.id}">${escape(h.text)}</a></li>`).join('\n');
   const body = markdown(source, '../../');
-  const companion = documents.find(d => d.route === (doc.label === 'Playbook' ? 'reference/http-server' : 'playbook/http-server')); 
+  const companion = documents.find(d => d.route === (doc.label === 'Playbook' ? 'reference/http-server' : 'playbook/http-server'));
   return `<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
