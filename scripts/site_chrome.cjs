@@ -18,7 +18,7 @@ function render(home, html, page, release) {
   let header = relative(headers[0][0]), footer = relative(footers[0][0]);
   const closing = relative(home.match(/<section class="closing">[\s\S]*?<\/section>/)?.[0] || '');
   if (html.includes('<!-- SITE_CLOSING -->')) html = once(html, '<!-- SITE_CLOSING -->', closing);
-  const currentRoute = ['article', 'article-tag', 'article-page'].includes(page) ? 'articles' : page === 'previous-releases' ? 'roadmap' : page;
+  const currentRoute = ['article', 'article-tag', 'article-page'].includes(page) ? 'articles' : page === 'previous-releases' ? 'roadmap' : /^(reference|playbook)\//.test(page) ? 'api' : page;
   const current = `href="${page === 'home' ? root : root + currentRoute + '/'}"`;
   if (header.includes(current)) header = once(header, current, current + ' aria-current="page"');
   else if (footer.includes(current)) footer = once(footer, current, current + ' aria-current="page"');
