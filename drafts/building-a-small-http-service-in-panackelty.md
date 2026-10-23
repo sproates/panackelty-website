@@ -201,6 +201,65 @@ Readiness isn't guaranteed. Another process may already own the port, for exampl
 
 For this example, press Ctrl-C to stop the process. Applications that manage their own listener lifetime can use `await server.close()` or `await server.destroy()`, handling their results as well. `close` stops accepting new work and gives active handlers and response writes up to one second to finish; `destroy` cancels active work immediately.
 
+## Panackelty comes with a web server
+
+You don't have to write a service to start hosting a site. The release also includes `panack-http-server`: a working static file server, built in Panackelty using the same HTTP framework we've just used. It comes packaged alongside `panack`, ready to run.
+
+I think that's quite a milestone. We have a language, a compiler and runtime, an HTTP library, and now a useful tool built from those pieces that ships with the language. You can unpack the release and use it to serve a site without writing any server code.
+
+Let's try it. From the extracted release directory, create a folder called `demo-site`:
+
+```sh
+mkdir -p demo-site
+```
+
+Save this as `demo-site/index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Served by Panackelty</title>
+</head>
+<body>
+  <h1>Hello from Panackelty</h1>
+  <p>This page is being served by a program written in Panackelty.</p>
+</body>
+</html>
+```
+
+Now start the server:
+
+```sh
+./bin/panack-http-server --root ./demo-site --port 8084 --no-cache --noindex
+```
+
+Open `http://127.0.0.1:8084/` in your browser. There's your page, served by Panackelty. Edit the HTML, save it and refresh the browser to see the change. The server reads the updated file on the next request; you don't need to restart it. There isn't automatic browser reload, so the refresh is still yours to do.
+
+The tool serves HTML, stylesheets, images and other regular files with their content types, uses `index.html` for directory requests, and returns 404 for missing files. It keeps file requests inside the chosen root and doesn't expose directory listings. We get those behaviours from the bundled tool without implementing them in each project.
+
+### Try it on your phone
+
+Stop the server with Ctrl-C, then restart it with a network binding:
+
+```sh
+./bin/panack-http-server --root ./demo-site --host 0.0.0.0 --port 8084 --no-cache --noindex
+```
+
+On a phone connected to the same local network, open the computer's LAN address with port 8084, for example `http://192.168.1.10:8084/`. Replace that address with your computer's actual address. `0.0.0.0` tells the server which interfaces to listen on; it isn't the address to enter in the phone's browser. Your firewall and network need to allow the connection.
+
+The network binding makes the files available to other devices that can reach the computer. `--no-cache` asks browsers not to cache the responses, and `--noindex` asks search engines not to index them; neither is an access control. Press Ctrl-C when you've finished.
+
+### This is how I preview these articles
+
+When I'm drafting articles, I generate the HTML and serve it with `panack-http-server` for a live preview. I can read the result in a browser and check it on my phone before publishing it as static HTML. There's no need for a CMS in that workflow.
+
+The preview of this article is being served by that very tool. Panackelty is helping me write about Panackelty, using a server built with the API the article demonstrates. That's a particularly satisfying point to have reached.
+
+The static server is intended for small sites and previews within the framework's limits. Its complete response, including headers, must fit within 1 MiB; larger files return 503. It doesn't provide TLS, compression or range requests. The [static serving playbook](/playbook/http-server/#serve-a-directory) has more detail, including how to use static serving from your own application.
+
 ## What this says about Panackelty
 
 The service is small, but it depends on quite a lot of the language working together: imported packages, records, generic context types, checked function references, type-owned methods, sum types, interpolation and asynchronous execution.
