@@ -8,21 +8,19 @@ tags:
   - alpha.14
 ---
 
-Seeing a site hosted by a service built in Panackelty felt like a great achievement. There was something quite different about opening a page in a browser and knowing that a program written in this language was serving it. It made the progress feel tangible.
+Seeing a site running on a server written in Panackelty felt like a great achievement. Open a browser, load a page, and there it is. A program written in this language is actually serving the site. I'm really pleased with how far it's come.
 
-A useful way to see how far Panackelty has come is to build something with it. With alpha.14, we can write a small HTTP service with named routes, typed application settings, request headers and bodies, and explicit responses. The compiler checks how those pieces fit together, and the runtime keeps the service listening for requests.
+With alpha.14, there's enough here to build a small HTTP service and give it a proper try. We can register routes, share settings between handlers, read headers and bodies, and decide what to send back. So let's do that.
 
-In the [previous article](/articles/giving-panackelty-methods-a-proper-home/), I described the work to give methods a proper home. The HTTP API puts that work to use. Calls such as `server.get(...)`, `request.header(...)` and `response.send(...)` belong to their respective types, with signatures the compiler can check.
+If you read the [previous article](/articles/giving-panackelty-methods-a-proper-home/), this is where the method work starts to pay off. We can write `server.get(...)`, `request.header(...)` and `response.send(...)`, and the compiler knows which type each method belongs to and what arguments it expects.
 
-Let's use them to build a service we can actually talk to.
+## Let's build one
 
-## A service with something to show
+We'll keep it small: a greeting, a health endpoint and an echo route that sends back whatever we give it. If we ask for something that isn't there, we'll get a 404.
 
-Our service will greet a caller, report that it is running, and echo a request body. It will also return a useful 404 response when a request doesn't match a route.
+We'll also give the server a greeting and a name. Those go into an `AppContext` record, which the server passes to each handler. No global variable needed.
 
-The greeting and service name belong to the application. We'll pass them to the server as a typed context, so every handler receives the same configuration without looking it up in a global variable.
-
-Use the native [alpha.14 release](/get-started/) for your machine. Unpack it and open a terminal in the extracted `panackelty` directory, alongside `bin`, `packages` and `examples`. This example uses native networking; it won't run in the browser playground.
+Grab the native [alpha.14 release](/get-started/) for your machine, unpack it and open a terminal in the extracted `panackelty` directory. You should see `bin`, `packages` and `examples`. You'll need the native release for this one; the browser playground doesn't support networking.
 
 Check the compiler:
 
@@ -54,11 +52,11 @@ Save this as `demo-service/panack.json`:
 }
 ```
 
-The manifest points to our source and the HTTP package bundled with the release. The dependency path is relative to the manifest, so keep `demo-service` beside `packages` for these instructions.
+This tells Panackelty where our code lives and where to find the bundled HTTP package. Keep `demo-service` beside `packages`, because that `../packages/http` path is relative to the manifest.
 
 ## The complete program
 
-Save the following as `demo-service/src/main.panack`:
+Here's the whole thing. Save it as `demo-service/src/main.panack`, then we'll run it and look at what the handlers do:
 
 ```panack
 import http/server as http
@@ -122,11 +120,11 @@ Run it from the extracted release directory:
 ./bin/panack run --project demo-service/panack.json
 ```
 
-Once it prints the listening address, leave that terminal running and open another for the requests below. If port 8080 is already in use, change it in the program and the request URLs.
+Once you see the listening address, leave that terminal alone and open another to send some requests. If something else is using port 8080, pick another port and change it in both the program and the URLs below.
 
-## Talk to the service
+## Let's send it something
 
-Start with a request that has no caller header:
+First, just ask for the home page:
 
 ```sh
 curl http://127.0.0.1:8080/
@@ -148,17 +146,17 @@ curl -H 'X-Caller: Ada' http://127.0.0.1:8080/
 Hello from Panackelty, Ada!
 ```
 
-There are several language features working together in that short handler. `request.header` returns `Option[Str]` because a header may be absent. The `match` handles both possibilities and produces a string. Interpolation combines that string with our application greeting, and `response.send` builds a text response with the default content type `text/plain; charset=utf-8`.
+The handler asks for `X-Caller`, but it can't assume we sent one. That's why `request.header` gives us an `Option[Str]`: either `Some(value)` or `None()`. We match on that, use `"visitor"` if there's no header, and put the greeting together. `response.send` sends it as text, with `text/plain; charset=utf-8` as the default content type.
 
-The missing header is an ordinary case that we handle directly. We don't need a null check or an exception to supply a default.
+I like how straightforward that is. A missing header is something we expect and handle, so we just give it a default.
 
-Next, inspect the health response, including its headers:
+Now try the health endpoint. The `-i` lets us see the response headers too:
 
 ```sh
 curl -i http://127.0.0.1:8080/health
 ```
 
-You'll see status `200 OK`, an `X-Service: article-demo` header and the body `OK`. The header comes from our typed application context. This endpoint only confirms that the service can answer a request; it doesn't check a database or any other dependency.
+You'll get `200 OK`, the header `X-Service: article-demo`, and `OK` in the body. That service name came from our `AppContext`. It's a very simple health check: it tells us the server can answer, but it isn't checking a database or anything else behind it.
 
 Finally, send a body:
 
@@ -166,19 +164,19 @@ Finally, send a body:
 curl -i --data-binary 'A small service, written in Panackelty.' http://127.0.0.1:8080/echo
 ```
 
-The response has status 200 and returns the supplied bytes with content type `application/octet-stream`. `send_bytes` lets us preserve the body as bytes, without assuming that it contains text. The server also exposes `put` and `delete` route registration methods when those operations are needed.
+And back it comes, with status 200 and content type `application/octet-stream`. The echo handler uses `send_bytes`, so it doesn't need to know whether the body contains text. It just sends the bytes back. There are `put` and `delete` methods for registering those routes too.
 
-## The types describe the agreement
+## Why does a handler return `Ok(())`?
 
-Look at the handler's result type:
+You might have noticed that each handler sends a response and then returns `Ok(())`. Its return type is:
 
 ```panack
 Result[Unit,Str]
 ```
 
-The HTTP response and the handler result serve different purposes. `response.send(...)` sets the body that the caller will receive. `Ok(())` tells the framework that the handler completed successfully. The `Unit` value means there isn't another application value to return on that successful path.
+We've already set the response body with `response.send(...)`. The `Ok(())` tells the framework that the handler finished successfully. There's no extra value to hand back, which is what `Unit`, written `()`, is doing here.
 
-That distinction lets our fallback deliberately send a 404 and still return `Ok(())`: it successfully handled a request for a route that doesn't exist.
+So a 404 response can still end in `Ok(())`. The handler did its job: someone asked for a route that doesn't exist, and we told them. Try it:
 
 ```sh
 curl -i http://127.0.0.1:8080/missing
@@ -190,23 +188,23 @@ The response has status 404 and the body:
 No route for /missing
 ```
 
-The context is checked too. Passing `AppContext` to `create_bound_contextual_server` establishes the context type for this server. Its route methods expect asynchronous handlers taking that context, a request and a response writer. A handler with an incompatible signature is a compiler error.
+The compiler checks the handlers too. We gave `create_bound_contextual_server` an `AppContext`, so it expects each handler to take that context, a request and a response writer. Give it a function with the wrong signature and the compiler will complain.
 
-For a service that doesn't need shared settings, `create_bound_server` provides the simpler form whose handlers take just the request and response writer. The API gives us a choice without making every application invent its own configuration plumbing.
+Don't need shared settings? Use `create_bound_server` instead. Its handlers just take the request and response writer.
 
-## Starting is an operation that can fail
+## Getting it running, and stopping it again
 
-`await server.listen()` returns when the listener is ready. The registered listener keeps the process alive after `main` finishes, so we don't need to write a loop to keep accepting requests.
+Once `await server.listen()` succeeds, we're ready to take requests. The listener keeps the process running even after `main` has finished. We don't have to write a loop just to keep it alive.
 
-Readiness isn't guaranteed. Another process may already own the port, for example. Our `match` handles the startup result, prints the supplied error message and exits with status 1 if the listener can't start. It only prints the listening message on success.
+Of course, starting a server can fail. Something else might already be using the port. That's why we match on the result: print the listening address if it worked, or print the error and exit with status 1 if it didn't.
 
-For this example, press Ctrl-C to stop the process. Applications that manage their own listener lifetime can use `await server.close()` or `await server.destroy()`, handling their results as well. `close` stops accepting new work and gives active handlers and response writes up to one second to finish; `destroy` cancels active work immediately.
+For now, Ctrl-C is enough to stop our example. If your program needs to stop the server itself, there's `await server.close()`, which stops taking new work and gives active handlers and response writes up to a second to finish. Or use `await server.destroy()` to cancel active work straight away. Both return a result that you'll need to handle.
 
 ## Panackelty comes with a web server
 
-You don't have to write a service to start hosting a site. The release also includes `panack-http-server`: a working static file server, built in Panackelty using the same HTTP framework we've just used. It comes packaged alongside `panack`, ready to run.
+And here's a bit I'm particularly pleased with: you don't even have to write the server yourself. `panack-http-server` comes in the release, right alongside `panack`. It's a working static file server, written in Panackelty using the HTTP framework we've just tried.
 
-I think that's quite a milestone. We have a language, a compiler and runtime, an HTTP library, and now a useful tool built from those pieces that ships with the language. You can unpack the release and use it to serve a site without writing any server code.
+It ships with the language, and you can use it straight away. Unpack Panackelty, point the tool at a folder, and you've got a site you can open in a browser. I think that's pretty cool.
 
 Let's try it. From the extracted release directory, create a folder called `demo-site`:
 
@@ -237,38 +235,36 @@ Now start the server:
 ./bin/panack-http-server --root ./demo-site --port 8084 --no-cache --noindex
 ```
 
-Open `http://127.0.0.1:8084/` in your browser. There's your page, served by Panackelty. Edit the HTML, save it and refresh the browser to see the change. The server reads the updated file on the next request; you don't need to restart it. There isn't automatic browser reload, so the refresh is still yours to do.
+Open `http://127.0.0.1:8084/` in your browser. That's it. Your page, served by Panackelty. Change a bit of the HTML, save it and refresh the page. The server reads the file again on the next request, so there's no need to restart it. You do still have to refresh the browser yourself.
 
-The tool serves HTML, stylesheets, images and other regular files with their content types, uses `index.html` for directory requests, and returns 404 for missing files. It keeps file requests inside the chosen root and doesn't expose directory listings. We get those behaviours from the bundled tool without implementing them in each project.
+You can add stylesheets, images and other files to the folder too. The server supplies their content types, looks for `index.html` when you ask for a directory, and returns 404 for files that aren't there. It keeps requests inside the folder you chose and doesn't list the directory contents.
 
 ### Try it on your phone
 
-Stop the server with Ctrl-C, then restart it with a network binding:
+Want to see it on your phone? Stop the server with Ctrl-C and run it again with `--host 0.0.0.0`:
 
 ```sh
 ./bin/panack-http-server --root ./demo-site --host 0.0.0.0 --port 8084 --no-cache --noindex
 ```
 
-On a phone connected to the same local network, open the computer's LAN address with port 8084, for example `http://192.168.1.10:8084/`. Replace that address with your computer's actual address. `0.0.0.0` tells the server which interfaces to listen on; it isn't the address to enter in the phone's browser. Your firewall and network need to allow the connection.
+Connect your phone to the same network and open your computer's LAN address on port 8084, something like `http://192.168.1.10:8084/`. Use your own computer's address there. Don't put `0.0.0.0` in the browser; that tells the server where to listen. The connection also needs to be allowed through your firewall and network.
 
-The network binding makes the files available to other devices that can reach the computer. `--no-cache` asks browsers not to cache the responses, and `--noindex` asks search engines not to index them; neither is an access control. Press Ctrl-C when you've finished.
+Other devices that can reach the computer can now read those files. The `--no-cache` and `--noindex` options ask browsers not to cache responses and search engines not to index the site. They don't make it private. Ctrl-C stops the server when you're done.
 
-### This is how I preview these articles
+### I'm using it for these articles
 
-When I'm drafting articles, I generate the HTML and serve it with `panack-http-server` for a live preview. I can read the result in a browser and check it on my phone before publishing it as static HTML. There's no need for a CMS in that workflow.
+This is how I preview articles while I'm writing them. Generate the HTML, serve it with `panack-http-server`, then have a look in the browser and on my phone. Once I'm happy with it, I publish the static HTML. No CMS needed.
 
-While I was writing this article, I used that very tool to serve previews of it. Panackelty is helping me write about Panackelty, using a server built with the API the article demonstrates. That's a particularly satisfying point to have reached.
+While I was writing this article, I used that very tool to serve previews of it. So the HTTP API we're looking at here was also helping me put the article together. That's quite satisfying.
 
-The static server is intended for small sites and previews within the framework's limits. Its complete response, including headers, must fit within 1 MiB; larger files return 503. It doesn't provide TLS, compression or range requests. The [static serving playbook](/playbook/http-server/#serve-a-directory) has more detail, including how to use static serving from your own application.
+There are limits to bear in mind. The static server's whole response, headers included, has to fit in 1 MiB; larger files get a 503. There's no TLS, compression or range support yet. It's useful for small sites and previews, and the [static serving playbook](/playbook/http-server/#serve-a-directory) goes into more detail if you'd like to use it in your own app.
 
-## What this says about Panackelty
+## There's more to do, but this works
 
-The service is small, but it depends on quite a lot of the language working together: imported packages, records, generic context types, checked function references, type-owned methods, sum types, interpolation and asynchronous execution.
+A lot of the recent language work comes together in this little service. Records give us our settings, the method system gives the API its shape, and the compiler checks that the handlers fit. Then the runtime keeps it all running while requests come in. We can spend our time writing what the service does.
 
-We can now use those features through a library API to build a program that keeps running and responds to other programs. The compiler checks the handler contracts, the HTTP package supplies routing and response handling, and the runtime owns the listener's execution. Application code can concentrate on what each request should do.
+It is still alpha software. The server currently allows 16 open connections and four active requests. Request and response headers are limited to 16 KiB each, and each body to 1 MiB, held in memory in full. A connection gets ten seconds from acceptance to finishing its response, then closes. TLS, streaming, WebSocket, middleware and HTTP/2 aren't there yet.
 
-There are still clear limits. Alpha.14 allows up to 16 open connections and four active requests, with 16 KiB limits for request and response headers and 1 MiB limits for each body. Bodies are held in memory in full. Each connection has ten seconds from acceptance to completing its response, and closes after that response. The server doesn't yet provide TLS, streaming, WebSocket, middleware or HTTP/2.
+The service we wrote binds to `127.0.0.1`, so you can only reach it from the same machine. It's a good place to experiment and get a feel for the API.
 
-Our example binds to `127.0.0.1`, so it is reachable only from the same machine. Those limits make this a useful service to experiment with locally, rather than a claim that every web application can move to Panackelty today.
-
-The [HTTP Server Reference](/reference/http-server/) describes the API and its limits, and the [HTTP server playbook](/playbook/http-server/) includes more examples, including static file serving and listener lifecycle management. A useful next step with this program is to add a route of your own. The manifest, context, routing and error handling are already in place.
+If you want to take it further, the [HTTP Server Reference](/reference/http-server/) covers the API and its limits, and the [playbook](/playbook/http-server/) has more examples. Or just add another route and try it. You've got a working server to build on.
