@@ -66,3 +66,33 @@ test('build publishes stable article, topic and paginated archive URLs, while ke
     assert.throws(() => parseArticle(path.join(content, 'mismatched-published-at.md')), /publishedAt must be a valid ISO 8601 timestamp/);
   } finally { fs.rmSync(root, {recursive:true, force:true}); }
 });
+
+test('homepage follows published ordering, escapes summaries and never promotes drafts', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'panackelty-latest-'));
+  try {
+    const content = path.join(root, 'content/articles'), drafts = path.join(root, 'drafts'), output = path.join(root, 'output');
+    fs.mkdirSync(content, {recursive:true}); fs.mkdirSync(drafts); fs.mkdirSync(output);
+    const home = '<main><!-- LATEST_ARTICLE_START --><!-- LATEST_ARTICLE_END --></main>';
+    fs.writeFileSync(path.join(output, 'index.html'), home);
+    fs.writeFileSync(path.join(output, 'sitemap.xml'), '<urlset></urlset>');
+    fs.writeFileSync(path.join(drafts, 'future.md'), article('Future draft', 'draft', '2030-01-01'));
+    build(root, output, true);
+    assert.equal(fs.readFileSync(path.join(output, 'index.html'), 'utf8'), home);
+    fs.writeFileSync(path.join(content, 'morning.md'), article('Morning', 'published', '2026-01-10', ['HTTP'], '2026-01-10T09:00:00+02:00'));
+    fs.writeFileSync(path.join(content, 'evening.md'), article('Evening & <news>', 'published', '2026-01-10', ['HTTP'], '2026-01-10T18:00:00+02:00').replace('status:', 'summary: A useful <tool> & a site.\nstatus:'));
+    build(root, output, true);
+    let html = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
+    assert.match(html, /href="articles\/evening\/"/);
+    assert.match(html, /Evening &amp; &lt;news&gt;/);
+    assert.match(html, /A useful &lt;tool&gt; &amp; a site\./);
+    assert.match(html, /<time datetime="2026-01-10">10 January 2026<\/time>/);
+    assert.doesNotMatch(html, /Future draft|Morning/);
+    fs.writeFileSync(path.join(content, 'tomorrow.md'), article('Tomorrow', 'published', '2026-01-11'));
+    build(root, output, false);
+    html = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
+    assert.match(html, /href="articles\/tomorrow\/"/);
+    assert.match(html, /An article about Tomorrow\./);
+    assert.equal((html.match(/class="home-latest-article"/g) || []).length, 1);
+    assert.doesNotMatch(html, /Evening|Future draft/);
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});

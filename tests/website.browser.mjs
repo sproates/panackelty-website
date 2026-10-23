@@ -74,3 +74,18 @@ test('manual installation is an optional alternative and explanations are discov
   await expect(page.locator('#explain-proof-output')).toContainText('subtraction: proved');
   await expect(page.locator('#explain-effect-output')).toContainText('effect boundary: rejected');
 });
+
+test('homepage latest article opens the matching published page', async ({page}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({width, height:844});
+    await page.goto('/');
+    const strip = page.locator('.home-latest-article');
+    await expect(strip).toContainText('Latest article');
+    const title = await strip.locator('h2 a').innerText();
+    const date = await strip.locator('time').getAttribute('datetime');
+    await strip.locator('h2 a').click();
+    await expect(page.locator('h1')).toHaveText(title.replace(/\s*→$/, '').trim());
+    await expect(page.locator('.article-byline time')).toHaveAttribute('datetime', new RegExp('^' + date));
+    await expect(page.locator('.preview-notice')).toHaveCount(0);
+  }
+});
