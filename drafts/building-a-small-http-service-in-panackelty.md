@@ -174,7 +174,7 @@ You might have noticed that each handler sends a response and then returns `Ok((
 Result[Unit,Str]
 ```
 
-We've already set the response body with `response.send(...)`. The `Ok(())` tells the framework that the handler finished successfully. There's no extra value to hand back, which is what `Unit`, written `()`, is doing here.
+We've already set the response body with `response.send(...)`. The `Ok(())` tells the framework that the handler finished successfully. There's no extra value to hand back, so we return the `Unit` value, `()`. I've written a bit more about this in [What is Unit in Panackelty?](/articles/what-is-unit-in-panackelty/).
 
 So a 404 response can still end in `Ok(())`. The handler did its job: someone asked for a route that doesn't exist, and we told them. Try it:
 
