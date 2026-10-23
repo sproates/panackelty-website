@@ -7,7 +7,7 @@ tags:
   - alpha.14
 ---
 
-Seeing a site hosted by a service built in Panackelty felt like a great achievement. There was something quite different about opening a page in a browser and knowing that a programme written in this language was serving it. It made the progress feel tangible.
+Seeing a site hosted by a service built in Panackelty felt like a great achievement. There was something quite different about opening a page in a browser and knowing that a program written in this language was serving it. It made the progress feel tangible.
 
 A useful way to see how far Panackelty has come is to build something with it. With alpha.14, we can write a small HTTP service with named routes, typed application settings, request headers and bodies, and explicit responses. The compiler checks how those pieces fit together, and the runtime keeps the service listening for requests.
 
@@ -55,7 +55,7 @@ Save this as `demo-service/panack.json`:
 
 The manifest points to our source and the HTTP package bundled with the release. The dependency path is relative to the manifest, so keep `demo-service` beside `packages` for these instructions.
 
-## The complete programme
+## The complete program
 
 Save the following as `demo-service/src/main.panack`:
 
@@ -121,7 +121,7 @@ Run it from the extracted release directory:
 ./bin/panack run --project demo-service/panack.json
 ```
 
-Once it prints the listening address, leave that terminal running and open another for the requests below. If port 8080 is already in use, change it in the programme and the request URLs.
+Once it prints the listening address, leave that terminal running and open another for the requests below. If port 8080 is already in use, change it in the program and the request URLs.
 
 ## Talk to the service
 
@@ -205,10 +205,10 @@ For this example, press Ctrl-C to stop the process. Applications that manage the
 
 The service is small, but it depends on quite a lot of the language working together: imported packages, records, generic context types, checked function references, type-owned methods, sum types, interpolation and asynchronous execution.
 
-We can now use those features through a library API to build a programme that keeps running and responds to other programmes. The compiler checks the handler contracts, the HTTP package supplies routing and response handling, and the runtime owns the listener's execution. Application code can concentrate on what each request should do.
+We can now use those features through a library API to build a program that keeps running and responds to other programs. The compiler checks the handler contracts, the HTTP package supplies routing and response handling, and the runtime owns the listener's execution. Application code can concentrate on what each request should do.
 
 There are still clear limits. Alpha.14 allows up to 16 open connections and four active requests, with 16 KiB limits for request and response headers and 1 MiB limits for each body. Bodies are held in memory in full. Each connection has ten seconds from acceptance to completing its response, and closes after that response. The server doesn't yet provide TLS, streaming, WebSocket, middleware or HTTP/2.
 
 Our example binds to `127.0.0.1`, so it is reachable only from the same machine. Those limits make this a useful service to experiment with locally, rather than a claim that every web application can move to Panackelty today.
 
-The [HTTP Server Reference](/reference/http-server/) describes the API and its limits, and the [HTTP server playbook](/playbook/http-server/) includes more examples, including static file serving and listener lifecycle management. A useful next step with this programme is to add a route of your own. The manifest, context, routing and error handling are already in place.
+The [HTTP Server Reference](/reference/http-server/) describes the API and its limits, and the [HTTP server playbook](/playbook/http-server/) includes more examples, including static file serving and listener lifecycle management. A useful next step with this program is to add a route of your own. The manifest, context, routing and error handling are already in place.
