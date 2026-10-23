@@ -28,7 +28,13 @@ for page in index.html capabilities/index.html get-started/index.html examples/i
 done
 grep -q 'id="v0.1.0-alpha.10"' "$work/pages/releases/index.html"
 node scripts/site_chrome.cjs site/index.html site/index.html home > "$work/home"
-cmp "$work/home" "$work/pages/index.html"
+node - "$work/pages/index.html" "$work/generated-home-shell" <<'NODE'
+const fs = require('fs');
+const source = fs.readFileSync(process.argv[2], 'utf8');
+if (!source.includes('class="home-latest-article"')) throw new Error('Homepage article strip missing');
+fs.writeFileSync(process.argv[3], source.replace(/<!-- LATEST_ARTICLE_START -->[\s\S]*?<!-- LATEST_ARTICLE_END -->/, '<!-- LATEST_ARTICLE_START --><!-- LATEST_ARTICLE_END -->'));
+NODE
+cmp "$work/home" "$work/generated-home-shell"
 for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html; do
     test "$(grep -c 'aria-current="page"' "$work/pages/$page")" = 1
     grep -q 'Releases &amp; roadmap' "$work/pages/$page"

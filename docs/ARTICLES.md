@@ -46,3 +46,9 @@ Article Markdown supports local SVG illustrations. Store them under
 ```md
 ![Diagram showing how the browser runs a program](/images/playground-run-flow.svg)
 ```
+
+The homepage automatically highlights the newest published article, using the same
+publication order as the archive. Drafts are excluded, even in preview builds.
+Add an optional single-line `summary:` to the article metadata for the homepage
+blurb; otherwise the build uses a short excerpt. With no published articles,
+the homepage omits the strip.

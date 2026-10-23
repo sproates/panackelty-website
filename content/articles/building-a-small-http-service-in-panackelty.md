@@ -1,5 +1,6 @@
 ---
 title: Building a small HTTP service in Panackelty
+summary: Build a service, try the bundled web server, and see how I use it to preview these articles.
 status: published
 date: 2026-10-23
 tags:

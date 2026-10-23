@@ -51,7 +51,7 @@ function parseArticle(file) {
   const header = raw.slice(4, end), body = raw.slice(end + 5);
   const values = {};
   for (const line of header.split('\n')) {
-    const match = line.match(/^(title|date|publishedAt|status|previewOrder):\s*(.*)$/);
+    const match = line.match(/^(title|summary|date|publishedAt|status|previewOrder):\s*(.*)$/);
     if (match) values[match[1]] = match[2].trim().replace(/^['"]|['"]$/g, '');
     else if (/^tags:\s*$/.test(line)) values.tags = [];
     else if (/^\s+-\s+/.test(line) && Array.isArray(values.tags)) values.tags.push(line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, ''));
@@ -146,6 +146,16 @@ function renderTag(tag, articles, previewDrafts = []) {
   const html = `${metadataHead(`Articles tagged ${tag}`, `Panackelty articles about ${tag}.`, route, '../../../')}<main id="main" class="article-layout"><p class="eyebrow"><a href="../../">Articles</a> · Topic</p><h1 class="topic-title">${escape(tag)}</h1>${draftNotice}<section class="article-list">${cards || '<p>No articles have been published under this topic yet.</p>'}</section><p><a href="../../">← All articles</a></p></main><!-- SITE_FOOTER --><script src="../../../site.js" defer></script></body></html>`;
   return renderChrome(fs.readFileSync(path.join(__dirname, '../site/index.html'), 'utf8'), html, 'article-tag');
 }
+function updateHome(destination, published) {
+  const file = path.join(destination, 'index.html');
+  if (!fs.existsSync(file)) return;
+  const source = fs.readFileSync(file, 'utf8');
+  const marker = /<!-- LATEST_ARTICLE_START -->[\s\S]*?<!-- LATEST_ARTICLE_END -->/;
+  if (!marker.test(source)) throw new Error('Homepage is missing the latest article slot');
+  const article = published[0];
+  const html = article ? `<aside class="home-latest-article" aria-labelledby="latest-article-title"><p class="latest-article-meta">Latest article <span aria-hidden="true">·</span> <time datetime="${escape(article.date)}">${dateLabel(article.date)}</time></p><h2 id="latest-article-title"><a href="articles/${escape(article.slug)}/">${escape(article.title)} <span aria-hidden="true">→</span></a></h2><p class="latest-article-summary">${escape(article.summary || excerpt(article.body))}</p></aside>` : '';
+  fs.writeFileSync(file, source.replace(marker, () => `<!-- LATEST_ARTICLE_START -->${html}<!-- LATEST_ARTICLE_END -->`));
+}
 function write(destination, relative, content) { const file = path.join(destination, relative); fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, content); }
 function build(repository, destination, includeDrafts = false) {
   const source = path.join(repository, 'content/articles');
@@ -160,6 +170,7 @@ function build(repository, destination, includeDrafts = false) {
     if (slugs.has(article.slug)) throw new Error(`Duplicate article slug: ${article.slug}`);
     slugs.add(article.slug);
   }
+  updateHome(destination, published);
   const pageCount = Math.ceil((published.length + previews.length) / PAGE_SIZE) || 1;
   const publishedPageCount = Math.ceil(published.length / PAGE_SIZE);
   for (let page = 1; page <= pageCount; page++) {
