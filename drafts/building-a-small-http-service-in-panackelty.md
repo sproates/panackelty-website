@@ -257,7 +257,7 @@ The network binding makes the files available to other devices that can reach th
 
 When I'm drafting articles, I generate the HTML and serve it with `panack-http-server` for a live preview. I can read the result in a browser and check it on my phone before publishing it as static HTML. There's no need for a CMS in that workflow.
 
-The preview of this article is being served by that very tool. Panackelty is helping me write about Panackelty, using a server built with the API the article demonstrates. That's a particularly satisfying point to have reached.
+While I was writing this article, I used that very tool to serve previews of it. Panackelty is helping me write about Panackelty, using a server built with the API the article demonstrates. That's a particularly satisfying point to have reached.
 
 The static server is intended for small sites and previews within the framework's limits. Its complete response, including headers, must fit within 1 MiB; larger files return 503. It doesn't provide TLS, compression or range requests. The [static serving playbook](/playbook/http-server/#serve-a-directory) has more detail, including how to use static serving from your own application.
 
