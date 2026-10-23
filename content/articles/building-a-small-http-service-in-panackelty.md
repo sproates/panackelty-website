@@ -1,6 +1,7 @@
 ---
 title: Building a small HTTP service in Panackelty
-status: draft
+status: published
+date: 2026-10-23
 tags:
   - HTTP
   - tooling
