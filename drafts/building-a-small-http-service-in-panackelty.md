@@ -3,7 +3,8 @@ title: Building a small HTTP service in Panackelty
 status: draft
 tags:
   - HTTP
-  - practical examples
+  - tooling
+  - types
   - alpha.14
 ---
 
