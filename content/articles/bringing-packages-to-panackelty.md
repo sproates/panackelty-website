@@ -1,6 +1,8 @@
 ---
 title: Bringing packages to Panackelty
-status: draft
+status: published
+date: 2026-10-24
+publishedAt: 2026-10-24T21:10:00+02:00
 summary: How package management is taking shape, the choices I've made, and a few things that needed another go.
 tags:
   - packages
