@@ -24,7 +24,7 @@ Dependencies stay in `panack.json`, so you can edit them directly. A local direc
 
 That matters when you're working on an app and a library together. Change the library's source and the app sees the change. The lock records the package identity and manifest, but deliberately doesn't freeze every source file in a live directory. Archives and Git snapshots are different: those are meant to represent particular content.
 
-## Checking a program shouldn't go shopping
+## Making sure we don’t go fishing around for dependencies on the quiet
 
 One decision we've made quite firmly is that checking or compiling a project won't quietly fetch dependencies.
 
