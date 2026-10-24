@@ -56,7 +56,7 @@ I've tested that separation by changing package-tool behaviour and checking that
 
 There are native libraries underneath. I've used zlib for gzip, the existing libcurl transport for HTTPS, and OpenSSL for SHA-256. Panackelty decides what a valid package is and what to do with it; these libraries provide the lower-level operations.
 
-## I did have to start part of it again
+## Redoing a bad approach
 
 The first archive implementation had defects in nested-directory extraction and the ordering used to calculate a source-tree digest. I reverted it to the accepted design baseline and reconsidered the implementation before continuing.
 
