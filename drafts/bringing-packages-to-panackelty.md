@@ -34,7 +34,7 @@ So there are three separate commands:
 - `panack deps update` changes those choices deliberately, either for selected dependencies or for the whole graph.
 - `panack deps restore` prepares the sources recorded in the lock. It doesn't choose newer versions or rewrite the lockfile.
 
-They take `--project panack.json` to select the project. These are commands for the upcoming release, rather than something to try with the alpha.14 download.
+They take `--project panack.json` to select the project.
 
 The lockfile is `panack.lock.json`. It records the whole dependency graph, including dependencies of dependencies. Archives are pinned by a hash of their exact compressed bytes, and a Git branch or tag will be resolved to a full commit ID when you lock or update it. Someone moving a tag afterwards shouldn't change what you get when you restore.
 
