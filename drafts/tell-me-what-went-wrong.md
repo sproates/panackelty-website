@@ -48,6 +48,30 @@ Then it gives you the command to restore them. You don't have to go looking up w
 
 It also explains that restoring those files won't change the lockfile, and that downloading remote packages needs an internet connection.
 
+## Explain it in words
+
+Editing `panack.json` by hand means it's quite easy to make a syntax mistake. This test gives it the deliberately broken input `{broken`:
+
+```text
+panack: error[PKG_MANIFEST_INVALID]: Cannot understand panack.json because it contains invalid JSON.
+
+  Project: <workspace>/my-app/panack.json
+  File: <workspace>/my-app/panack.json
+  Location: line 1, column 2
+
+JSON property names must be enclosed in double quotes. Panack expected an opening double quote at this location.
+
+Correct the reported JSON problem, then retry your command.
+```
+
+This is one I particularly like. It doesn't leave you trying to decipher a parser error.
+
+It names the file, gives you the line and column, and explains the rule you've broken: JSON property names need double quotes. Then it tells you what it expected at that location.
+
+You can go straight to the problem and understand what needs changing. You don't need to know how the parser works.
+
+That doesn't mean adding quotes would make this whole test input valid. It's deliberately incomplete. The message explains the problem found at this point, rather than pretending one edit will fix everything.
+
 ## Tell me whose problem it is
 
 Sometimes the missing package isn't one you've added directly. Your app depends on a package, and that package depends on something else.
