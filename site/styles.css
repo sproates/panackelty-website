@@ -371,3 +371,9 @@ footer { color: var(--muted); }
 .home-latest-article h2 a:hover { text-decoration: underline; text-underline-offset: .2em; }
 .home-latest-article h2 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .home-latest-article .latest-article-summary { margin: .4rem 0 0; max-width: 70ch; color: var(--muted); font-size: .9rem; }
+
+/* Diagnostic prose should remain readable without sideways scrolling. */
+.article-layout pre code.language-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

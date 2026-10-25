@@ -21,29 +21,34 @@ The examples below come from tests of the upcoming alpha.15 package work. They'r
 
 ## Show me the actual problem
 
-Here's an archive that ends before its contents and end marker are complete:
+You try to run your program, but one of its dependencies isn't on your machine. Here's what Panackelty tells you:
 
 ```text
-panack: error[PKG_ARCHIVE_INCOMPLETE]: Cannot unpack the archive because the archive ended before its contents and end marker were complete.
+panack: error[PKG_CACHE_MISSING]: Cannot build this project because dependency 'lib' (package 'demo.library') is missing locally.
 
-  Project: <workspace>/app/panack.json
-  Source archive: <workspace>/source.tar.gz
-  Dependency name: lib
+  Project: <workspace>/Ian's app/panack.json
+  Lockfile: <workspace>/Ian's app/panack.lock.json
+  Source archive: <workspace>/library.tar.gz
+  Missing directory: <workspace>/Ian's app/.panack_modules/demo.library
 
-Panack has stopped extraction.
+The lockfile records this dependency, but Panack cannot find its local files.
 
-Obtain a valid copy of the archive and retry your command. If a fresh copy produces the same error, ask the package maintainer to recreate the archive. A replacement must still match the checksums in an existing lockfile.
+Restore the packages identified by the lockfile by running:
+
+  panack deps restore --project '<workspace>/Ian'"'"'s app/panack.json'
+
+Running this command will restore the local packages without changing the lockfile.
+
+An internet connection is needed if remote packages must be downloaded.
 ```
 
-That gives me something to work with. It says which archive, which dependency and which project are involved, then explains that extraction has stopped.
+That's useful straight away. It names the missing dependency and shows where its files should be.
 
-It also tells me what to try next. Get a valid copy. If that still fails, the maintainer may need to recreate it.
+Then it gives you the command to restore them. You don't have to go looking up which command you need or work out which project it should apply to.
 
-The last sentence matters too: a replacement still has to match the existing lockfile. I don't want an error message casually encouraging someone to accept different package contents just to make the error go away.
+It also explains that restoring those files won't change the lockfile, and that downloading remote packages needs an internet connection.
 
-These details have to survive the trip through the code. If the archive reader knows the input was incomplete, that shouldn't become a vague cache error by the time the command reports it.
-
-So part of this work was preserving the cause through the layers, not just rewriting the sentence at the end.
+The quoting looks a bit awkward because the test project is called `Ian's app`. I'll come back to that.
 
 ## Tell me whose problem it is
 
@@ -100,6 +105,32 @@ Then it explains what the command changes and what it doesn't. The local copy ge
 That distinction is worth the extra lines. Restoring the content you've already selected and updating the project to accept different content are separate decisions. The error message needs to respect that.
 
 And yes, the quoting in that command is a bit ugly. The test project is called `Ian's app`, deliberately. A suggested shell command needs to work with spaces and an apostrophe in the path too.
+
+## Keep the useful detail
+
+Here's an archive that ends before its contents and end marker are complete:
+
+```text
+panack: error[PKG_ARCHIVE_INCOMPLETE]: Cannot unpack the archive because the archive ended before its contents and end marker were complete.
+
+  Project: <workspace>/app/panack.json
+  Source archive: <workspace>/source.tar.gz
+  Dependency name: lib
+
+Panack has stopped extraction.
+
+Obtain a valid copy of the archive and retry your command. If a fresh copy produces the same error, ask the package maintainer to recreate the archive. A replacement must still match the checksums in an existing lockfile.
+```
+
+That gives me something to work with. It says which archive, which dependency and which project are involved, then explains that extraction has stopped.
+
+It also tells me what to try next. Get a valid copy. If that still fails, the maintainer may need to recreate it.
+
+The last sentence matters too: a replacement still has to match the existing lockfile. I don't want an error message casually encouraging someone to accept different package contents just to make the error go away.
+
+These details have to survive the trip through the code. If the archive reader knows the input was incomplete, that shouldn't become a vague cache error by the time the command reports it.
+
+So part of this work was preserving the cause through the layers, not just rewriting the sentence at the end.
 
 ## Don't make up a reason
 
