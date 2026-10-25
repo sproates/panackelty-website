@@ -1,6 +1,8 @@
 ---
 title: Tell me what went wrong
-status: draft
+status: published
+date: 2026-10-25
+publishedAt: 2026-10-25T18:51:20+01:00
 summary: The work behind Panackelty's package errors, and why telling you how to recover matters as much as rejecting the problem.
 tags:
   - packages
