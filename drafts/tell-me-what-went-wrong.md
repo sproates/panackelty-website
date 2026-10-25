@@ -128,32 +128,6 @@ Then it explains what the command changes and what it doesn't. The local copy ge
 
 That distinction is worth the extra lines. Restoring the content you've already selected and updating the project to accept different content are separate decisions. The error message needs to respect that.
 
-## Keep the useful detail
-
-Here's an archive that ends before its contents and end marker are complete:
-
-```text
-panack: error[PKG_ARCHIVE_INCOMPLETE]: Cannot unpack the archive because the archive ended before its contents and end marker were complete.
-
-  Project: <workspace>/my-app/panack.json
-  Source archive: <workspace>/source.tar.gz
-  Dependency name: lib
-
-Panack has stopped extraction.
-
-Obtain a valid copy of the archive and retry your command. If a fresh copy produces the same error, ask the package maintainer to recreate the archive. A replacement must still match the checksums in an existing lockfile.
-```
-
-That gives me something to work with. It says which archive, which dependency and which project are involved, then explains that extraction has stopped.
-
-It also tells me what to try next. Get a valid copy. If that still fails, the maintainer may need to recreate it.
-
-The last sentence matters too: a replacement still has to match the existing lockfile. I don't want an error message casually encouraging someone to accept different package contents just to make the error go away.
-
-These details have to survive the trip through the code. If the archive reader knows the input was incomplete, that shouldn't become a vague cache error by the time the command reports it.
-
-So part of this work was preserving the cause through the layers, not just rewriting the sentence at the end.
-
 ## Don't make up a reason
 
 There's another side to useful errors: knowing when there isn't enough information to explain the cause.
