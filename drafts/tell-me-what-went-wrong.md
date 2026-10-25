@@ -17,7 +17,7 @@ I wasn't happy with where the messages had got to. Some explanations were too ge
 
 I wanted better than that.
 
-The examples below come from tests of the upcoming alpha.15 package work. They're real output, with temporary directories, test-server ports and generated commits replaced by placeholders. This work isn't in the released alpha.14, and there are still diagnostics to finish.
+The examples below come from tests of the upcoming alpha.15 package work. They're real output, with project paths simplified to `my-app`, and temporary directories, test-server ports and generated commits replaced by placeholders. This work isn't in the released alpha.14, and there are still diagnostics to finish.
 
 ## Show me the actual problem
 
@@ -26,16 +26,16 @@ You try to run your program, but one of its dependencies isn't on your machine. 
 ```text
 panack: error[PKG_CACHE_MISSING]: Cannot build this project because dependency 'lib' (package 'demo.library') is missing locally.
 
-  Project: <workspace>/Ian's app/panack.json
-  Lockfile: <workspace>/Ian's app/panack.lock.json
+  Project: <workspace>/my-app/panack.json
+  Lockfile: <workspace>/my-app/panack.lock.json
   Source archive: <workspace>/library.tar.gz
-  Missing directory: <workspace>/Ian's app/.panack_modules/demo.library
+  Missing directory: <workspace>/my-app/.panack_modules/demo.library
 
 The lockfile records this dependency, but Panack cannot find its local files.
 
 Restore the packages identified by the lockfile by running:
 
-  panack deps restore --project '<workspace>/Ian'"'"'s app/panack.json'
+  panack deps restore --project '<workspace>/my-app/panack.json'
 
 Running this command will restore the local packages without changing the lockfile.
 
@@ -48,8 +48,6 @@ Then it gives you the command to restore them. You don't have to go looking up w
 
 It also explains that restoring those files won't change the lockfile, and that downloading remote packages needs an internet connection.
 
-The quoting looks a bit awkward because the test project is called `Ian's app`. I'll come back to that.
-
 ## Tell me whose problem it is
 
 A package can be perfectly valid for another tool and still use something Panackelty doesn't support. Git submodules are an example:
@@ -57,7 +55,7 @@ A package can be perfectly valid for another tool and still use something Panack
 ```text
 panack: error[PKG_GIT_SUBMODULE]: Cannot prepare the Git package because the repository contains a submodule.
 
-  Project: <workspace>/diagnostic-app/panack.json
+  Project: <workspace>/my-app/panack.json
   Repository: https://localhost:<port>/repo.git
   Dependency name: library
   Requested commit: <locked-commit>
@@ -89,7 +87,7 @@ Save any edits you want to keep elsewhere before restoring these files.
 
 To restore the local package files to the contents identified by the lockfile, run:
 
-  panack deps restore --project '<workspace>/Ian'"'"'s app/panack.json'
+  panack deps restore --project '<workspace>/my-app/panack.json'
 
 Running this command will replace the local copy without changing the lockfile.
 
@@ -104,8 +102,6 @@ Then it explains what the command changes and what it doesn't. The local copy ge
 
 That distinction is worth the extra lines. Restoring the content you've already selected and updating the project to accept different content are separate decisions. The error message needs to respect that.
 
-And yes, the quoting in that command is a bit ugly. The test project is called `Ian's app`, deliberately. A suggested shell command needs to work with spaces and an apostrophe in the path too.
-
 ## Keep the useful detail
 
 Here's an archive that ends before its contents and end marker are complete:
@@ -113,7 +109,7 @@ Here's an archive that ends before its contents and end marker are complete:
 ```text
 panack: error[PKG_ARCHIVE_INCOMPLETE]: Cannot unpack the archive because the archive ended before its contents and end marker were complete.
 
-  Project: <workspace>/app/panack.json
+  Project: <workspace>/my-app/panack.json
   Source archive: <workspace>/source.tar.gz
   Dependency name: lib
 
@@ -141,7 +137,7 @@ This test makes an HTTPS connection fail certificate verification. The current H
 ```text
 panack: error[PKG_HTTPS_CONNECTION]: Cannot download the archive because Panack could not establish a secure HTTPS connection to the archive server.
 
-  Project: <workspace>/app/panack.json
+  Project: <workspace>/my-app/panack.json
   Package: test.archive
   Source archive: https://localhost:<port>/lib.tar.gz
   Dependency name: lib
