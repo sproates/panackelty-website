@@ -17,7 +17,7 @@ I wasn't happy with where the messages had got to. Some explanations were too ge
 
 I wanted better than that.
 
-The examples below come from tests of the upcoming alpha.15 package work. They're real output, with project paths simplified to `my-app`, and temporary directories, test-server ports and generated commits replaced by placeholders. This work isn't in the released alpha.14, and there are still diagnostics to finish.
+The examples below come from tests of the upcoming alpha.15 package work. They're real output, with project paths simplified to `my-app`, and temporary directories and test-server ports replaced by placeholders. This work isn't in the released alpha.14, and there are still diagnostics to finish.
 
 ## Show me the actual problem
 
@@ -50,29 +50,31 @@ It also explains that restoring those files won't change the lockfile, and that 
 
 ## Tell me whose problem it is
 
-A package can be perfectly valid for another tool and still use something Panackelty doesn't support. Git submodules are an example:
+Sometimes the missing package isn't one you've added directly. Your app depends on a package, and that package depends on something else.
+
+Now you've got a missing file somewhere down the chain. Where do you start?
 
 ```text
-panack: error[PKG_GIT_SUBMODULE]: Cannot prepare the Git package because the repository contains a submodule.
+panack: error[PKG_MANIFEST_MISSING]: Cannot load the package because panack.json is missing.
 
   Project: <workspace>/my-app/panack.json
-  Repository: https://localhost:<port>/repo.git
-  Dependency name: library
-  Requested commit: <locked-commit>
-  Submodule path: submodule
+  Dependency: demo.app -> outer
+  Dependency: demo.outer -> inner
+  Dependency directory: <workspace>/missing
+  Dependency declared in: <workspace>/outer/panack.json
+  Dependency name: inner
+  Missing file: <workspace>/missing/panack.json
 
-A submodule refers to another Git repository. Panack does not fetch submodule contents for packages.
+Panack needs panack.json to read the package's name, version and dependencies.
 
-If you maintain this package, provide the required files without a submodule or declare the other package as a dependency in panack.json. Otherwise, ask the package maintainer for a compatible package.
+Check the dependency path in the declaring manifest. If the path is wrong, correct the path. If the path is right, restore the missing panack.json or obtain a complete copy of the package.
 ```
 
-I'm quite pleased with this one.
+This shows how the app got there: `demo.app` depends on `outer`, and `demo.outer` declares the missing `inner` dependency.
 
-It names the repository, commit and submodule path. Then it explains what a submodule is and why the package can't be prepared.
+It points to the manifest that declares it, as well as the file it couldn't find. I don't have to work backwards through the packages to discover which path needs checking.
 
-The advice also depends on whether you maintain the package. If you do, there are changes you can make. If you're just trying to use it, you need a compatible package from its maintainer.
-
-That's much more useful than telling everyone to go and restructure somebody else's repository.
+And it doesn't assume the path is wrong. It could be right, with the package itself incomplete. The advice covers both cases.
 
 ## A suggested fix needs some care
 
