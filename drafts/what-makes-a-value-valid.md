@@ -14,7 +14,7 @@ But it’s probably not a very useful name for a button. Two integers can both b
 
 Knowing the basic type only gets us so far. Sometimes the program needs to know a bit more about what it's been given.
 
-That's why I'm planning validated domain types for alpha.15. The design is agreed, but I haven't implemented it yet. The examples here show how I intend it to work.
+That's why I'm planning validated domain types for alpha.15. I’ve got a design I’m happy with, but I haven't implemented it yet. The examples here show how I intend it to work.
 
 ## A string isn't necessarily a label
 
