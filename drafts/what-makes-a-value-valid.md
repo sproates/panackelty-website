@@ -8,7 +8,7 @@ tags:
   - alpha.15
 ---
 
-An empty string is a perfectly good string.
+An empty string is a perfectly good string. Some of my favourite strings are empty.
 
 It's probably not a very useful name for a button, though. And a pair of integers can each be valid while making no sense together as the start and end of a range.
 
