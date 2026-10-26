@@ -1,7 +1,7 @@
 ---
 title: What makes a value valid?
 status: draft
-summary: A string can be a string and still be wrong for the job. How I want Panackelty's types to carry more of what a program actually needs.
+summary: An empty string is a perfectly good string. But is it a useful label? A look at the domain types I'm planning for Panackelty.
 tags:
   - types
   - language-design
@@ -12,17 +12,17 @@ An empty string is a perfectly good string. Some of my favourite strings are emp
 
 But it’s probably not a very useful name for a button. Two integers can both be valid in themselves while making no sense as the start and end of a range.
 
-The basic types tell us something about the values, but they don't tell us everything the program needs to know.
+Knowing the basic type only gets us so far. Sometimes the program needs to know a bit more about what it's been given.
 
-That's what I want to address with validated domain types in Panackelty. The design is agreed for alpha.15; implementation is still ahead. The declarations below show that planned design, rather than code you can run with the current release.
+That's why I'm planning validated domain types for alpha.15. The design is agreed, but I haven't implemented it yet. The examples here show how I intend it to work.
 
 ## A string isn't necessarily a label
 
-Suppose I want a label that isn't blank, is no longer than 80 characters, and doesn't contain control characters.
+Say I want a label that isn't blank, is no longer than 80 characters, and has no control characters in it.
 
-I could check those things wherever I use it. But then every function taking a string has to know whether someone has already checked it, and what they checked.
+I could check all that whenever I use it. Or check it once and remember which strings I've checked. Neither seems particularly appealing.
 
-I'd rather give that requirement a name:
+I'd rather write down what I mean by a label:
 
 ```panackelty
 type Label = Str where text =>
@@ -31,53 +31,51 @@ type Label = Str where text =>
   && text.has_no_control_characters()
 ```
 
-`text` is the name I've chosen for the value being checked. It only exists inside that condition. I could choose another name if it made the declaration clearer.
+I've called the value `text` here. That name only applies inside the condition, and I can choose whatever name makes sense.
 
-The conditions are written out where I define `Label`. Once a value has that type, passing it to another function shouldn't mean starting those checks again from scratch.
+Once a value is a `Label`, another function can accept it as one. It doesn't have to wonder whether I checked it, or whether my idea of a valid label was the same as its own.
 
-That function can ask for a `Label` because it needs a label, rather than accept any string and hope for the best.
+The requirements are there in the type.
 
 ## Empty and blank aren't the same thing
 
-`""` is empty. `"   "` isn't, but neither is much use for this label.
+`""` is empty. `"   "` has three spaces in it. Both would make a fairly unhelpful button label.
 
-That's why the design has a separate `is_non_blank()` check. It requires at least one character outside a defined Unicode whitespace set. The definition is pinned to Unicode 17.0.0, so it won't depend on the machine's locale.
+So checking the length isn't enough. `is_non_blank()` checks that there's at least one character that isn't Unicode whitespace.
 
-There are some details here that are easy to wave away until they cause a problem.
+I've chosen a fixed definition from Unicode 17.0.0. What counts as whitespace shouldn't change depending on which machine runs the program.
 
-String length counts Unicode scalar values, not bytes or the visible characters a person might count on screen. An accented letter can be represented by one scalar, or by a letter followed by a combining accent. Those have different lengths under this rule.
+Length needs a bit of care too. Panackelty counts Unicode scalar values, which aren't necessarily the characters you see on screen. An accented letter can be one scalar, or a letter followed by a combining accent. They can look the same and have different lengths.
 
-And non-blank doesn't guarantee visible text. Some characters, such as a zero-width space, aren't in that whitespace set.
+Non-blank doesn't necessarily mean visible either. A zero-width space isn't in that whitespace set.
 
-So `Label` means exactly the conditions I've declared. It doesn't mean “every possible thing a user interface might want from a label”. If I need something more, that needs its own design.
+That doesn't make the checks useless, but it does mean I need to be clear about what they check. This `Label` type isn't a complete set of rules for every user interface. It's the set I've written down.
 
-## Where does the guarantee come from?
+## How does a string become a Label?
 
-Sometimes the compiler already has enough information to establish that a value meets the requirements.
+If the compiler can prove the value meets all the conditions, I can use `Label(input)`.
 
-The planned ordinary construction, `Label(input)`, is for that case. Every requirement has to be proved. If the compiler can't do that, construction is a compile-time error.
+If it can't, that won't compile. It won't quietly add a runtime check instead.
 
-It won't quietly insert a runtime check and hope that's what I meant.
-
-But input from a file or an HTTP request usually isn't known in advance. I still need a way to check it while the program runs:
+But the compiler can't know what someone will put in a file or send in an HTTP request. For that, I need to check the value while the program runs:
 
 ```panackelty
 result = validate[Label](input)
 ```
 
-The planned result type is `Result[Label, ValidationError]`. Success gives me a `Label`; failure gives me details I can handle.
+That returns `Result[Label, ValidationError]`. Either I get a `Label`, or I get an error explaining why it couldn't be one.
 
-That makes the point where I accept outside data explicit. Before validation, I have a string. After successful validation, I have a value with the guarantees my program asked for.
+Before that check, it's a string. After a successful check, I can use it wherever a `Label` is needed.
 
-Validation doesn't trim it, normalise it or change it to make it pass. The input is evaluated once and preserved as it is.
+The validation won't tidy it up for me. It evaluates the input once and leaves it unchanged: no trimming, no normalising, no quietly removing things to make it pass.
 
-If I want to trim a string first, that's a separate decision in my program.
+If I want to trim it first, I can do that myself.
 
-## Tell me which requirements failed
+## Tell me what failed
 
-After the [work on package error messages](/articles/tell-me-what-went-wrong/), I don't want validation to just hand back a Boolean and leave the explanation to everyone else.
+After the [work on package error messages](/articles/tell-me-what-went-wrong/), I'd be a bit disappointed if this just gave me `false` and left me to work out why.
 
-An empty string fails two of the conditions in that `Label` declaration. The planned rendered error is:
+For an empty string, the proposed message is:
 
 ```text
 Cannot validate the value as Label.
@@ -87,17 +85,17 @@ Label requires at least 1 Unicode scalar value, but the string is empty.
 Label requires at least one character that is not Unicode whitespace, but the string is empty.
 ```
 
-Both failures are reported. The length limit and control-character check pass, so they don't appear as problems.
+There are two failed conditions, so it reports both. Being empty doesn't break the maximum length or introduce control characters, so those don't appear as problems.
 
-The error also has structured information: the target type, the failed constraints, their locations and useful facts such as the actual count. A program can use those details directly instead of parsing a sentence intended for a person.
+The error will also contain the details as data: which type I was trying to create, which conditions failed, where they apply, and facts such as the actual length.
 
-`ValidationError.render()` will produce the plain-text explanation. It won't print anything itself.
+That means I can use them in my program without trying to pick apart the message text. If I want the text, `ValidationError.render()` gives me that. It doesn't print it for me.
 
-The original input isn't automatically kept in the error or printed in the message either. A failed validation could involve something private; reporting why it failed shouldn't automatically put that value into a log.
+And it won't automatically include the original input. I might be validating something private. I'd like to know why it failed without accidentally putting it in a log.
 
-## Two valid fields can make an invalid record
+## What about those two integers?
 
-Here's another case I want to express:
+Back to the range from the beginning:
 
 ```panackelty
 record Range {
@@ -108,9 +106,9 @@ record Range {
 type OrderedRange = Range where range => range.start <= range.end
 ```
 
-There's nothing wrong with either integer in `Range(10, 3)`. The problem is their relationship.
+`Range(10, 3)` contains two perfectly good integers. They're just the wrong way round for an `OrderedRange`.
 
-The planned validation can explain that too:
+The planned validation message makes that distinction:
 
 ```text
 Cannot validate the value as OrderedRange.
@@ -118,50 +116,52 @@ Cannot validate the value as OrderedRange.
 OrderedRange requires field 'start' to be less than or equal to field 'end', but that relationship is not satisfied.
 ```
 
-For this first version, those relationships are between direct fields of the same record with the same underlying ordered numeric type. I'm not trying to make the compiler prove arbitrary relationships between any expressions you can write.
+For now, this is limited to comparing direct fields in the same record, with the same underlying ordered numeric type. It won't accept arbitrary expressions and somehow work out whether they make sense together.
 
-That keeps the promise something I can define and test properly.
+There's enough to get right here already.
 
-## Changing the value changes the question
+## What if I change it?
 
-A guarantee can't just stick around after an operation that might have broken it.
+Checking a value once doesn't mean every version of it will be valid forever.
 
-If I have an ordered range and want to change its start, the design is to construct a complete candidate record and validate the replacement:
+If I change the start of a range, I need to check the new range. The design is to make an ordinary record and validate it before using it as the replacement:
 
 ```panackelty
 candidate = Range(new_start, previous.end)
 result = validate[OrderedRange](candidate)
 ```
 
-The old range stays valid. The replacement has to earn the same guarantee before it can be used as an `OrderedRange`.
+That leaves the old range alone. If the candidate fails, it doesn't become an `OrderedRange`.
 
-The same principle applies to strings and collections. Passing a validated value through a function preserves its type, but producing changed content doesn't automatically preserve every condition. The checker needs to prove that it does, or the result is an ordinary base value that may need validating again.
+Strings and collections work the same way. Passing a value around doesn't lose what I know about it, but changing its content might. Unless the compiler can prove the conditions still hold, the changed result is an ordinary base value and may need checking again.
 
-## It applies to collections too
+## A list can be the wrong size too
 
-A list can have the right element type and still contain too many entries for the job:
+Perhaps I need between one and twenty names:
 
 ```panackelty
 type SmallNames = [Str] where names =>
   names.len() >= 1 && names.len() <= 20
 ```
 
-That says there must be between one and twenty strings, inclusive. It doesn't say those strings are non-blank, and it doesn't mean every possible array index is safe.
+Those bounds include one and twenty. The same sort of size checks are planned for maps and sets, counting entries and distinct elements respectively.
 
-The planned size constraints cover arrays, maps and sets. Maps count entries; sets count distinct elements.
+But this declaration only checks how many strings are in the list. It says nothing about whether the strings themselves are blank.
 
-Again, the type should tell you what it guarantees without suggesting more than it knows.
+It doesn't make every array index safe either. I still need to check the index I'm using.
 
-## Keeping the first version manageable
+## Where I'm starting
 
-Panackelty already has numeric guards. This work extends the useful kinds of requirements I can express, and moves guard declarations to the explicit binding syntax shown above.
+Panackelty already has numeric guards. I'm extending that idea to these strings, collections and relationships between fields, and changing declarations to use an explicit name like `text` or `range`.
 
-The new string, collection and record conditions can be joined with `&&`, with parentheses and line breaks to keep them readable. Alternatives for those new families are planned for alpha.16. Existing numeric alternatives are already supported and will be preserved.
+The new conditions can be joined with `&&`. Parentheses and line breaks let me lay them out so they're readable.
 
-I'm also keeping arbitrary user-defined predicates outside this scope. There's a difference between executing a function to get a Boolean and giving the compiler a condition it can reason about.
+Alternatives for these new kinds of condition are planned for alpha.16. Numeric alternatives already work and will stay supported.
 
-The [agreed design](https://github.com/sproates/panackelty/blob/main/docs/design/VALIDATED_DOMAIN_TYPES.md) goes into the exact rules, errors and implementation steps.
+I'm not including arbitrary user-written functions in the conditions. Running a function and getting a Boolean back is one thing. Expecting the compiler to understand what that function proves is quite another.
 
-What I want is quite straightforward: when a function asks for a label or an ordered range, its type should carry the requirements that make that value useful.
+The [agreed design](https://github.com/sproates/panackelty/blob/main/docs/design/VALIDATED_DOMAIN_TYPES.md) has the full details if you'd like to read them.
 
-Then the rest of the program can get on with using it.
+What I'm aiming for is to check a value when I need to, give it a type that says what I now know about it, and let the rest of the program use that information.
+
+I shouldn't have to keep asking whether my label is actually a label.
