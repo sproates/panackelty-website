@@ -40,7 +40,8 @@ renderer remains based on the immutable reviewed changelog snapshot.
 - Keep the homepage outline and detailed roadmap consistent with core's agreed
   release scope. Package-management scope remains to be settled; alpha.18's Docker
   and Linux ARM64 work is optional; alpha.19 features require design and evidence.
-  Preserve existing alpha.15 guard/inference selections and avoid duplicate credit.
+  Keep validated domain types in alpha.15; the inference/diagnostics assessment
+  moves to alpha.16 by owner decision on 26 October 2026. Avoid duplicate credit.
 - Historical articles keep their publication context. Current capability pages,
   download pins and release history change only during a release promotion.
 - The first non-alpha section is a target, with scope/version/date still under
