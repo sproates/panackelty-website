@@ -10,7 +10,7 @@ tags:
 
 An empty string is a perfectly good string. Some of my favourite strings are empty.
 
-It's probably not a very useful name for a button, though. And a pair of integers can each be valid while making no sense together as the start and end of a range.
+But it’s probably not a very useful name for a button. Two integers can both be valid in themselves while making no sense as the start and end of a range.
 
 The basic types tell us something about the values, but they don't tell us everything the program needs to know.
 
