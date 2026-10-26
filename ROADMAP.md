@@ -6,6 +6,19 @@ website-specific backlog. Core language and release programmes remain in
 The RM identifiers below are preserved from that roadmap; they are not issue
 numbers. Do not renumber or duplicate programme completion credit.
 
+## Inference assessment release allocation, 26 October 2026
+
+Prepared for publication: move the inference/diagnostics assessment from the
+alpha.15 roadmap paragraph into alpha.16, following core GI#170 and
+[core PR#611](https://github.com/sproates/panackelty/pull/611). Keep the
+library-boundary assessment in alpha.15. Homepage theme descriptions remain
+accurate. No released capability, download pin or historical article changes.
+
+Acceptance: source and rendered preview review, affected anchor checks,
+whitespace checks, hosted Website checks, owner merge approval and live roadmap
+verification after publication. No new issue was created for this wording change.
+Static prose only; no runtime or performance impact. Publication remains pending.
+
 ## Current work
 
 The repository migration is in progress under
