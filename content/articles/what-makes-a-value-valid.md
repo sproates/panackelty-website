@@ -62,10 +62,23 @@ If it can't, that won't compile. It won't quietly add a runtime check instead.
 But the compiler can't know what someone will put in a file or send in an HTTP request. For that, I need to check the value while the program runs. That's what the built-in function `validate` is for:
 
 ```panackelty
-result = validate[Label](input)
+show_label(label: Label): Void {
+  print(label)
+}
+
+handle_input(input: Str): Void {
+  match validate[Label](input) {
+    Ok(label) => show_label(label),
+    Error(problem) => print(problem.render())
+  }
+}
 ```
 
-That returns `Result[Label, ValidationError]`. Either I get a `Label`, or I get an error explaining why it couldn't be one.
+`validate[Label](input)` returns `Result[Label, ValidationError]`, and `match` handles both possible outcomes.
+
+If validation succeeds, `Ok(label)` gives me a `Label` to pass to `show_label`. That function only accepts a `Label`, so it doesn't need to repeat the checks.
+
+If validation fails, `Error(problem)` gives me the details. Here I turn them into a message with `problem.render()` and print it. `show_label` isn't called.
 
 Before that check, it's a string. After a successful check, I can use it wherever a `Label` is needed.
 
