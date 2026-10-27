@@ -160,7 +160,7 @@ Alternatives for these new kinds of condition are planned for alpha.16. Numeric 
 
 I'm not including arbitrary user-written functions in the conditions. Running a function and getting a Boolean back is one thing. Expecting the compiler to understand what that function proves is quite another.
 
-The [agreed design](https://github.com/sproates/panackelty/blob/main/docs/design/VALIDATED_DOMAIN_TYPES.md) has the full details if you'd like to read them.
+The [design](https://github.com/sproates/panackelty/blob/main/docs/design/VALIDATED_DOMAIN_TYPES.md) has the full details if you'd like to read them.
 
 What I'm aiming for is to check a value when I need to, give it a type that says what I now know about it, and let the rest of the program use that information.
 
