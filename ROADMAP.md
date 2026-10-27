@@ -8,33 +8,36 @@ numbers. Do not renumber or duplicate programme completion credit.
 
 ## Inference assessment release allocation, 26 October 2026
 
-Prepared for publication: move the inference/diagnostics assessment from the
-alpha.15 roadmap paragraph into alpha.16, following core GI#170 and
-[core PR#611](https://github.com/sproates/panackelty/pull/611). Keep the
-library-boundary assessment in alpha.15. Homepage theme descriptions remain
-accurate. No released capability, download pin or historical article changes.
+Delivered in [PR#58](https://github.com/sproates/panackelty-website/pull/58).
+The public roadmap places the inference/diagnostics assessment in alpha.16 and
+keeps the library-boundary assessment in alpha.15, consistent with core GI#170
+and merged [core PR#611](https://github.com/sproates/panackelty/pull/611).
+Live verification on 27 October confirmed that allocation and native alpha.14
+availability. Publication provenance identifies source
+`baa2677d2840561803d0f47cf189f77c059d115d` and
+[publication run 40470876662](https://github.com/sproates/panackelty-website/actions/runs/40470876662).
+No released capability, download pin or historical article changed through the
+allocation update.
 
-Acceptance: source and rendered preview review, affected anchor checks,
-whitespace checks, hosted Website checks, owner merge approval and live roadmap
-verification after publication. No new issue was created for this wording change.
-Static prose only; no runtime or performance impact. Publication remains pending.
+## Current maintenance context
 
-## Current work
-
-The repository migration is in progress under
-[core GI#178: Independent website publishing](https://github.com/sproates/panackelty/issues/178).
-Standalone validation/staging is delivered by website PR#1. Production cutover,
-core retirement and live acceptance remain pending. Migrating the backlog does
-not start its individual features or change their agreed priorities.
+This repository owns and serves the production website. Independent publication
+and core source retirement are delivered; [migration acceptance](docs/MIGRATION.md)
+records the evidence and recovery limitations. Native alpha.14 and browser v0.2.1
+are promoted. Alpha.15 package management is accepted on core `next` but remains
+unreleased; use the [core release summary](https://github.com/sproates/panackelty/blob/next/docs/NEXT_RELEASE_STATUS.md)
+for implementation status. Website release promotion remains a separate decision.
 
 ## Release rebalance: alpha.14 through alpha.19
 
-Prepared 20 October 2026: align homepage and roadmap with the owner's narrowed
-alpha.14 scope and shifted release sequence. Keep test-speed work in alpha.15;
-add the HTTP reference/examples as alpha.14's final required feature slice and
-keep colours optional. Add a dated methods-article completion note rather than
-rewriting its historical migration account. Preserve alpha.13 download/browser
-pins. Core scope merge, preview approval, CI and publication remain pending.
+Delivered by [PR#51](https://github.com/sproates/panackelty-website/pull/51), including
+the reviewed release rebalance from PR#50. Alpha.14 methods, HTTP and reference
+material are published; alpha.15–alpha.19 remain planned. Later allocation
+changes belong in the current release descriptions and their specific records.
+
+The older delivery records below retain the release pins and acceptance context
+of their own changes. Their historical alpha.13 references do not override the
+current pins or release-maintenance guidance above.
 
 ## Alpha.14 through alpha.18 release direction
 
