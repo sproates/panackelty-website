@@ -57,7 +57,7 @@ If the compiler can prove the value meets all the conditions, I can use `Label(i
 
 If it can't, that won't compile. It won't quietly add a runtime check instead.
 
-But the compiler can't know what someone will put in a file or send in an HTTP request. For that, I need to check the value while the program runs:
+But the compiler can't know what someone will put in a file or send in an HTTP request. For that, I need to check the value while the program runs. That's what the built-in function `validate` is for:
 
 ```panackelty
 result = validate[Label](input)
