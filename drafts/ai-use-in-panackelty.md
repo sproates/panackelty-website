@@ -4,71 +4,69 @@ status: draft
 tags:
   - AI
   - development
-summary: How I use AI to help build Panackelty, what it makes possible, and why keeping control of the project matters to me.
+summary: I use AI a lot when building Panackelty. Here's how it helps, and why I still want control over where the project goes.
 ---
 
-I want to talk about how I use AI to help me build Panackelty. It makes a substantial contribution to the project, including implementation, tests, documentation, verification and the admin that goes along with all of that.
+I want to talk about how I use AI to help me build Panackelty. I use it a lot, for writing code, tests, documentation, and helping me keep track of the work.
 
 At no point am I claiming that I've written 100% of the Panackelty codebase by hand. That would be madness.
 
-I've updated the [contribution guide](https://github.com/sproates/panackelty/blob/next/CONTRIBUTING.md#how-panackelty-is-developed) to make this explicit, and to explain what I expect from contributions that use AI. But I also wanted to write about how it fits into the way I work, because there's quite a lot more to it than generating code.
+I've updated the [contribution guide](https://github.com/sproates/panackelty/blob/next/CONTRIBUTING.md#how-panackelty-is-developed) to say more about this, including what I expect when someone uses AI to help with a contribution. I thought it was worth an article too, because there's quite a lot to say about how I use it and why.
 
-## Ideas I can actually try
+## Getting to try things
 
-AI is a fantastic accelerator. We can now explore ideas that would previously have taken a long time even to get to a proof of concept.
+AI is a fantastic accelerator. We can now explore ideas that would take a long time even to do a proof of concept for. For me, that's probably the most exciting part of it.
 
-That's a big deal for a project like this. I can have an idea about how something ought to work, spend time on the design, and then get far enough with an implementation to find out whether the idea is any good. Doing all of that by hand would take me ages.
+Take `panack explain`. I want to be able to ask the compiler why it made a decision, follow the reasoning and understand what it's telling me. That includes when it accepts a program. Sometimes you want to know why something works.
 
-And sometimes the useful result is finding out that the first approach isn't good enough.
+I think that's a cool thing to have in a language. I've [written about it before](/articles/do-not-underestimate-panack-explain/), and I'm now expanding what it can tell you to cover almost the whole language.
 
-The work on `panack explain` is a good example. I'm expanding what it can explain dramatically, towards covering almost the whole language. As I worked through more complex examples, it became clear that the flat text output wasn't going to work well for users. There was more information, but it was becoming harder to make sense of it.
+Doing all of that by hand would take me ages.
 
-So I'm moving towards an interactive terminal app. I want people to be able to explore the explanation and follow the parts they're interested in. That work is still in progress, but being able to try the ideas is what helped me see that the presentation needed to change.
+With AI helping, I can get far enough to try it on real examples and see where the idea holds up. And where it doesn't. The flat text output looked fine at first, but once I started working through more complex examples it became clear that it wasn't going to work well for someone actually using it.
 
-Having help with the implementation gives me more opportunities to make those discoveries. It doesn't make the decision for me.
+So I'm moving it towards an interactive terminal app. That work is still in progress, but I got to make that decision because I could try the thing and see the problem. I wasn't just imagining what it might be like to use.
 
-## It's still my project
+That's a very useful position to be in when you're working on an idea.
 
-I decide the direction of Panackelty. I spend a lot of time working through designs and specifications, thinking about what belongs in the language and what doesn't. I define the requirements, consider the options and review how the result behaves.
+## I still want to decide what I'm building
 
-I care about those decisions. Quite a lot, actually.
+This is my project. I decide where it's going, what I want in the language and how I want it to work. I spend a lot of time on the designs and specs, and AI helps me work through those too.
 
-That's why using AI needs to be carefully managed. I want that control, and getting an implementation quickly isn't much use if it quietly takes the project somewhere I didn't intend to go.
+But I want to be happy with a design before going ahead with it. If something doesn't fit, I want to understand why. If there are other ways to do it, I want to think about them. Getting some code written quickly doesn't make those questions go away.
 
-A specification gives me something concrete to work from. What should this feature do? How should it behave when it can't do that? How does it fit with the rest of the language? If those questions haven't been answered, generating more code doesn't answer them for me.
+And this is actually why I want AI use to be carefully managed and controlled. Because I want that control.
 
-AI can help me work through the questions too. I can explore alternatives and challenge an approach before committing to it. But I'm responsible for deciding what to accept, including when the right decision is to stop and rethink it.
+It's quite easy to imagine asking for a feature and getting an implementation that looks reasonable, but makes decisions you haven't really thought through. How should it interact with another part of the language? What should happen when something goes wrong? Those decisions are part of the design, even if they only become obvious while writing the code.
 
-## Keeping track of the work
+I don't want them settled just because that's what happened to get generated. I want to understand what I'm agreeing to.
 
-Some of the most useful help is with the roadmap.
+## There's a roadmap to look after too
 
-There's a lot to keep track of when you're building a language. An idea can turn into several pieces of work, which depend on other pieces of work, and it's quite easy for the interesting new thing to distract you from finishing something you've already started.
+AI is also a great help with keeping the project on track. There's a lot of detail in a roadmap once you get beyond a list of features you'd like to have.
 
-I use AI to help manage that. Keeping the roadmap organised, working through dependencies and making the next steps explicit helps me keep the project disciplined. I still decide the priorities, but I have help maintaining the detail that makes those priorities useful.
+Something needs doing before something else can start. Part of a feature is finished, but there's still work to do before it's useful. A new idea comes along and you need to work out where it fits, or whether it belongs there at all.
 
-I don't want the roadmap to become a list of things that sounded good in a conversation and were then forgotten.
+I use AI to help me keep track of that and work out what to do next. I still choose what gets done, but having help with the detail makes it much easier to keep the work organised and disciplined.
 
-## I like verification
+I quite like that side of it. It gives me more time to think about the project without losing track of all the things that need doing.
 
-I'm anyway the kind of person who wants to check things. If I think a program should behave a particular way, I want evidence that it does. And I want to know that it still does after the next change.
+## I like checking things
 
-Being able to automate a lot of that is empowering.
+I am anyway the kind of person who loves verification. I want to know that something works, and I want to know that it still works after I've changed something else. Being able to automate a lot of that is empowering.
 
-Panackelty has a serious amount of verification because I've chosen to put it there. The checks include individual behaviours, complete programs run through the toolchain and a reproducible bootstrap check. I'm building a compiler, so I want to be able to make changes with some confidence that I haven't broken the things it already does.
+There's a serious amount of verification in Panackelty. That's my choice.
 
-AI helps with writing and maintaining that verification, but a generated test still needs scrutiny. Does it check the behaviour I intended, or does it just agree with the implementation? A passing test is useful evidence only if we're asking it a useful question.
+There are checks for individual behaviours, complete programs run through the toolchain, and checks that the compiler can rebuild itself reproducibly. I'm building a compiler, so yes, I do want to spend time making sure it does what it's supposed to do.
 
-The contribution guide makes the responsibility clear: understand, review and validate what you submit. Check claims about results, and report the checks you actually ran. Using AI doesn't transfer that responsibility to the tool.
+AI helps me write and maintain those checks. But I still need to think about what they're checking. A test that agrees with the implementation might just be repeating the same mistake. What I want to know is whether the behaviour is right.
 
-That's how I want the project to work, including my own contributions.
+The contribution guide says much the same thing about work submitted to the project. Use AI, that's fine. But understand what you're submitting, check it, and be clear about what you've actually verified. I expect that of my own work too.
 
-## What I'd like to come out of it
+## I'd like the ideas to go somewhere
 
-I've [written before about `panack explain`](/articles/do-not-underestimate-panack-explain/), and it's one of the ideas I'm particularly pleased to be able to explore. I want the compiler to help you understand its reasoning, including when your program is accepted and you're trying to understand why.
+I'm not claiming `panack explain` is an entirely novel idea. Other people have thought about helping users understand compilers. But I do think what I'm trying to do with it is different and cool, and I'm pleased that I can actually explore it instead of leaving it as something I'd like to get around to one day.
 
-I'm not claiming that nobody has ever thought about compiler explanations before. But I do think there's something different and cool in what I'm trying to build, and AI makes it practical for me to prove more of it out.
+I kind of hope people pick up concepts like this and incorporate them into mainstream languages, even if they never use Panackelty.
 
-I kind of hope that people pick up ideas like this and incorporate them into mainstream languages. Even if they never use Panackelty.
-
-I'd be very happy to see something I explored here become a tool that helps people understand their programs somewhere else.
+I'd love to be using another language one day and find that an idea I'd worked on here had helped make it a bit easier to understand what my program was doing.
