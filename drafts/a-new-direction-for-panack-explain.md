@@ -15,7 +15,7 @@ The information was interesting. But I was having to work too hard to understand
 
 ## More information isn't necessarily more help
 
-I've [written before about why I'm excited about `panack explain`](/articles/do-not-underestimate-panack-explain/). I want to understand why the compiler accepted or rejected something, what types it worked out and what information it used to reach a decision.
+I've [written before](/articles/do-not-underestimate-panack-explain/) about why I'm excited about `panack explain`. I want to understand why the compiler accepted or rejected something, what types it worked out and what information it used to reach a decision.
 
 Sometimes the program is fine and I just want to understand why it works. That's useful too.
 
