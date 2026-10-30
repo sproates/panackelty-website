@@ -11,7 +11,7 @@ I want to talk about how I use AI to help me build Panackelty. I use it a lot, f
 
 At no point am I claiming that I've written 100% of the Panackelty codebase by hand. That would be madness.
 
-I've updated the [contribution guide](https://github.com/sproates/panackelty/blob/next/CONTRIBUTING.md#how-panackelty-is-developed) to say more about this, including what I expect when someone uses AI to help with a contribution. I thought it was worth an article too, because there's quite a lot to say about how I use it and why.
+I've updated the [contribution guide](https://github.com/sproates/panackelty/blob/next/CONTRIBUTING.md#how-panackelty-is-developed) to say more about this, including what I expect when someone uses AI to help with a contribution.
 
 ## Getting to try things
 
@@ -27,8 +27,6 @@ With AI helping, I can get far enough to try it on real examples and see where t
 
 So I'm moving it towards an interactive terminal app. That work is still in progress, but I got to make that decision because I could try the thing and see the problem. I wasn't just imagining what it might be like to use.
 
-That's a very useful position to be in when you're working on an idea.
-
 ## I still want to decide what I'm building
 
 This is my project. I decide where it's going, what I want in the language and how I want it to work. I spend a lot of time on the designs and specs, and AI helps me work through those too.
@@ -40,6 +38,8 @@ And this is actually why I want AI use to be carefully managed and controlled. B
 It's quite easy to imagine asking for a feature and getting an implementation that looks reasonable, but makes decisions you haven't really thought through. How should it interact with another part of the language? What should happen when something goes wrong? Those decisions are part of the design, even if they only become obvious while writing the code.
 
 I don't want them settled just because that's what happened to get generated. I want to understand what I'm agreeing to.
+
+In practice, that means agreeing what a piece of work is supposed to do before starting it, keeping changes focused and checking the result against the spec. If the implementation throws up a design question, I want to come back to that question.
 
 ## There's a roadmap to look after too
 
@@ -68,5 +68,3 @@ The contribution guide says much the same thing about work submitted to the proj
 I'm not claiming `panack explain` is an entirely novel idea. Other people have thought about helping users understand compilers. But I do think what I'm trying to do with it is different and cool, and I'm pleased that I can actually explore it instead of leaving it as something I'd like to get around to one day.
 
 I kind of hope people pick up concepts like this and incorporate them into mainstream languages, even if they never use Panackelty.
-
-I'd love to be using another language one day and find that an idea I'd worked on here had helped make it a bit easier to understand what my program was doing.
