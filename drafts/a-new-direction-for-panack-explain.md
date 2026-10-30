@@ -35,6 +35,10 @@ A long text report makes you do a lot of the work of finding and connecting thos
 
 I'm currently prototyping this, and it's already looking a lot more useful.
 
+![The panack explain prototype showing an expandable tree of compiler evidence for a welcome function, with a condition selected and keyboard controls below.](/images/panack-explain-prototype.svg)
+
+This is the prototype as it stands, exploring the compiler evidence for a small welcome function.
+
 The prototype isn't in the main repo yet. It works with the evidence the existing compiler already produces, so I've been able to work on it separately. I'll add it to the repo soon.
 
 It's not finished yet. I'm still working out how it should behave, and trying it is part of that. But I feel much happier with this direction than I did with the idea of giving people an increasingly long report to read.
