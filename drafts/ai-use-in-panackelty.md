@@ -65,6 +65,6 @@ The contribution guide says much the same thing about work submitted to the proj
 
 ## I'd like the ideas to go somewhere
 
-I'm not claiming `panack explain` is an entirely novel idea. Other people have thought about helping users understand compilers. But I do think what I'm trying to do with it is different and cool, and I'm pleased that I can actually explore it instead of leaving it as something I'd like to get around to one day.
+I'm not claiming `panack explain` is an entirely novel idea. Other people have thought about helping users understand compilers. But I do think what I'm trying to do with it is different and cool, and I'm pleased that I can actually explore it instead of leaving it as something I'd like to get around to one day. LLMs are a great accelerator for this.
 
 I kind of hope people pick up concepts like this and incorporate them into mainstream languages, even if they never use Panackelty.
