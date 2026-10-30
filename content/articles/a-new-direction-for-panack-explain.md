@@ -1,6 +1,8 @@
 ---
 title: A new direction for panack explain
-status: draft
+status: published
+date: 2026-10-30
+publishedAt: 2026-10-30T11:22:00+01:00
 tags:
   - compiler
   - tooling
