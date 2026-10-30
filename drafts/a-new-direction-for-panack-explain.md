@@ -37,7 +37,7 @@ I'm currently prototyping this, and it's already looking a lot more useful.
 
 ![The panack explain prototype showing an expandable tree of compiler evidence for a welcome function, with compiler checks expanded, an accepted operand-type check selected and keyboard controls below.](/images/panack-explain-prototype.svg)
 
-This is the prototype as it stands, exploring the compiler evidence for a small welcome function.
+Here I've expanded the condition to see the types of its operands and the checks the compiler made. Both operands are `Nat`, and I can see that the operand-type check and the `if` condition were accepted.
 
 The prototype isn't in the main repo yet. It works with the evidence the existing compiler already produces, so I've been able to work on it separately. I'll add it to the repo soon.
 
