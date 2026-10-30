@@ -1,6 +1,7 @@
 ---
 title: AI use in Panackelty
-status: draft
+status: published
+date: 2026-10-30
 tags:
   - AI
   - development
