@@ -1,7 +1,8 @@
 ---
 title: Why I use Cloudflare Web Analytics on Panackelty
 summary: I want to know which pages people visit and how they find their way around, without pretending page views tell me whether someone has read or enjoyed an article.
-status: draft
+status: published
+date: 2026-11-03
 tags:
   - website
   - privacy
