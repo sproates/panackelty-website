@@ -8,7 +8,7 @@ tags:
   - Cloudflare
 ---
 
-I've added Cloudflare Web Analytics because I want to know whether people visit Panackelty, which pages they open, and how they find their way around. I'd like to know which articles attract visits and whether people look at the reference pages. The numbers might give me a clue about what to work on next.
+I wanted to know whether people visit Panackelty, which pages they open, and how they find their way around. So I added Cloudflare Web Analytics. Maybe the numbers will give me a clue about what to work on next or which parts of the site need more explanation.
 
 I'm interested in the general picture, not who you are. I want to know whether the site is being used and whether it works properly for people on different devices and browsers.
 
