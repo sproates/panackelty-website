@@ -93,6 +93,14 @@ Linux x86-64 and macOS arm64 and requires network access.
 Article authoring, draft previews and publication metadata are described in
 [Writing and publishing articles](docs/ARTICLES.md).
 
+### Analytics
+
+Cloudflare Web Analytics is added to the production deployment artifact from
+the `CLOUDFLARE_WEB_ANALYTICS_TOKEN` repository variable. Pull-request and local
+preview builds omit the beacon so review traffic is not sent to the live
+analytics property. This value is the public site identifier used by the browser
+snippet, not a Cloudflare account API credential.
+
 Every PR also runs editorial navigation, release-status and clipboard checks
 at desktop and phone widths. It runs these checks plus browser tests from an immutable reviewed
 browser-repository commit. Documentation and explicit presentation-only paths

@@ -126,12 +126,16 @@ stable and regenerates the article/tag listings and sitemap.
 <a id="rm-119"></a>
 ### RM#119: Cookie-free website analytics
 
-**Idea; unscheduled.** [GI#2: Analytics](https://github.com/sproates/panackelty-website/issues/2)
-was transferred from core GI#252 with its history. Proposed basic Cloudflare
-statistics, production-only collection and an accurate privacy notice require
-provider/privacy verification, account setup and live dashboard acceptance.
-No collection or account change is enabled by this migration. Provisional size:
-small, one website PR plus setup and verification.
+**In progress.** [GI#2: Add basic cookie-free website analytics](https://github.com/sproates/panackelty-website/issues/2)
+was transferred from core GI#252 with its history. Cloudflare Web Analytics is
+configured in the owner's personal account; collection awaits the reviewed
+production change. The beacon is added to the production deployment artifact
+only, while local and pull-request previews omit it. The article explaining why
+analytics is used and what it does and does not measure is included in this
+change. [GI#65](https://github.com/sproates/panackelty-website/issues/65) tracks
+publication. Acceptance still includes confirming deployed collection and
+dashboard verification. Provisional size: small, one website PR plus deployment
+verification.
 
 <a id="rm-8"></a>
 ### RM#8: Website CI follow-ups
