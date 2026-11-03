@@ -1,5 +1,5 @@
 ---
-title: Why I use Cloudflare Web Analytics on Panackelty
+title: Why I’ve added Cloudflare Analytics to this site
 summary: I want to know which pages people visit and how they find their way around, without pretending page views tell me whether someone has read or enjoyed an article.
 status: published
 date: 2026-11-03
