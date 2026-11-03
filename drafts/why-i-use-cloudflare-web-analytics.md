@@ -8,28 +8,28 @@ tags:
   - Cloudflare
 ---
 
-I want to know whether people visit the Panackelty site, which pages and articles they open, and how they find their way around. That gives me something useful to work with when I decide what to explain next or which parts of the site need attention.
+I've added Cloudflare Web Analytics because I want to know whether people visit Panackelty, which pages they open, and how they find their way around. I'd like to know which articles attract visits and whether people look at the reference pages. The numbers might give me a clue about what to work on next.
 
-I don't need to know who you are. I'm interested in the broad picture: which pages get visited, where visits come from, and whether the site works well for people using different devices and browsers.
+I'm interested in the general picture, not who you are. I want to know whether the site is being used and whether it works properly for people on different devices and browsers.
 
-## What the numbers can tell me
+## What I can see, and what I can't
 
-Cloudflare Web Analytics reports page views, visits, referrers and page performance, including Core Web Vitals. Cloudflare defines a page view as a successful response for an HTML page. Its definition of a visit is based on whether the page view came from another site or a direct link. One visit can include several page views.
+Cloudflare shows page views, visits, where people came from, and page performance, including Core Web Vitals. It calls a successful response for an HTML page a page view. A visit is based on whether someone came from another site or followed a direct link, and one visit can include several page views.
 
-That should help me see which articles attract visits and whether people move between parts of the site. But a page view doesn't tell me that someone read an article to the end. It doesn't tell me which paragraph they reached, what they thought, or whether they found the page useful. It records that a page loaded. That's all.
+That might tell me which articles people open, or whether they move from one part of the site to another. But it can't tell me whether anyone actually read an article to the end, what they thought, or whether they found it useful. It tells me a page loaded. That's all.
 
-Cloudflare Web Analytics doesn't currently support custom events, so I haven't added tracking for individual button clicks or actions in the playground. I'm not trying to follow a person from page to page.
+I haven't added tracking for button clicks or actions in the playground. Cloudflare Web Analytics doesn't currently support custom events, so I'll be able to see that someone opened the playground page, but not whether they ran a program. I'm not trying to follow an individual person around the site.
 
-## What the site sends
+## What gets sent to Cloudflare
 
-Panackelty is hosted on GitHub Pages, so I use Cloudflare's manual JavaScript snippet. The snippet runs in the browser and reads performance information from the browser's own APIs. Cloudflare says the beacon doesn't set or read cookies, local storage or other browser storage, and that it doesn't track individual visitors across customers' websites.
+The site is hosted on GitHub Pages, so I add Cloudflare's JavaScript snippet to the pages. It runs in your browser and reads performance information from the browser's own APIs. Cloudflare says the beacon doesn't set or read cookies, local storage or other browser storage, and doesn't track individual visitors across its customers' websites.
 
-The request still goes to Cloudflare. As with any web request, Cloudflare's service receives the visitor's IP address while handling it. Cloudflare says it discards that address at the nearest data centre and doesn't store it in its core databases or logs. The beacon also reports information such as the page being viewed, its referrer and performance timings. Cloudflare says it doesn't log query strings.
+The request still goes to Cloudflare, and Cloudflare receives your IP address while handling it. Cloudflare says it discards the address at the nearest data centre and doesn't store it in its core databases or logs. The beacon also reports the page being viewed, its referrer and performance timings. Cloudflare says it doesn't log query strings.
 
-The details matter, so I've linked to [Cloudflare's explanation of the data it collects](https://developers.cloudflare.com/speed/observatory/rum-beacon/) and its [Web Analytics metrics](https://developers.cloudflare.com/web-analytics/data-metrics/high-level-metrics/). If the setup changes, this explanation should change with it.
+I've linked to [Cloudflare's explanation of the data it collects](https://developers.cloudflare.com/speed/observatory/rum-beacon/) and its [Web Analytics metrics](https://developers.cloudflare.com/web-analytics/data-metrics/high-level-metrics/), so you can check the details for yourself. If I change how analytics works on the site, I'll update this article too.
 
 ## Why I'm telling you
 
-I don't want a cookie banner for a setup that doesn't use cookies or browser storage. But I also don't want analytics quietly added to the site with no explanation. I use it because I want to understand what people find and how the site is working, then make better decisions about what to improve.
+I don't want a cookie banner for this setup, which Cloudflare says doesn't use cookies or browser storage. But I don't want to add analytics and keep quiet about it either. I want to know whether people are using the site and how it's working, and I'm happy to explain why I've added it.
 
 If you don't like the idea, that's fair. At least you can see what's running and why.
