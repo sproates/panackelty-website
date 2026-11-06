@@ -4,7 +4,10 @@
 
 Published 6 November 2026. Native downloads, installer source pin, release notes,
 platform requirements, guard bindings and explanation guidance target the verified
-alpha.15 release. The independently pinned browser remains v0.2.1 / alpha.14.
+alpha.15 release. The final browser promotion selects v0.3.0 / alpha.15. Browser PR #14 passed
+27 real-browser tests and runtime contracts, including validated domain types.
+Final website acceptance requires published-archive verification, website checks
+and live playground execution; the overall rollout remains incomplete until then.
 Public native archive hashes and source/bytecode examples pass on macOS.
 Owner approved the preview and all article edits. PR #68 merged as `8eb3944`.
 [Publication run 42191989577](https://github.com/sproates/panackelty-website/actions/runs/42191989577)
