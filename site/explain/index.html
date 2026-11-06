@@ -54,6 +54,10 @@ main(): Void {
 <li>Follow the supporting source with <strong>Enter</strong> when offered. The relevant fact comes from <code>n &gt;= 2</code> in the enclosing condition.</li>
 <li>Press <strong>Left</strong> to return to your previous selection, or <strong>q</strong> to quit.</li>
 </ol>
+<figure class="article-figure">
+<a href="../images/panack-explain-alpha15.svg" aria-label="Open the terminal capture at full size"><img src="../images/panack-explain-alpha15.svg" width="1000" height="480" alt="The interactive explorer shows n - 2 as proved. Panack knows n is at least 2 here, so subtracting 2 leaves zero or more. The supporting condition is n &gt;= 2." loading="lazy"></a>
+<figcaption>The subtraction explanation in the released alpha.15 explorer, using this example. Captured terminal output; select the image to open it at full size. Press Enter in the explorer to follow the supporting condition.</figcaption>
+</figure>
 <p>The useful part is the connection: the subtraction is accepted because this branch establishes the bound it needs. You can see which condition the proof depends on, rather than just knowing that the program compiled.</p>
 </section>
 <section class="content-section">
