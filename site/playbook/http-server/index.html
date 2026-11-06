@@ -11,13 +11,13 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Playbook · alpha.14</p>
+<p class="eyebrow">Playbook · alpha.15</p>
 <h1 id="page-title">HTTP server playbook</h1><p class="lede">Start a server. Send a request. Build from a working example.</p>
 <p>Looking up a method? See the <a href="../../reference/http-server/">HTTP Server Reference</a></p>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#your-first-server">Your first server</a></li>
-<li class="toc-level-3"><a href="#open-your-alpha-14-release-package">Open your alpha.14 release package</a></li>
+<li class="toc-level-3"><a href="#open-your-alpha-15-release-package">Open your alpha.15 release package</a></li>
 <li class="toc-level-3"><a href="#run-it-before-changing-anything">Run it before changing anything</a></li>
 <li class="toc-level-3"><a href="#the-complete-program">The complete program</a></li>
 <li class="toc-level-3"><a href="#the-project-manifest">The project manifest</a></li>
@@ -28,13 +28,13 @@
 <li class="toc-level-2"><a href="#serve-a-directory">Serve a directory</a></li>
 <li class="toc-level-3"><a href="#use-static-serving-in-your-application">Use static serving in your application</a></li>
 <li class="toc-level-2"><a href="#before-building-a-larger-service">Before building a larger service</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>This playbook walks through a working HTTP server, from sending your first request to sharing settings between handlers and shutting the server down. Each example includes the complete code, so you can read it here or try it with your alpha.14 release package. For individual methods and their options, see the <a href="../../reference/http-server/">API reference</a>.</p>
+<article class="capabilities-content http-docs-content"><p>This playbook walks through a working HTTP server, from sending your first request to sharing settings between handlers and shutting the server down. Each example includes the complete code, so you can read it here or try it with your alpha.15 release package. For individual methods and their options, see the <a href="../../reference/http-server/">API reference</a>.</p>
 <h2 id="your-first-server">Your first server</h2>
-<h3 id="open-your-alpha-14-release-package">Open your alpha.14 release package</h3>
-<p>Use the alpha.14 release package for your operating system and processor. Unpack it and open a terminal in the extracted <code>panackelty</code> directory. The package includes the compiler, runtime, standard library, HTTP package and the examples used in this playbook. You do not need Git, Make, a C compiler or Xcode tools.</p>
+<h3 id="open-your-alpha-15-release-package">Open your alpha.15 release package</h3>
+<p>Use the alpha.15 release package for your operating system and processor. Unpack it and open a terminal in the extracted <code>panackelty</code> directory. The package includes the compiler, runtime, standard library, HTTP package and the examples used in this playbook. You do not need Git, Make, a C compiler or Xcode tools.</p>
 <p>Check that you are using the supplied compiler:</p>
 <pre><code class="language-sh">./bin/panack --version</code></pre>
-<p>The version should be <code>0.1.0-alpha.14</code>. All commands below run from this extracted directory, which contains <code>bin</code>, <code>examples</code> and <code>packages</code>. Using <code>./bin/panack</code> keeps the compiler and bundled packages together, even if another version is installed on your machine. Use <code>curl</code> in a second terminal to try the requests.</p>
+<p>The version should be <code>0.1.0-alpha.15</code>. All commands below run from this extracted directory, which contains <code>bin</code>, <code>examples</code> and <code>packages</code>. Using <code>./bin/panack</code> keeps the compiler and bundled packages together, even if another version is installed on your machine. Use <code>curl</code> in a second terminal to try the requests.</p>
 <h3 id="run-it-before-changing-anything">Run it before changing anything</h3>
 <pre><code class="language-sh">./bin/panack run --project examples/network/http_server/panack.json 8080</code></pre>
 <p>The terminal prints <code>Listening on http://127.0.0.1:8080/</code> and stays running. In a second terminal:</p>
@@ -99,7 +99,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_server&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.15&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},
@@ -198,7 +198,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_contextual_server&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.15&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},
@@ -267,7 +267,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_server_lifecycle&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.15&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},

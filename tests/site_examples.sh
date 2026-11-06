@@ -43,18 +43,18 @@ for example in $examples; do
     "$command" run "$work/$example.bc" > "$work/actual"
     cmp "$work/expected" "$work/actual"
     if [ "$example" = explain ]; then
-      "$command" explain "$work/$example.panack" --function remaining > "$work/explanation"
+      "$command" explain --text "$work/$example.panack" --function remaining > "$work/explanation"
       grep -q '^program: accepted$' "$work/explanation"
       grep -q '^subtraction: proved$' "$work/explanation"
       grep -q '^left lower bound: 2$' "$work/explanation"
       sed 's/n - 2/n - 3/' "$work/$example.panack" > "$work/unproved.panack"
-      if "$command" explain "$work/unproved.panack" --function remaining > "$work/unproved" 2> "$work/diagnostic"; then
+      if "$command" explain --text "$work/unproved.panack" --function remaining > "$work/unproved" 2> "$work/diagnostic"; then
         echo 'Accepted insufficient subtraction bound' >&2; exit 1
       fi
       grep -q '^program: rejected$' "$work/unproved"
       grep -q '^subtraction: unproved$' "$work/unproved"
       extract explain-effect-source > "$work/report.panack"
-      if "$command" explain "$work/report.panack" --function report > "$work/effect" 2> "$work/diagnostic"; then
+      if "$command" explain --text "$work/report.panack" --function report > "$work/effect" 2> "$work/diagnostic"; then
         echo 'Accepted printing from a pure function' >&2; exit 1
       fi
       grep -q '^effect boundary: rejected$' "$work/effect"

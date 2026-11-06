@@ -1,5 +1,16 @@
 # Website roadmap
 
+## Native alpha.15 promotion
+
+Prepared 6 November 2026. Native downloads, installer source pin, release notes,
+platform requirements, guard bindings and explanation guidance target the verified
+alpha.15 release. The independently pinned browser remains v0.2.1 / alpha.14.
+Public native archive hashes and source/bytecode examples pass on macOS.
+Remaining acceptance is hosted checks, preview approval, merge and live verification.
+HTTP reference snapshots are refreshed from the published release source.
+No article draft is included, and browser promotion remains separate.
+
+
 This repository owns website development, publication, release promotion and
 website-specific backlog. Core language and release programmes remain in
 [Panackelty core](https://github.com/sproates/panackelty/blob/main/ROADMAP.md).
