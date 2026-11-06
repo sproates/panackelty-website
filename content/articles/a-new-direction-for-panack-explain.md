@@ -9,6 +9,8 @@ tags:
 summary: I'm prototyping an interactive terminal app for panack explain. It's already looking more useful, and I want to get it right before alpha.15.
 ---
 
+> Update, 6 November 2026: The interactive terminal explorer is now released in native alpha.15. This article describes the earlier prototype. See the [current explanation guide](/explain/) for the released workflow.
+
 I've been spending a lot of time on `panack explain`, expanding what it can tell you about your program. The intention is to cover almost the whole language, which gives it rather a lot to say.
 
 And while trying to make sense of that output, I realised something. In its current format, it wasn't all that useful. It was basically a dump of information.

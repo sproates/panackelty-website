@@ -91,4 +91,4 @@ These conversions are explicit because numeric types represent different sets of
 
 Exactness does not prove that a formula is right. The programmer still has to choose the right model, units and domain policy. Panackelty’s exact types ensure that the operations follow its arithmetic rules without silently rounding or truncating.
 
-For the full rules, see [numeric semantics in the specification](https://github.com/sproates/panackelty/blob/main/SPEC.md#values-and-numeric-semantics), the [exact-decimal example in the README](https://github.com/sproates/panackelty/blob/main/README.md#exact-decimal-arithmetic), and the [decimal example program](https://github.com/sproates/panackelty/blob/main/examples/decimal.panack).
+For the full rules, see [numeric semantics in the specification](https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md#values-and-numeric-semantics), the [exact-decimal example in the language tour](https://github.com/sproates/panackelty/blob/main/docs/guides/LANGUAGE_TOUR.md#exact-decimal-arithmetic), and the [decimal example program](https://github.com/sproates/panackelty/blob/main/examples/decimal.panack).

@@ -9,6 +9,9 @@ Public native archive hashes and source/bytecode examples pass on macOS.
 Remaining acceptance is hosted checks, preview approval, merge and live verification.
 HTTP reference snapshots are refreshed from the published release source.
 No article draft is included, and browser promotion remains separate.
+The promotion audit also corrects outdated package/explanation claims, moved
+documentation links and the pinned playground’s installation link. Historical
+articles retain their original accounts with dated alpha.15 release notes.
 
 
 This repository owns website development, publication, release promotion and

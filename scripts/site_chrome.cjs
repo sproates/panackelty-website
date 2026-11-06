@@ -24,6 +24,7 @@ function render(home, html, page, release) {
   else if (footer.includes(current)) footer = once(footer, current, current + ' aria-current="page"');
   // Older pinned browser artifacts predate the core documentation move.
   if (page === 'playground') {
+    html = html.replaceAll('href="../#start"', 'href="../get-started/"');
     html = html.replaceAll('https://github.com/sproates/panackelty/blob/main/SPEC.md',
       'https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md');
   }

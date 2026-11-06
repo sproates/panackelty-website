@@ -11,6 +11,8 @@ tags:
   - alpha.15
 ---
 
+> Update, 6 November 2026: The package diagnostics are now released in native alpha.15. The examples below record the implementation while it was in progress. [Install alpha.15](/get-started/).
+
 I've spent quite a bit of the recent package work looking at what happens when things go wrong.
 
 In the [previous article](/articles/bringing-packages-to-panackelty/), I wrote about getting packages safely onto your machine. But refusing a broken archive is only part of the job. If the message leaves you wondering what broke and what you're supposed to do about it, there's still work to do.

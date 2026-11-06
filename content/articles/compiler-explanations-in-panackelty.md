@@ -10,7 +10,7 @@ tags:
 
 A compiler can reject a program with a useful error and still leave you wondering why a particular expression passed or failed. Panackelty’s `panack explain` command is meant to make some of those compiler decisions easier to inspect.
 
-**Version note:** This article describes `panack explain` as of Panackelty alpha.12. The feature will be expanded in alpha.13; details TBC.
+**Version note:** This article describes `panack explain` as of Panackelty alpha.12. For the released alpha.15 interactive explorer, see the [current explanation guide](/explain/).
 
 The command currently doesn't explain every type rule or tell you what will happen when the program runs. It will never prove a whole program correct. Its query reports evidence for two specific checks:
 
@@ -61,4 +61,4 @@ A rejected project can still have valid local effect evidence for a separately t
 
 ## Further reading
 
-For the exact output contract and limitations, see the [compiler explanation guide](https://github.com/sproates/panackelty/blob/main/docs/COMPILER_EXPLANATIONS.md) and the [README example](https://github.com/sproates/panackelty/blob/main/README.md#explain-subtraction-and-effect-checks).
+For the exact output contract and limitations, see the [compiler explanation guide](https://github.com/sproates/panackelty/blob/main/docs/guides/COMPILER_EXPLANATIONS.md) and the [toolchain example](https://github.com/sproates/panackelty/blob/main/docs/guides/TOOLCHAIN.md#explain-checked-types-guarded-conversions-subtraction-and-effects).

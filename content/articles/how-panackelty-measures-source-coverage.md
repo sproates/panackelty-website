@@ -201,7 +201,7 @@ Those answers make a figure more useful than a larger percentage without context
 
 ## Inspect the evidence
 
-The [live source coverage report](https://sproates.github.io/panackelty-coverage/source/html/index.html) shows the latest accepted source measurements and their provenance: the source revision and evidence behind the report. The [baseline contract](https://github.com/sproates/panackelty/blob/main/docs/SOURCE_COVERAGE_BASELINE.md) describes the manifest, policy, reproduction process and publication boundary. The [inventory contract](https://github.com/sproates/panackelty/blob/main/docs/SOURCE_INVENTORY.md) explains which source constructs are counted, and the [collection guide](https://github.com/sproates/panackelty/blob/main/docs/SOURCE_COVERAGE.md) describes counters, sessions and record validation.
+The [live source coverage report](https://sproates.github.io/panackelty-coverage/source/html/index.html) shows the latest accepted source measurements and their provenance: the source revision and evidence behind the report. The [baseline contract](https://github.com/sproates/panackelty/blob/main/docs/history/SOURCE_COVERAGE_BASELINE.md) describes the manifest, policy, reproduction process and publication boundary. The [inventory contract](https://github.com/sproates/panackelty/blob/main/docs/reference/SOURCE_INVENTORY.md) explains which source constructs are counted, and the [collection guide](https://github.com/sproates/panackelty/blob/main/docs/reference/SOURCE_COVERAGE.md) describes counters, sessions and record validation.
 
 To reproduce the baseline, use a clean committed core checkout with Node 24 and the normal native toolchain, then run:
 
