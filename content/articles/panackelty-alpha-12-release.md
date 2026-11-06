@@ -11,7 +11,7 @@ tags:
 
 *Updated 2026-10-11: alpha.12 has been released.* The downloadable native
 preview adds chained `else if` conditions, executable file-based namespaces and
-opt-in source coverage for Panackelty code. [Get alpha.12](/get-started/),
+opt-in source coverage for Panackelty code. [Get alpha.12](https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.12),
 read the [release notes](https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.12),
 or browse the [coverage reports](https://coverage.panackelty.com/).
 

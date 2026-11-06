@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#15130f">
-    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.14: exact arithmetic, guarded types, effects, async/await and more.">
+    <meta name="description" content="Explore Panackelty’s language features, native tools and runtime, in native alpha.15: exact arithmetic, guarded types, effects, async/await and more.">
     <link rel="canonical" href="https://panackelty.com/capabilities/">
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
@@ -19,8 +19,8 @@
         <p class="eyebrow">Explore Panackelty</p>
         <h1 id="page-title">Clear intentions.<br><em>Concrete capabilities.</em></h1>
 <p class="lede">Exact arithmetic. Types that express your rules. Compiler-checked effects. Generic functions, exhaustive pattern matching and async/await.</p>
-<p class="section-intro">Panackelty brings these together in a language for building terminal tools, processing data and exploring algorithms. Its compiler is written in Panackelty itself—and the toolchain can explain selected parts of its reasoning.</p>
-<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.14</strong> for Linux x86-64 and Apple silicon. The browser playground runs v0.2.1, with the alpha.14 compiler and different host capabilities.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.14">Native alpha.14</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.2.1">Browser v0.2.1</a></p></div>
+<p class="section-intro">Panackelty brings these together in a language for building terminal tools, processing data and exploring algorithms. Its compiler is written in Panackelty itself—and the toolchain can expose its function-checking decisions and their supporting evidence.</p>
+<div class="release-note"><p><strong>Available today:</strong> native developer preview <strong>0.1.0-alpha.15</strong> for Linux x86-64 and Apple silicon. The browser playground runs v0.2.1, with the alpha.14 compiler and different host capabilities. Its guarded-type syntax omits the explicit binding used in the native examples below.</p><p><a href="https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.15">Native alpha.15</a> · <a href="https://github.com/sproates/panackelty-browser/releases/tag/v0.2.1">Browser v0.2.1</a></p></div>
 </section>
 <div class="capabilities-layout">
 <nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p>
@@ -43,7 +43,7 @@
 <li><a href="#tcp">Bounded TCP clients and servers</a></li>
 <li><a href="#http">HTTP clients and services</a></li>
 <li><a href="#preview-server">Serve files over HTTP</a></li>
-<li><a href="#local-packages">Share local packages</a></li>
+<li><a href="#local-packages">Manage package dependencies</a></li>
 <li><a href="#imports">Build programs across files</a></li>
 <li><a href="#explain">A compiler you can question</a></li>
 <li><a href="#tooling">Check, run, compile and inspect</a></li>
@@ -52,7 +52,7 @@
 
 </nav>
 <div class="capabilities-content">
-<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.14 · experimental</p><h2 id="language-features">Language features</h2>
+<section class="capabilities-group" aria-labelledby="language-features"><p class="eyebrow">Native alpha.15 · experimental</p><h2 id="language-features">Language features</h2>
 <article class="capability-detail" aria-labelledby="exact-values"><h3 id="exact-values">Exact answers, without hidden rounding</h3>
 <p>A third should stay a third until your program decides otherwise.</p>
 <p>Panackelty supports arbitrary-precision whole numbers, exact base-10 decimals and exact fractions. Calculations preserve their meaning without silently substituting floating-point approximations.</p>
@@ -70,11 +70,11 @@ main(): Void {
 <p>“An integer” is often too broad. Your program may need a positive quantity, a bounded index or a valid port number.</p>
 <p>Guarded types put those constraints into the type itself:</p>
 <pre id="cap-types-source" tabindex="0" aria-label="Panackelty code example"><code>
-type Positive = Int where value &gt; 0
-type Port = Nat where value &gt;= 1 &amp;&amp; value &lt;= 65535
+type Positive = Int where value =&gt; value &gt; 0
+type Port = Nat where value =&gt; value &gt;= 1 &amp;&amp; value &lt;= 65535
 </code></pre>
 <p>The compiler checks that values satisfy supported constraints before accepting their use. It can reason from literals and facts established by surrounding conditions.</p>
-<p>That moves some checks out of comments and into the language.</p>
+<p>Alpha.15 also supports string length and text constraints, collection sizes and numeric relationships between record fields. For external input, <code>validate[Type](input)</code> returns either a checked value or structured failures. <a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.15/docs/guides/VALIDATED_DOMAIN_TYPES.md">See validated domain types and migration examples</a>.</p>
 <p>The current proof system is deliberately bounded. It does not prove arbitrary properties or silently add runtime validation for untrusted input.</p>
 </article>
 <article class="capability-detail" aria-labelledby="data-models"><h3 id="data-models">Data models with every case accounted for</h3>
@@ -139,7 +139,7 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>That distinction matters for file formats, command output and network protocols. Code points are not always the same as the visible characters a reader perceives.</p>
 </article>
 </section>
-<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.14 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
+<section class="capabilities-group" aria-labelledby="tools-runtime"><p class="eyebrow">Native alpha.15 · experimental</p><h2 id="tools-runtime">Tools and runtime</h2>
 <article class="capability-detail" aria-labelledby="host"><h3 id="host">Practical access to the host</h3>
 <p>The native toolchain provides typed paths, filesystem operations, process execution and elapsed-time measurement.</p>
 <p>Read and write files, inspect directories and work with temporary resources. Run commands with explicit arguments, working directories, environment overrides, output limits and timeouts.</p>
@@ -152,21 +152,21 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>This is a working, experimental networking foundation. Alpha.14 adds a routed HTTP server framework and type-owned methods. The HTTP client supports bounded GET and verified HTTPS; the cleartext server supports typed GET/POST/PUT/DELETE handlers, explicit limits and graceful shutdown. Server TLS is not included. These host capabilities are unavailable in the browser playground.</p>
 </article>
 <article class="capability-detail" aria-labelledby="http"><h3 id="http">HTTP clients and services</h3>
-<p><span class="badge">Native alpha.14</span></p>
+<p><span class="badge">Native alpha.15</span></p>
 <p>Request data with bounded HTTP/1.1 GET and verified HTTPS. Responses and errors are typed; deadlines, cancellation and response-size limits are explicit. Certificate and hostname verification use the native platform’s libcurl transport.</p>
 <p>Build cleartext HTTP services with typed GET, POST, PUT and DELETE handlers, checked message framing and bounded concurrent requests. Continuous services announce readiness after binding and drain active requests on shutdown. Server TLS is not included.</p>
 
 </article>
 <article class="capability-detail" aria-labelledby="preview-server"><h3 id="preview-server">Serve files over HTTP</h3>
-<p><span class="badge">Native alpha.14</span></p>
+<p><span class="badge">Native alpha.15</span></p>
 <p>The installed <code>panack-http-server</code> tool serves any chosen folder. It provides confined asynchronous reads, directory indexes, redirects, MIME types and GET support. Use it to serve static content such as documents, generated reports or websites; website preview is one application.</p>
 <p>It starts on loopback by default and offers no-cache and noindex options. Requests, responses and clients are bounded; directory listings, ranges, TLS, file watching and automatic rebuilds are outside its contract.</p>
 <p><a href="../examples/#folder-preview-example">Serve your first files →</a></p>
 </article>
-<article class="capability-detail" aria-labelledby="local-packages"><h3 id="local-packages">Share local packages</h3>
-<p><span class="badge">Available in alpha.14</span></p>
+<article class="capability-detail" aria-labelledby="local-packages"><h3 id="local-packages">Manage package dependencies</h3>
+<p><span class="badge">Available in alpha.15</span></p>
 <p>Reuse local libraries through strict <code>panack.json</code> manifests, dependency aliases and explicit public exports. Applications can check, compile and run through a project entry point, and the complete package tree can move without changing declaration identity.</p>
-<p>Manifests select the exact matching toolchain. Conflicting versions and roots are rejected. Remote dependency restoration, registries and package-management workflows remain future work.</p>
+<p>Manifests select the exact matching toolchain. Conflicting versions and roots are rejected. Use <code>panack deps lock</code> to record local, HTTPS or pinned Git dependencies, and <code>panack deps restore</code> to restore them. A public package registry is outside this release.</p>
 
 <p><a href="../examples/#local-package-example">Create a library and use it from an application →</a></p>
 </article>
@@ -174,15 +174,15 @@ pure value_or(option: Option[Nat], fallback: Nat): Nat {
 <p>Imports let you organise code into separate source files and use the standard library.</p>
 <p>Logical paths such as <code>stdlib/path</code> and <code>project/shared/module</code> keep imports independent of where the toolchain is installed.</p>
 <p>Alpha.12 adds executable file-based namespaces. Import modules explicitly from <code>project/</code> or <code>stdlib/</code>, use aliases or selected imports, qualify names, and expose public declarations or re-exports. The compiler keeps declarations from different modules distinct through checking and code generation; source and saved-v9 bytecode run only the selected entry module.</p>
-<p>Alpha.13 adds local reusable packages with strict <code>panack.json</code> manifests, dependency aliases and explicit public exports. Package graphs stay within their configured roots and retain identity when moved together. Manifests pin the exact toolchain version. Remote dependency restoration and package management remain planned.</p>
+<p>Alpha.13 adds local reusable packages with strict <code>panack.json</code> manifests, dependency aliases and explicit public exports. Package graphs stay within their configured roots and retain identity when moved together. Manifests pin the exact toolchain version. Alpha.15 adds locked local folders and archives, HTTPS archives and Git dependencies pinned to commits. Restore dependencies before building; Git is optional unless fetching a Git dependency.</p>
 <p><a href="../examples/#namespace-examples">Run the namespace examples →</a></p>
 </article>
 <article class="capability-detail" aria-labelledby="explain"><h3 id="explain">A compiler you can question</h3>
 <p>Checking a program is useful. Understanding the reason behind a decision is useful too.</p>
-<p><span class="badge">Native alpha.14</span></p>
-<p>Alpha.13 expands <code>panack explain</code> with recorded decisions for values, calls, returns, assignments, operators, conditions, matches, collections and effect boundaries. Source locations and explicit unavailable results keep the supported scope visible.</p>
-<p>Use it to inspect the facts behind a supported decision instead of treating the compiler as a black box.</p>
-<p>Its scope is currently limited. It does not explain every diagnostic or certify an entire program.</p>
+<p><span class="badge">Native alpha.15</span></p>
+<p>Alpha.15 opens an interactive explorer for function-checking decisions, including types, calls, inference, callbacks, proofs and effects. Start with a source statement, inspect its decisions and follow the supporting source. Accepted programs also expose generated instructions and their origins.</p>
+<p>Use <code>--text</code> for a plain report. <a href="../explain/">Explore the compiler’s decisions →</a></p>
+<p>This is static analysis: it does not execute your program or show runtime values. Parsing and name-resolution failures remain frontend diagnostics, and decisions that checking cannot reach are marked unavailable with a reason.</p>
 </article>
 <article class="capability-detail" aria-labelledby="tooling"><h3 id="tooling">Check, run, compile and inspect</h3>
 <p>The <code>panack</code> command supports source checking, execution, compilation to saved bytecode and disassembly.</p>

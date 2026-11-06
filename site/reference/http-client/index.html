@@ -11,7 +11,7 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">API reference · alpha.14</p>
+<p class="eyebrow">API reference · alpha.15</p>
 <h1 id="page-title">HTTP Client</h1><p class="lede">GET requests, response types and errors for the native HTTP client.</p>
 <p>Want to get started quickly? See the <a href="../../playbook/http-server/">HTTP Server Playbook</a></p>
 </section>
@@ -123,7 +123,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_client&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.14&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.15&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},
@@ -132,7 +132,8 @@ async main(): Unit {
   }
 }</code></pre>
 <p>From the directory containing both folders, run:</p>
-<pre><code class="language-sh">./panackelty/bin/panack run --project http-client-example/panack.json</code></pre>
+<pre><code class="language-sh">./panackelty/bin/panack deps lock --project http-client-example/panack.json
+./panackelty/bin/panack run --project http-client-example/panack.json</code></pre>
 <p>The output starts with <code>Status: 200</code>, followed by <code>hello from Panackelty HTTP server</code>. The body already ends with a newline, so printing it adds a blank line. To try custom limits, replace <code>client.get(...)</code> with <code>client.get_with_limits(&quot;http://127.0.0.1:8080/&quot;, client.ClientLimits(5000, 16384, 65536))</code>.</p></article>
 </div>
 <!-- SITE_CLOSING -->

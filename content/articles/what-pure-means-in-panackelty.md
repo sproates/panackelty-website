@@ -103,6 +103,6 @@ For me, the useful part is being able to hand the compiler a `LoadedProject`, te
 - [Panackelty project loader](https://github.com/sproates/panackelty/blob/main/src/compiler/loader.panack)
 - [Panackelty lexer](https://github.com/sproates/panackelty/blob/main/src/compiler/lexer.panack)
 - [Panackelty pure compiler frontend](https://github.com/sproates/panackelty/blob/main/src/compiler/project_frontend.panack)
-- [Panackelty language specification](https://github.com/sproates/panackelty/blob/main/SPEC.md)
+- [Panackelty language specification](https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md)
 - [The Haskell 2010 Report](https://www.haskell.org/onlinereport/haskell2010/)
 - [Philip Wadler, “The Essence of Functional Programming”](https://doi.org/10.1145/143165.143169)

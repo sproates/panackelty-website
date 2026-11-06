@@ -22,7 +22,7 @@ We'll keep it small: a greeting, a health endpoint and an echo route that sends 
 
 We'll also give the server a greeting and a name. Those go into an `AppContext` record, which the server passes to each handler. No global variable needed.
 
-Grab the native [alpha.14 release](/get-started/) for your machine, unpack it and open a terminal in the extracted `panackelty` directory. You should see `bin`, `packages` and `examples`. You'll need the native release for this one; the browser playground doesn't support networking.
+Grab the native [alpha.14 release](https://github.com/sproates/panackelty/releases/tag/v0.1.0-alpha.14) for your machine, unpack it and open a terminal in the extracted `panackelty` directory. You should see `bin`, `packages` and `examples`. You'll need the native release for this one; the browser playground doesn't support networking.
 
 Check the compiler:
 

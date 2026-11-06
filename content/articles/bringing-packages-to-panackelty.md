@@ -10,6 +10,8 @@ tags:
   - alpha.15
 ---
 
+> Update, 6 November 2026: Package management is now released in native alpha.15, including local, HTTPS and pinned Git dependencies. This article describes the work while it was in progress. [Install alpha.15](/get-started/).
+
 In the [HTTP service article](/articles/building-a-small-http-service-in-panackelty/), we pointed a project at the HTTP package sitting beside it. Nice and simple, provided the code is already on your machine.
 
 But I'd like to be able to put a library in another repository and use it from there, or give someone an archive without making them sort out where everything belongs.
