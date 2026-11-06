@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#15130f"><meta name="description" content="Use panack explain to understand natural-number subtraction proofs and local effect checks, with runnable alpha.15 examples.">
+  <meta name="theme-color" content="#15130f"><meta name="description" content="Explore compiler decisions interactively in Panackelty alpha.15. Inspect source statements, follow supporting facts and understand why a check passed or failed.">
   <link rel="canonical" href="https://panackelty.com/explain/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="../chrome.css">
@@ -9,7 +9,17 @@
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <!-- SITE_HEADER -->
-<main id="main"><section class="capabilities-hero"><p class="eyebrow">Available in native alpha.15</p><h1>Understand why the compiler agrees.</h1><p class="lede"><code>panack explain</code> shows the facts behind a natural-number subtraction check and the decisions behind local call and await effect boundaries. Read the compiler’s evidence alongside its ordinary diagnostics.</p></section><section class="content-section"><h2>Ask about one function.</h2><p>Save this program as <code>remaining.panack</code>, then run the command below with the native alpha.15 toolchain. The command checks the whole project and reports evidence for the named function. It does not execute your program. Successful projects also expose instructions compiled in memory.</p><article id="explain-example"><span class="badge">Works with alpha.15</span><h3>Why can n − 2 stay a natural number?</h3><p>The true branch establishes that n is at least 2. The compiler uses that lower bound to prove the subtraction cannot go below zero.</p>
+<main id="main">
+<section class="capabilities-hero">
+<p class="eyebrow">Interactive terminal explorer · native alpha.15</p>
+<h1>Explore what the compiler checked.</h1>
+<p class="lede">Start with your source code. Open a statement, inspect the compiler’s decisions and follow the facts behind them. <code>panack explain</code> helps you understand why code passed a check—or why the compiler could not accept it.</p>
+<p>This is static analysis. It checks your program without running it. It does not pause execution or display runtime variable values.</p>
+</section>
+<section class="content-section">
+<h2>1. Open a function.</h2>
+<p>Use the <a href="../get-started/">native alpha.15 toolchain</a> in a terminal. Save this complete program as <code>remaining.panack</code>:</p>
+<article id="explain-example">
 <pre id="explain-source"><code>
 pure remaining(n: Nat): Nat {
   if n &gt;= 2 {
@@ -23,10 +33,50 @@ main(): Void {
   print(remaining(5))
 }
 </code></pre>
-<p class="output-label">Output</p><pre class="example-output" id="explain-output"><samp>
+<p>The function subtracts two only when <code>n</code> is at least two. Otherwise it returns zero. Both paths must produce a <code>Nat</code>, which cannot be negative.</p>
+<p>If you run the program with <code>panack run remaining.panack</code>, it prints:</p>
+<pre class="example-output" id="explain-output"><samp>
 3
 </samp></pre>
-</article><div class="copy-command"><pre id="explain-command"><code>panack explain remaining.panack --function remaining</code></pre><button class="copy-command-button" type="button" data-copy-target="explain-command" aria-label="Copy explanation command" aria-describedby="explain-command-copy-status" hidden>Copy</button></div><p id="explain-command-copy-status" class="copy-command-status" role="status" aria-live="polite"></p><p>In a terminal, this opens the interactive explorer. Use Up/Down to select a source statement and Enter to open its decisions and supporting source. Left returns to the same selection; <code>n</code> jumps to the first rejected or unproved decision. For accepted programs, explore the generated instructions and their source origins. Press <code>q</code> to quit.</p><p>The <code>3</code> above is the program’s output when run. Use <code>panack explain --text remaining.panack --function remaining</code> for a plain report, including this excerpt:</p><pre id="explain-proof-output"><samp>program: accepted
+</article>
+<p>To inspect the compiler’s reasoning instead, run:</p>
+<div class="copy-command"><pre id="explain-command"><code>panack explain remaining.panack --function remaining</code></pre><button class="copy-command-button" type="button" data-copy-target="explain-command" aria-label="Copy explanation command" aria-describedby="explain-command-copy-status" hidden>Copy</button></div>
+<p id="explain-command-copy-status" class="copy-command-status" role="status" aria-live="polite"></p>
+<p>This opens the interactive explorer for <code>remaining</code>. Statements appear in source order. The compilation result tells you whether the project was accepted; the source view lets you choose what to investigate.</p>
+<p>The command checks the whole project even when you select one function. Large projects can take time to open.</p>
+</section>
+<section class="content-section">
+<h2>2. Follow a decision to its evidence.</h2>
+<ol>
+<li>Use <strong>Up and Down</strong> to select the source statement containing <code>n - 2</code>.</li>
+<li>Press <strong>Enter</strong> to see the compiler decisions associated with that statement.</li>
+<li>Select the subtraction decision and press <strong>Enter</strong> to inspect the explanation. The compiler must establish that subtracting two cannot take <code>n</code> below zero.</li>
+<li>Follow the supporting source with <strong>Enter</strong> when offered. The relevant fact comes from <code>n &gt;= 2</code> in the enclosing condition.</li>
+<li>Press <strong>Left</strong> to return to your previous selection, or <strong>q</strong> to quit.</li>
+</ol>
+<p>The useful part is the connection: the subtraction is accepted because this branch establishes the bound it needs. You can see which condition the proof depends on, rather than just knowing that the program compiled.</p>
+</section>
+<section class="content-section">
+<h2>3. See what changes when the proof fails.</h2>
+<p>Quit the explorer and change <code>n - 2</code> to <code>n - 3</code>. Keep the condition <code>n &gt;= 2</code>, then run the same explanation command again.</p>
+<p>The project is now rejected. Press <strong>n</strong> to jump to the first rejected or unproved decision, then open it. The branch establishes a minimum of two, but the subtraction needs at least three. When <code>n</code> is two, the result would be negative.</p>
+<p>If subtracting three is your intention, change the condition to <code>n &gt;= 3</code> and reopen the explorer. If the function should subtract only two, restore <code>n - 2</code>. The explanation identifies the mismatch; you decide which behaviour is correct.</p>
+<p>“Unproved” means the compiler could not establish safety. It does not mean the program was executed and failed.</p>
+</section>
+<section class="content-section">
+<h2>Explore more than subtraction.</h2>
+<p>The explorer exposes function-checking decisions for types, arguments and return values, existing type inference, generic constraints, operators, conditions, pattern matching, collections, callbacks, guarded conversions and effects.</p>
+<p>For validated domain types, inspect the requirement and follow the guard declaration that supplies it. When checking stops before a decision can be made, the explorer marks that decision unavailable and explains why. Parsing and name-resolution failures remain frontend diagnostics.</p>
+<p>For an accepted project, you can also inspect the instructions generated for a statement and follow their source origins. These are compiler-generated instructions, not a trace of a running program. The explorer prepares them in memory.</p>
+<p>A successful local check does not make the whole project valid. Read the compilation result alongside the individual decisions.</p>
+</section>
+<section class="content-section">
+<h2>Plain reports when you need them.</h2>
+<p>Use <code>--text</code> to get a report rather than the terminal explorer. Piping the output also selects text mode.</p>
+<pre><code>panack explain --text remaining.panack --function remaining</code></pre>
+<p>For the original <code>n - 2</code> program, the report includes this excerpt. This is plain report output, not the interactive screen:</p>
+<details><summary>Show the subtraction report excerpt</summary>
+<pre id="explain-proof-output"><samp>program: accepted
 function: remaining
 scope: Nat subtraction; generic definitions, not call-site specialisations
 
@@ -40,13 +90,21 @@ left lower bound: 2
 guard branch: true
 source: project/remaining.panack:2:6-2:12
 expression: n &gt;= 2
-reason: retained lower bound is at least the right constant</samp></pre><p>Read <code>program: accepted</code> as whole-project acceptance. <code>subtraction: proved</code> describes this one obligation. The source positions connect the decision to the subtraction and its guard.</p></section><section class="content-section"><h2>Change the assumption.</h2><p>Change <code>n - 2</code> to <code>n - 3</code>, keeping the guard <code>n &gt;= 2</code>. Run the same explanation command again. The lower bound is no longer sufficient, so the program is rejected and the subtraction is <code>unproved</code>. That means the checker could not establish safety; it is not a claim that the program was executed and failed.</p></section><section class="content-section"><h2>See an effect boundary.</h2><p>Save this deliberately invalid program as <code>report.panack</code>. A pure function cannot call the effectful <code>print</code> builtin.</p><pre id="explain-effect-source"><code>
+reason: retained lower bound is at least the right constant</samp></pre>
+<p><code>program: accepted</code> describes the project. <code>subtraction: proved</code> describes this particular check.</p>
+</details>
+<details><summary>Show a rejected effect check</summary>
+<p>Save this deliberately invalid program as <code>report.panack</code>. A pure function cannot call <code>print</code>, which has an effect:</p>
+<pre id="explain-effect-source"><code>
 pure report(): Void {
   print(1)
 }
 
 main(): Void {}
-</code></pre><pre><code>panack explain --text report.panack --function report</code></pre><p>With <code>--text</code>, the command exits with status 1, preserves the ordinary diagnostic on stderr, and includes this local explanation:</p><pre id="explain-effect-output"><samp>program: rejected
+</code></pre>
+<pre><code>panack explain --text report.panack --function report</code></pre>
+<p>The command exits with status 1, preserves the ordinary diagnostic on stderr and includes this explanation:</p>
+<pre id="explain-effect-output"><samp>program: rejected
 
 effect scope: local call and await boundaries; declarations and callable types, not transitive/runtime effects
 
@@ -59,7 +117,17 @@ callee: print
 classification basis: builtin or constructor contract
 callee effect: ordinary
 awaited: no
-reason: pure function cannot call impure function print</samp></pre><p>An ordinary function may print. Changing <code>pure report</code> to <code>report</code> makes this call boundary allowed. Allowed describes that local boundary; consult the separate program result for whole-project validity.</p></section><section class="content-section"><h2>Read the result accurately.</h2><div class="capability-grid"><article><h3>Proved or unproved</h3><p>Subtraction evidence comes from the checker’s existing constants and lower-bound facts. The query adds visibility to those decisions; it does not add proof rules.</p></article><article><h3>Allowed or rejected</h3><p>Effect evidence describes local calls and await boundaries, including pure, ordinary and async contexts. It does not follow callee bodies to infer transitive or runtime effects.</p></article><article><h3>Unavailable</h3><p>Decisions that checking could not reach are marked unavailable with a reason. This is different from a rejected decision.</p></article></div><p>Accepted projects exit 0. Rejected projects and invalid queries exit 1. A local proof does not override other errors. Alpha.13 also records supported decisions for values, calls, returns, assignments, operators, conditions, matches, collections and record fields. This guide illustrates subtraction and effects. Alpha.15 includes function-checking decisions and source-to-instruction provenance. Runtime value histories are outside this static-analysis tool.</p><p>This guide applies to native alpha.15. The pinned browser playground does not provide this CLI command. <a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.15/docs/guides/COMPILER_EXPLANATIONS.md">Read the full query contract →</a> · <a href="../roadmap/#alpha-15">See what alpha.15 delivers →</a></p></section><!-- SITE_CLOSING --></main>
+reason: pure function cannot call impure function print</samp></pre>
+<p>Changing <code>pure report</code> to <code>report</code> allows this call if printing is the intended behaviour.</p>
+</details>
+</section>
+<section class="content-section">
+<h2>Keep exploring.</h2>
+<p>This guide describes native alpha.15. The independently pinned browser playground does not provide the terminal explorer.</p>
+<p><a href="https://github.com/sproates/panackelty/blob/v0.1.0-alpha.15/docs/guides/COMPILER_EXPLANATIONS.md">Full explanation contract and supported decisions →</a> · <a href="../roadmap/#alpha-15">What alpha.15 delivers →</a></p>
+</section>
+<!-- SITE_CLOSING -->
+</main>
 <!-- SITE_FOOTER -->
 <script src="../site.js" defer></script>
 </body></html>

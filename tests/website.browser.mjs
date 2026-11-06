@@ -74,6 +74,10 @@ test('manual installation is an optional alternative and explanations are discov
   await page.getByRole('link',{name:'Compiler explanations',exact:true}).click();
   await expect(page).toHaveURL(/\/explain\/$/);
   await expect(page.locator('#explain-command')).toContainText('--function remaining');
+  await expect(page.getByRole('heading', {name:'2. Follow a decision to its evidence.'})).toBeVisible();
+  await expect(page.locator('#explain-proof-output')).toBeHidden();
+  await page.getByText('Show the subtraction report excerpt', {exact:true}).click();
+  await expect(page.locator('#explain-proof-output')).toBeVisible();
   await expect(page.locator('#explain-proof-output')).toContainText('subtraction: proved');
   await expect(page.locator('#explain-effect-output')).toContainText('effect boundary: rejected');
 });
