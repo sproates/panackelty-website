@@ -2,11 +2,14 @@
 
 ## Native alpha.15 promotion
 
-Prepared 6 November 2026. Native downloads, installer source pin, release notes,
+Published 6 November 2026. Native downloads, installer source pin, release notes,
 platform requirements, guard bindings and explanation guidance target the verified
 alpha.15 release. The independently pinned browser remains v0.2.1 / alpha.14.
 Public native archive hashes and source/bytecode examples pass on macOS.
-Remaining acceptance is hosted checks, preview approval, merge and live verification.
+Owner approved the preview and all article edits. PR #68 merged as `8eb3944`.
+[Publication run 42191989577](https://github.com/sproates/panackelty-website/actions/runs/42191989577)
+passed deployment and exact-byte/provenance verification. The live homepage was
+verified in a browser and advertises alpha.15 as available. Native promotion is complete.
 HTTP reference snapshots are refreshed from the published release source.
 The explanation walkthrough includes a terminal capture from the released alpha.15
 explorer, with the matching subtraction example and a full-size image link.
