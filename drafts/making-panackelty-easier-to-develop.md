@@ -36,6 +36,13 @@ There were other opportunities in local-variable lookup, string handling, collec
 
 Because the compiler runs on the VM, these improvements helped the compiler too. They also benefit other programs doing the affected kinds of work, although the size of that benefit depends on the program.
 
+There were measurable gains from the VM changes alone:
+
+- **Direct function lookup:** compiling a program importing all 28 standard-library modules fell from 0.612 seconds to 0.387 seconds, about 37% less time, using medians from five alternating pairs. A single compiler self-build comparison fell from 44.70 seconds to 29.31 seconds. That larger example is encouraging, but one pair is weaker evidence than repeated measurements.
+- **Reusing literal values during execution:** a later trial reduced median compiler self-build time from 17.44 seconds to 13.93 seconds, about 20% less time, across three pairs. This avoids repeatedly constructing the same eligible string and numeric literal values during an execution.
+
+Both trials used the same compiler bytecode for their respective baseline and candidate VMs, and produced identical compiled output. The later trial started from a VM that already included earlier improvements, so these are individual changes measured against their own baselines, not percentages to add together. Retaining lookup targets and literal values also has a memory cost; the trial records include those trade-offs.
+
 ## Then stop repeating compilation work
 
 Making the VM faster helps when the compiler has work to do. There was also work the compiler didn't need to do again at all.
@@ -93,4 +100,4 @@ Those features haven't been delivered by this optimisation work, and the design 
 
 I'd quite like that small uptime endpoint to work now.
 
-The measurement details are in the [compiler optimisation record](https://github.com/sproates/panackelty/blob/next/docs/COMPILER_EDIT_PROFILE.md) and the [VM direct-call trial](https://github.com/sproates/panackelty/blob/next/docs/VM_CALL_LOOKUP_TRIAL.md).
+The measurement details are in the [compiler optimisation record](https://github.com/sproates/panackelty/blob/next/docs/COMPILER_EDIT_PROFILE.md), the [VM direct-call trial](https://github.com/sproates/panackelty/blob/next/docs/VM_CALL_LOOKUP_TRIAL.md) and the [VM literal-reuse trial](https://github.com/sproates/panackelty/blob/next/docs/VM_LITERAL_REUSE_TRIAL.md).
