@@ -24,13 +24,11 @@ A language change involves a lot of repetition. Change the implementation, compi
 
 Slow feedback makes every part of that more expensive. It also makes it harder to stay interested in the problem you're actually trying to solve. By the time a check finishes, you've either been sitting waiting or you've moved on to something else.
 
-AI does a substantial amount of implementation and verification work on Panackelty, but that doesn't remove the cost of this loop. I still need to work through the design, review the behaviour and decide whether the result is good enough. Faster feedback helps with all of that.
-
 ## Start with what the machine is actually doing
 
-We profiled the VM while it compiled Panackelty code. One early opportunity was function lookup.
+I started by profiling the VM while it compiled Panackelty code. One early opportunity was function lookup.
 
-The bytecode identifies functions by name. The VM was repeatedly resolving those names while executing calls, even though a successfully verified program already gave us enough information to identify the target. The optimisation retains that target after verification, so subsequent direct calls don't have to repeat the lookup.
+The bytecode identifies functions by name. The VM was repeatedly resolving those names while executing calls, even though successful verification already provided enough information to identify the target. The optimisation retains that target after verification, so subsequent direct calls don't have to repeat the lookup.
 
 The names are still there for diagnostics. The bytecode format didn't need to change, and the runtime checks weren't removed.
 
@@ -54,7 +52,7 @@ The cache checks source and toolchain contents rather than trusting file modific
 
 That second case turned out to be more interesting than simply saving the compiler's internal data structures.
 
-An early implementation avoided checking unchanged function bodies again, but spent a lot of time decoding the saved checked bodies. We had removed some work and introduced another substantial cost in its place.
+An early implementation avoided checking unchanged function bodies again, but spent a lot of time decoding the saved checked bodies. That removed some work and introduced another substantial cost in its place.
 
 The later approach retains compiled functions together with the information needed to check their effects against the current program. It can reuse those functions without reconstructing their complete checked-body trees. Signatures and effect checks still run, and changes invalidate the affected modules and their consumers.
 
@@ -75,9 +73,9 @@ There are costs too. In the latest cold-build comparison, creating the summaries
 
 The full local validation for the latest slice still took about nine and a half minutes. Making one compilation faster doesn't make every part of validation disappear. There are runtime tests, process and network tests, bootstrap checks, packaging and installation checks as well.
 
-## There is more we could do
+## There is more to do
 
-Ordinary CI isn't yet retaining these incremental compiler caches between runs. We tested reuse between hosted jobs successfully, but adopting it in the regular pipelines is separate work. The cache has to be useful for the jobs that actually run, and restoring it has a cost of its own.
+Ordinary CI isn't yet retaining these incremental compiler caches between runs. A hosted trial successfully reused the cache between jobs, but adopting it in the regular pipelines is separate work. The cache has to be useful for the jobs that actually run, and restoring it has a cost of its own.
 
 There are also more compiler and VM opportunities. Incremental reuse is still conservative, and it works at module granularity rather than avoiding every possible piece of repeated work inside an edited module. Bootstrap proofs deliberately continue to compile afresh.
 
@@ -89,9 +87,9 @@ But I started this because I wanted to make language development easier. At some
 
 The immediate next step is the async clock API and the uptime example. Reading the clock isn't pure, but it can fit into the async model without pretending that it is. My preferred direction is to select the async API through the module import, while keeping the operation names familiar.
 
-The counter brings us back to application state. I'm leaning towards supporting anonymous functions, closures and explicit state as independently useful options, but the details still need to be worked through. In particular, I want it to be clear when a function uses state from outside its own body and how that state can change.
+The counter brings me back to application state. I'm leaning towards supporting anonymous functions, closures and explicit state as independently useful options, but the details still need to be worked through. In particular, I want it to be clear when a function uses state from outside its own body and how that state can change.
 
-Those features haven't been delivered by this optimisation work, and the design isn't finished. What we have is a better starting point for implementing and testing them.
+Those features haven't been delivered by this optimisation work, and the design isn't finished. I now have a better starting point for implementing and testing them.
 
 I'd quite like that small uptime endpoint to work now.
 
