@@ -7,6 +7,8 @@ tags:
   - tooling
 ---
 
+> Update, 6 November 2026: Native alpha.15 now includes the interactive explorer and expanded function-checking evidence. The examples below describe the earlier report interface. See the [current explanation guide](/explain/).
+
 A compiler can tell you whether code passed or failed. Panack Explain can also show selected decisions the checker made: the types it compared, the facts it used, and where those facts came from.
 
 I want compiler reasoning to be something developers can inspect while they’re trying to understand their code. These examples show what that looks like in the alpha.13 development on the `next` branch. I’ve omitted sections of the full reports that aren’t relevant to each example.
@@ -315,7 +317,7 @@ Other language tools expose useful compiler information in different forms. Rust
 
 I’m taking a different direction with Panack. I want one developer-facing, per-function explanation that brings selected decisions together across types, effects, and proofs. I want it to show not only why a check failed, but also why it passed, what checker facts supported the result, and where those facts came from. That combination is the part I think can become distinctive.
 
-There isn’t yet an explanation for every type, effect, and proof decision made while checking a function. I’ll keep expanding the coverage, and I’ll improve the output too. The full report can be long, with sections that aren’t relevant to every function. I want to make it easier to scan while keeping the facts and source locations that make the explanations useful. The current scope and known limits are in the compiler explanation guide ([4](https://github.com/sproates/panackelty/blob/next/docs/COMPILER_EXPLANATIONS.md)) and the Panackelty README ([5](https://github.com/sproates/panackelty/blob/next/README.md#explain-checked-types-guarded-conversions-subtraction-and-effects)).
+There isn’t yet an explanation for every type, effect, and proof decision made while checking a function. I’ll keep expanding the coverage, and I’ll improve the output too. The full report can be long, with sections that aren’t relevant to every function. I want to make it easier to scan while keeping the facts and source locations that make the explanations useful. The current scope and known limits are in the compiler explanation guide ([4](https://github.com/sproates/panackelty/blob/next/docs/guides/COMPILER_EXPLANATIONS.md)) and the Panackelty toolchain guide ([5](https://github.com/sproates/panackelty/blob/next/docs/guides/TOOLCHAIN.md#explain-checked-types-guarded-conversions-subtraction-and-effects)).
 
 ## The title
 
@@ -326,6 +328,6 @@ The title comes from “Double Life”, an advert for the original PlayStation t
 1. [Rust compiler command-line documentation](https://doc.rust-lang.org/stable/rustc/command-line-arguments.html).
 2. [GHC typechecker trace documentation](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghc.html).
 3. [GHCi `:type-at` documentation](https://downloads.haskell.org/ghc/9.14.1.20260728/docs/users_guide/ghci.html).
-4. [Panackelty compiler explanation guide](https://github.com/sproates/panackelty/blob/next/docs/COMPILER_EXPLANATIONS.md).
-5. [Panackelty README: explain checked types, guarded conversions, subtraction and effects](https://github.com/sproates/panackelty/blob/next/README.md#explain-checked-types-guarded-conversions-subtraction-and-effects).
+4. [Panackelty compiler explanation guide](https://github.com/sproates/panackelty/blob/next/docs/guides/COMPILER_EXPLANATIONS.md).
+5. [Panackelty toolchain guide: explain checked types, guarded conversions, subtraction and effects](https://github.com/sproates/panackelty/blob/next/docs/guides/TOOLCHAIN.md#explain-checked-types-guarded-conversions-subtraction-and-effects).
 6. [“Double Life” PlayStation advert](https://www.youtube.com/watch?v=QIW4HMl81hw).

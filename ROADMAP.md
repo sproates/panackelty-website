@@ -1,5 +1,31 @@
 # Website roadmap
 
+## Completed: alpha.15 promotion
+
+Published 6 November 2026. Native downloads, installer source pin, release notes,
+platform requirements, guard bindings and explanation guidance target the verified
+alpha.15 release. The final browser promotion selects v0.3.1 / alpha.15. Browser PRs #14 and #15 passed
+27 real-browser tests and runtime contracts, including validated domain types.
+The published browser archive matches the validated candidate byte for byte.
+PR #70 merged as `a8e2441` after all website checks passed.
+[Publication run 42220421756](https://github.com/sproates/panackelty-website/actions/runs/42220421756)
+passed exact deployed-byte and provenance verification. Live alpha.15 string
+validation accepted `Ada` and reported both failed constraints for an empty
+string. The overall alpha.15 rollout is complete.
+Public native archive hashes and source/bytecode examples pass on macOS.
+Owner approved the preview and all article edits. PR #68 merged as `8eb3944`.
+[Publication run 42191989577](https://github.com/sproates/panackelty-website/actions/runs/42191989577)
+passed deployment and exact-byte/provenance verification. The live homepage was
+verified in a browser and advertises alpha.15 as available. Native promotion is complete.
+HTTP reference snapshots are refreshed from the published release source.
+The explanation walkthrough includes a terminal capture from the released alpha.15
+explorer, with the matching subtraction example and a full-size image link.
+No article draft is included. Browser promotion is complete.
+The promotion audit also corrects outdated package/explanation claims, moved
+documentation links and the pinned playground’s installation link. Historical
+articles retain their original accounts with dated alpha.15 release notes.
+
+
 This repository owns website development, publication, release promotion and
 website-specific backlog. Core language and release programmes remain in
 [Panackelty core](https://github.com/sproates/panackelty/blob/main/ROADMAP.md).

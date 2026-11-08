@@ -10,6 +10,8 @@ tags:
   - alpha.15
 ---
 
+> Update, 6 November 2026: Validated domain types are now released in native alpha.15. This article records the design before implementation. See the [released guide and migration examples](https://github.com/sproates/panackelty/blob/v0.1.0-alpha.15/docs/guides/VALIDATED_DOMAIN_TYPES.md) for the supported behaviour.
+
 An empty string is a perfectly good string. Some of my favourite strings are empty.
 
 But it’s probably not a very useful name for a button. Two integers can both be valid in themselves while making no sense as the start and end of a range.

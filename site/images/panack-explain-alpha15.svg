@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480" role="img" aria-labelledby="title description">
+<title id="title">Panack explain: a proved subtraction</title>
+<desc id="description">Captured from the released alpha.15 interactive explorer. The project compiles. Panack knows n is at least 2 in this branch, so subtracting 2 leaves zero or more.</desc>
+<!-- Real terminal output captured at 86 columns by 20 rows from v0.1.0-alpha.15, using the remaining.panack example on /explain/. Text and row positions are preserved. -->
+<rect width="1000" height="480" rx="8" fill="#181d26"/>
+<g fill="#e6e8ed" font-family="Menlo, Consolas, monospace" font-size="18" style="white-space: pre" xml:space="preserve">
+<text x="24" y="32">Panack explain</text>
+<text x="24" y="55">Project compiles</text>
+<text x="24" y="78">pure remaining(n: Nat): Nat {</text>
+<text x="24" y="101"></text>
+<text x="24" y="124">    n - 2</text>
+<text x="24" y="147"></text>
+<text x="24" y="170">n - 2 =&gt; Nat  [Proved]</text>
+<text x="24" y="193">n - 2</text>
+<text x="24" y="216">Panack knows n is at least 2 here. Subtracting 2 therefore leaves zero or more.</text>
+<text x="24" y="239">n &gt;= 2 must be true in this branch.</text>
+<text x="24" y="262"></text>
+<text x="24" y="285"></text>
+<text x="24" y="308"></text>
+<text x="24" y="331"></text>
+<text x="24" y="354"></text>
+<text x="24" y="377"></text>
+<text x="24" y="400"></text>
+<text x="24" y="423"></text>
+<text x="24" y="446">Enter show source   Left back   q quit</text>
+</g>
+</svg>

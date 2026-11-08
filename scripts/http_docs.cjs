@@ -49,7 +49,7 @@ function render(doc, sources) {
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">${doc.label} · alpha.14</p>
+<p class="eyebrow">${doc.label} · alpha.15</p>
 <h1 id="page-title">${doc.title}</h1><p class="lede">${doc.intro}</p>
 <p>${doc.label === 'API reference' ? `Want to get started quickly? See the <a href="../../${companion.route}/">HTTP Server Playbook</a>` : `Looking up a method? See the <a href="../../${companion.route}/">HTTP Server Reference</a>`}</p>
 </section>

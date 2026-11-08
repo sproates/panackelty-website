@@ -8,10 +8,12 @@ test('pinned playground artifacts link to the relocated language reference', () 
   const home = fs.readFileSync(path.join(__dirname, '../site/index.html'), 'utf8');
   const old = 'https://github.com/sproates/panackelty/blob/main/SPEC.md';
   const current = 'https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md';
-  const artifact = `<html><head></head><body><header class="site-header"></header><a href="${old}">Language reference</a></body></html>`;
+  const artifact = `<html><head></head><body><header class="site-header"></header><a href="${old}">Language reference</a><noscript><a href="../#start">Install</a></noscript></body></html>`;
   const result = render(home, artifact, 'playground');
   assert.ok(result.includes(`href="${current}"`));
   assert.ok(!result.includes(old));
+  assert.ok(result.includes('<noscript><a href="../get-started/">Install</a></noscript>'));
+  assert.ok(!result.includes('href="../#start"'));
   assert.ok(render(home, artifact.replace(old, current), 'playground').includes(`href="${current}"`));
 });
 

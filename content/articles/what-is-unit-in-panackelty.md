@@ -64,6 +64,6 @@ The empty parentheses on the last line are the result. They are not an omitted r
 
 `Unit` is also different from `None()`. `None()` means an optional value is absent; `Unit` is a present success value with nothing more to carry. Use `Void` when a function returns no value at all. Use `Unit` when the result needs to say that an operation succeeded, even though there is no data to return.
 
-For the exact rules and more examples, see [First-class Unit in the specification](https://github.com/sproates/panackelty/blob/main/SPEC.md#first-class-unit), [Exact fractions and Unit in the README](https://github.com/sproates/panackelty/blob/main/README.md#exact-fractions-and-unit), and [typed filesystem operations](https://github.com/sproates/panackelty/blob/main/SPEC.md#typed-filesystem-process-and-sleep-apis).
+For the exact rules and more examples, see [First-class Unit in the specification](https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md#first-class-unit), [Exact fractions and Unit in the language tour](https://github.com/sproates/panackelty/blob/main/docs/guides/LANGUAGE_TOUR.md#exact-fractions-and-unit), and [typed filesystem operations](https://github.com/sproates/panackelty/blob/main/docs/reference/SPEC.md#typed-filesystem-process-and-sleep-apis).
 
 Is this hugely useful? Necessary? Your mileage may vary, and that’s fine. I think it’s a perfect fit for Panackelty.
