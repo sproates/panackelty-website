@@ -8,9 +8,9 @@ tags:
   - performance
 ---
 
-I wanted to write a small HTTP service with a healthcheck endpoint that reported its uptime. Panackelty already has an HTTP server, so that seemed a reasonable thing to try.
+If I wanted to write a small HTTP service with a healthcheck endpoint that reported its uptime, that would seem a reasonable thing to do in Panackelty. It already has an HTTP server.
 
-It didn't work. The clock API was available, but an async handler couldn't call it. Then I tried an endpoint that counted how many requests the server had handled, which exposed a different limitation: how should handlers share and update application state?
+But with the current API, it wouldn't work. The clock API is available, but an async handler wouldn't be able to call it. An endpoint that counted how many requests the server had handled would raise a different question: how should handlers share and update application state?
 
 These are exactly the sorts of problems I want to find by building real programs. They're also the reason I want to improve async access to the standard library and work through support for anonymous functions, closures and explicit state.
 
