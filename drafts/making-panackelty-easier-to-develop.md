@@ -5,6 +5,7 @@ status: draft
 tags:
   - development
   - compiler
+  - vm
   - performance
 ---
 
