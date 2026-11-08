@@ -1,7 +1,8 @@
 ---
 title: Making Panackelty easier to develop
 summary: Before working on async standard-library APIs, closures and state, I spent some time making the VM and compiler faster. The aim was to make the next language changes less painful to build and verify.
-status: draft
+status: published
+date: 2026-11-08
 tags:
   - development
   - compiler
