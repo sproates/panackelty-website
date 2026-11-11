@@ -6,7 +6,7 @@ publishedAt: 2026-10-27T01:04:32+01:00
 summary: An empty string is a perfectly good string. But is it a useful label? A look at the domain types I'm planning for Panackelty.
 tags:
   - types
-  - language-design
+  - language design
   - alpha.15
 ---
 
