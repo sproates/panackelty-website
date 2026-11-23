@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read beneath a designated root without allowing the requested path to escape it.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-filesystem-confined/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Confined filesystem reads — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Confined filesystem reads</h1><p class="lede">Read beneath a designated root without allowing the requested path to escape it.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#root-identity">root_identity()</a></li>
+<li class="toc-level-2"><a href="#read">read()</a></li>
+<li class="toc-level-2"><a href="#read-link">read_link()</a></li>
+<li class="toc-level-2"><a href="#returned-records">Returned records</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Read beneath a designated root without allowing the requested path to escape it.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/filesystem/confined as confined</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/filesystem/confined/async as confined</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="root-identity">root_identity()</h2>
+<pre><code class="language-panack">root_identity(root: Path): Result[FilesystemRootIdentity,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>root: Path</code> — existing root directory.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[FilesystemRootIdentity,FilesystemError]</code>.</p>
+<p>Reports the physical root device and inode. No descriptor stays open between calls. Compare this identity with each read when replacement of the root must be detected.</p>
+<p><strong>Errors:</strong> Invalid roots and filesystem failures are returned as <code>FilesystemError</code>.</p>
+<h2 id="read">read()</h2>
+<pre><code class="language-panack">read(root: Path, relative: Path, limit: Nat): Result[FilesystemRootRead,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>root: Path</code> — root directory.</li>
+<li><code>relative: Path</code> — relative file path beneath the root.</li>
+<li><code>limit: Nat</code> — maximum bytes, at most 16 MiB.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[FilesystemRootRead,FilesystemError]</code>, containing root identity and file bytes.</p>
+<p>Opens the root and resolves the regular file beneath its held descriptor. Relative symlinks may be followed only while remaining beneath the root. Absolute links and parent escapes are rejected. Paths are bounded to 4096 bytes, walking to 256 directory levels and 40 symlink expansions. The read is confined, but is not a snapshot against concurrent edits.</p>
+<p><strong>Errors:</strong> Escapes, invalid paths, symlink loops, nonregular files, exceeded bounds and host failures return <code>FilesystemError</code>.</p>
+<h2 id="read-link">read_link()</h2>
+<pre><code class="language-panack">read_link(root: Path, relative: Path): Result[Bytes,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>root: Path</code> — root directory.</li>
+<li><code>relative: Path</code> — relative path of the symlink.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,FilesystemError]</code>, native target bytes.</p>
+<p>Reads the final link without following its target. Rejects absolute/parent-traversing input paths and symlinked ancestors. Targets above 4096 bytes fail. It does not promise that the link will remain unchanged.</p>
+<p><strong>Errors:</strong> Missing paths, a final entry that is not a symlink, unsafe ancestors and oversized targets fail.</p>
+<h2 id="returned-records">Returned records</h2>
+<pre><code class="language-panack">record FilesystemRootIdentity { device: Nat, inode: Nat }
+record FilesystemRootRead { identity: FilesystemRootIdentity, contents: Bytes }</code></pre>
+<p><code>identity</code> identifies the root opened for that read. <code>contents</code> is the complete bounded file content. <a href="../../reference/stdlib-filesystem/#filesystemerror">FilesystemError fields and categories</a> apply to all three operations. The older <code>read_beneath</code> export retains its compatibility <code>HostError</code> result.</p>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-input-and-files/#complete-example-async-publish-note">The publication example</a> reads the published file through this confined interface.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/filesystem/confined.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

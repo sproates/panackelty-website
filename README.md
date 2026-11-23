@@ -22,6 +22,17 @@ Previous release summaries live at `/previous-releases/`, preserving the older
 roadmap text while the roadmap describes the current release and upcoming work.
 All pages use the homepage-owned shared navigation and footer.
 
+## Standard library development documentation
+
+The alpha.16 stdlib pages use a reviewed core snapshot in
+[docs/stdlib](docs/stdlib/README.md). Update the snapshot and run
+`node scripts/stdlib_docs.cjs` to regenerate the reference and guide pages. Module references include signatures,
+parameters, results, behaviour and errors directly on the site; GitHub links are
+supplementary implementation references.
+`make check` verifies generated content, complete examples and local links.
+These pages are explicitly development documentation; they do not advance the
+native release or browser playground pins.
+
 ## Develop and preview
 
 Use Node 24, Git, Make, a POSIX shell, awk and tar. No npm packages are needed

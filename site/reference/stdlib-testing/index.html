@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Build explicit test results using pure assertions. Reporting is a separate checked effect.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-testing/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Testing assertions — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Testing assertions</h1><p class="lede">Build explicit test results using pure assertions. Reporting is a separate checked effect.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#expect">expect()</a></li>
+<li class="toc-level-2"><a href="#equal-str">equal_str()</a></li>
+<li class="toc-level-2"><a href="#equal-nat">equal_nat()</a></li>
+<li class="toc-level-2"><a href="#testresult">TestResult</a></li>
+<li class="toc-level-2"><a href="#reporting">Reporting</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Build explicit test results using pure assertions. Reporting is a separate checked effect.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/testing as testing</code></pre>
+<h2 id="expect">expect()</h2>
+<pre><code class="language-panack">pure expect(name: Str, condition: Bool, reason: Str): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>condition: Bool</code> — whether the assertion holds.</li>
+<li><code>reason: Str</code> — explanation used when it fails.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Pure. Creates a passed or failed result without printing or exiting.</p>
+<h2 id="equal-str">equal_str()</h2>
+<pre><code class="language-panack">pure equal_str(name: Str, actual: Str, expected: Str): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>actual: Str</code> — observed value.</li>
+<li><code>expected: Str</code> — required value.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Pure. Compares values and supplies an expected/actual explanation on failure.</p>
+<h2 id="equal-nat">equal_nat()</h2>
+<pre><code class="language-panack">pure equal_nat(name: Str, actual: Nat, expected: Nat): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>actual: Nat</code> — observed value.</li>
+<li><code>expected: Nat</code> — required value.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Pure. Compares values and supplies an expected/actual explanation on failure.</p>
+<h2 id="testresult">TestResult</h2>
+<pre><code class="language-panack">record TestResult { name: Str, outcome: TestOutcome }
+enum TestOutcome { TestPassed, TestFailed(Str) }</code></pre>
+<p><code>TestFailed(reason)</code> retains the failure explanation; <code>TestPassed()</code> has no payload. Assertions do not stop later tests.</p>
+<h2 id="reporting">Reporting</h2>
+<p>Use <a href="../../reference/stdlib-testing-reporting/">testing/reporting</a> for checked output. The older <code>testing.report(results: [TestResult]): Nat</code> is an ordinary compatibility function that returns the failure count but does not expose output failure as a <code>Result</code>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/testing.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

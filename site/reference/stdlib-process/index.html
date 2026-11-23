@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Run a bounded subprocess, inspect its termination and access invocation arguments.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-process/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Processes — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Processes</h1><p class="lede">Run a bounded subprocess, inspect its termination and access invocation arguments.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#run">run()</a></li>
+<li class="toc-level-2"><a href="#arguments">arguments()</a></li>
+<li class="toc-level-2"><a href="#exit">exit()</a></li>
+<li class="toc-level-2"><a href="#command">Command</a></li>
+<li class="toc-level-2"><a href="#processoutput">ProcessOutput</a></li>
+<li class="toc-level-2"><a href="#processerror">ProcessError</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-pipe-input">Complete example: async pipe input</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Run a bounded subprocess, inspect its termination and access invocation arguments.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/process as process</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/process/async as process</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="run">run()</h2>
+<pre><code class="language-panack">run(command: Command): Result[ProcessOutput,ProcessError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>command: Command</code> — executable, arguments, input, working directory, environment, timeout and combined output limit; all fields are required.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[ProcessOutput,ProcessError]</code>. A nonzero child exit is still <code>Ok(output)</code>.</p>
+<p>Runs the exact executable path. Relative executable paths resolve against the child working directory. There is no PATH search or implicit shell. Arguments are passed separately and exclude argv[0]. The async form suspends while the process runs. Timeout or cancellation stops and reaps the process group under the host policy; descendants that leave that group are not a general containment guarantee. Timeout and output-limit failures return no partial output.</p>
+<p><strong>Errors:</strong> Invalid arguments/environment, launch failure, timeout and combined-output exhaustion have distinct categories.</p>
+<h2 id="arguments">arguments()</h2>
+<pre><code class="language-panack">arguments(): [Str]</code></pre>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+<p><strong>Returns:</strong> <code>[Str]</code>, the arguments supplied to the current invocation.</p>
+<p>Use the async import and <code>await process.arguments()</code> inside an async function.</p>
+<h2 id="exit">exit()</h2>
+<pre><code class="language-panack">exit(status: Nat): Unit</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>status: Nat</code> — requested exit status.</li>
+</ul>
+<p><strong>Returns:</strong> Declared <code>Unit</code>; normal execution does not continue after exiting.</p>
+<p>Ends the current invocation with the requested status. Use the async form inside async code.</p>
+<h2 id="command">Command</h2>
+<pre><code class="language-panack">record Command {
+  executable: Path, arguments: [Str], stdin: Bytes, working_directory: Path,
+  environment: ProcessEnvironment, timeout: Duration, output_limit: Nat
+}</code></pre>
+<ul>
+<li><code>executable</code> is the exact path to run.</li>
+<li><code>arguments</code> excludes argv[0]; values must not contain NUL.</li>
+<li><code>stdin</code> is the complete byte input, at most 16 MiB.</li>
+<li><code>working_directory</code> is the child working directory.</li>
+<li><code>environment</code> selects inherited or exact entries.</li>
+<li><code>timeout</code> must be positive and at most 365 days.</li>
+<li><code>output_limit</code> bounds stdout and stderr combined, at most 16 MiB. Arguments and environment lists each allow at most 4096 entries. Host argument-size limits may be smaller.</li>
+</ul>
+<pre><code class="language-panack">enum ProcessEnvironment { InheritEnvironment([Str]), ExactEnvironment([Str]) }</code></pre>
+<p>Entries are <code>NAME=value</code> strings with unique, nonempty names and no NUL. Empty values are allowed. <code>InheritEnvironment</code> overrides entries in the invocation environment; <code>ExactEnvironment</code> supplies only the listed entries. An exact environment does not sandbox the child.</p>
+<h2 id="processoutput">ProcessOutput</h2>
+<pre><code class="language-panack">record ProcessOutput { termination: ProcessTermination, stdout: Bytes, stderr: Bytes }
+enum ProcessTermination { Exited(Nat), Signalled(Nat) }</code></pre>
+<p><code>Exited(code)</code> identifies normal termination; check whether the code is zero. <code>Signalled(signal)</code> identifies signal termination. Output is bytes: use checked UTF-8 decoding when text is expected.</p>
+<h2 id="processerror">ProcessError</h2>
+<pre><code class="language-panack">record ProcessError {
+  executable: Path, working_directory: Path, timeout: Duration, output_limit: Nat,
+  kind: ProcessErrorKind, native: HostError
+}</code></pre>
+<p>The record preserves executable, directory and bounds, but excludes arguments, environment and input/output contents. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum ProcessErrorKind {
+  InvalidTimeout, LimitExceeded, InvalidArgument, InvalidEnvironment, LaunchFailed,
+  TimedOut, OutputLimitExceeded, ClockUnavailable, ResourceLimit, Cancelled,
+  HostFailure, UnsupportedHost, OtherFailure
+}</code></pre>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-pipe-input">Run the complete bounded subprocess example</a>.</p>
+<h2 id="complete-example-async-pipe-input">Complete example: async pipe input</h2>
+<pre><code class="language-panack">import stdlib/encoding/utf8 as utf8
+import stdlib/path as paths
+import stdlib/process/async as process
+import stdlib/time/async as time
+import stdlib/console/async as console
+
+async copy_text(): Result[Str,Str] {
+  match paths.from_text(&quot;/bin/cat&quot;) {
+    Error(path_error) =&gt; Error(&quot;The executable path is invalid.&quot;),
+    Ok(executable) =&gt; {
+      command = process.Command(executable, [], &quot;hello λ&quot;.encode_utf8(),
+        paths.current(), process.ExactEnvironment([]), time.seconds(5), 64)
+      match await process.run(command) {
+        Error(problem) =&gt; Error(problem.render()),
+        Ok(output) =&gt; match output.termination {
+          process.Signalled(signal) =&gt; Error(&quot;cat was terminated by signal ${signal}.&quot;),
+          process.Exited(status) =&gt; {
+            if status != 0 { Error(&quot;cat exited with status ${status}.&quot;) }
+            else { match utf8.decode(output.stdout) {
+              Error(decode_error) =&gt; Error(&quot;cat returned invalid UTF-8.&quot;), Ok(text) =&gt; Ok(text)
+            } }
+          }
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await copy_text() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await process.exit(1)
+    },
+    Ok(text) =&gt; match await console.write_line(text) {
+      Error(write_error) =&gt; await process.exit(1), Ok(written) =&gt; ()
+    }
+  }
+}</code></pre><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/process.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

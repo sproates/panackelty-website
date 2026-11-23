@@ -28,7 +28,7 @@ async function checkPages(root, base) {
       throw new Error(`Unexpected bundled coverage report: ${file}`);
     }
   }
-  const targets = new Set(['index.html', 'releases/index.html', 'playground/index.html', ...landing, ...['capabilities','get-started','examples','explain','under-the-hood','roadmap','previous-releases','api','reference/http-client','reference/http-server','playbook/http-server'].map(page => `${page}/index.html`)]);
+  const targets = new Set(['index.html', 'releases/index.html', 'playground/index.html', ...landing, ...['capabilities','get-started','examples','explain','under-the-hood','roadmap','previous-releases','api','reference/http-client','reference/http-server','playbook/http-server', 'reference/standard-library', 'playbook/stdlib-migration', 'playbook/async-resources', 'playbook/async-input-and-files', 'playbook/async-stdlib', "reference/stdlib-time", "reference/stdlib-environment", "reference/stdlib-console", "reference/stdlib-process", "reference/stdlib-filesystem", "reference/stdlib-filesystem-confined", "reference/stdlib-filesystem-staging", "reference/stdlib-sha256", "reference/stdlib-gzip", "reference/stdlib-http-stream", "reference/stdlib-tcp", "reference/stdlib-bytecode", "reference/stdlib-path", "reference/stdlib-utf8", "reference/stdlib-bytes", "reference/stdlib-testing", "reference/stdlib-testing-reporting", "reference/stdlib-testing-filesystem", "reference/stdlib-testing-process"].map(page => `${page}/index.html`)]);
   for (const file of targets) {
     if (!fs.statSync(path.join(root, file)).isFile()) throw new Error(`Missing entry point: ${file}`);
   }

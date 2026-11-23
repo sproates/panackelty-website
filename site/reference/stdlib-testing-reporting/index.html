@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Print ordered test results and return either the failure count or a checked console error.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-testing-reporting/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Test reporting — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Test reporting</h1><p class="lede">Print ordered test results and return either the failure count or a checked console error.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#report">report()</a></li>
+<li class="toc-level-2"><a href="#result-types">Result types</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Print ordered test results and return either the failure count or a checked console error.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/testing/reporting as reporting</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/testing/reporting/async as reporting</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="report">report()</h2>
+<pre><code class="language-panack">report(results: [TestResult]): Result[Nat,ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>results: [TestResult]</code> — results in the order to report.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Nat,ConsoleError]</code>. <code>Ok(count)</code> contains the number of failed tests.</p>
+<p>Prints PASS/FAIL lines followed by the total and failure counts. Stops on the first failed write. It does not choose an exit status for the program; use the returned count for that policy.</p>
+<p><strong>Errors:</strong> <a href="../../reference/stdlib-console/#consoleerror">ConsoleError</a> if output fails. A failed write prevents a successful count return.</p>
+<h2 id="result-types">Result types</h2>
+<p>This module re-exports <a href="../../reference/stdlib-testing/">TestResult, TestOutcome and the pure assertions</a>. They have the same identity as in <code>stdlib/testing</code>, including through the async module.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/testing/reporting.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

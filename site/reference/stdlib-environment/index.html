@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read environment values captured for the current invocation.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-environment/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Environment — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Environment</h1><p class="lede">Read environment values captured for the current invocation.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#get">get()</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Read environment values captured for the current invocation.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/environment as environment</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/environment/async as environment</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="get">get()</h2>
+<pre><code class="language-panack">get(name: Str): Option[Str]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — the environment variable name.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Option[Str]</code>: <code>Some(value)</code> when present, <code>None()</code> when absent.</p>
+<p>The empty value <code>Some(&quot;&quot;)</code> is distinct from absence. This reads the invocation snapshot, not a live view of later host changes. With the async import use <code>await environment.get(name)</code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-panack">name = await environment.get(&quot;APP_NAME&quot;)
+display_name = name.value_or(&quot;Panack service&quot;)</code></pre>
+<p>This fragment belongs inside an async function. It substitutes a default only when the variable is absent.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/environment.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

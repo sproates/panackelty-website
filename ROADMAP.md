@@ -1,5 +1,16 @@
 # Website roadmap
 
+## In review: alpha.16 standard library documentation
+
+23 November 2026: five development pages cover the module reference, migration,
+async resources, bounded input and file publication, and practical async stdlib
+usage. Nine complete examples are copied from validated core revision
+`d57d2473da478424066dc8d4d777fd9a0b979645`. Local website checks pass; owner preview
+review, integration and publication remain pending. This delivers the website
+part of core RM#162 / AS5 without changing released downloads, the playground
+or published articles. No compiler/runtime performance impact: static pages and
+scoped table styles only; browser assets are unchanged.
+
 ## Completed: alpha.15 promotion
 
 Published 6 November 2026. Native downloads, installer source pin, release notes,
@@ -309,3 +320,21 @@ The v0.1.3 browser archive retained a hard-coded alpha.12 label despite its
 alpha.13 compiler. Website assembly now owns that presentation text, using
 reviewed compiler/bytecode metadata alongside the immutable browser pin. Runtime
 asset bytes and checksums are unchanged. Publication acceptance remains pending.
+
+## Stdlib reference review correction — 23 November 2026
+
+Owner feedback: reference pages must explain the APIs directly, in the style of
+Node API documentation, rather than send readers to GitHub for essential detail.
+Website PR #77 now includes nineteen module pages and 72 function entries with
+signatures, parameters, results, errors and lifetime/bounds information. The index
+links to those pages; source links are supplementary. The standard library stays
+ahead of HTTP on API Docs. Preview review and publication remain pending.
+
+Owner accepted the documentation approach and preview on 23 November 2026.
+This is preview approval, not permission to publish. PR #77 remains unmerged;
+website integration/publication requires separate authorisation.
+
+The owner authorised PR #77 checks and publication on 23 November 2026, conditional
+on passing checks. Completion takes effect after merge, successful deployment and
+live verification of the module reference/navigation. Until then, publication
+acceptance remains pending. Released version pins and articles are unchanged.

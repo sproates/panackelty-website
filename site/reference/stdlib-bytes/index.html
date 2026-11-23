@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Construct empty bytes and take bounded slices. Byte values are distinct from text.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-bytes/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Bytes — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Bytes</h1><p class="lede">Construct empty bytes and take bounded slices. Byte values are distinct from text.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#empty">empty()</a></li>
+<li class="toc-level-2"><a href="#slice">slice()</a></li>
+<li class="toc-level-2"><a href="#value-methods">Value methods</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Construct empty bytes and take bounded slices. Byte values are distinct from text.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/bytes as bytes</code></pre>
+<h2 id="empty">empty()</h2>
+<pre><code class="language-panack">pure empty(): Bytes</code></pre>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+<p><strong>Returns:</strong> <code>Bytes</code>, an empty byte sequence.</p>
+<p>Pure. Equivalent to constructing <code>bytes()</code>.</p>
+<h2 id="slice">slice()</h2>
+<pre><code class="language-panack">pure slice(data: Bytes, start: Nat, end: Nat): Bytes</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>data: Bytes</code> — source bytes.</li>
+<li><code>start: Nat</code> — start offset, inclusive.</li>
+<li><code>end: Nat</code> — end offset, exclusive.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Bytes</code>, the selected slice.</p>
+<p>Pure compatibility function. New code may use <code>data.slice(start,end)</code> with the same bounds contract.</p>
+<p><strong>Errors:</strong> Bounds must satisfy <code>start &lt;= end &lt;= data.len()</code>. Invalid bounds trap; this operation does not return a <code>Result</code>.</p>
+<h2 id="value-methods">Value methods</h2>
+<p><code>data.len(): Nat</code> returns the byte count. <code>data.slice(start: Nat,end: Nat): Bytes</code> takes the same bounded half-open slice as the module function. <code>length()</code> remains the compatibility length name. UTF-8 decoding is a separate checked operation: <a href="../../reference/stdlib-utf8/#decode">utf8.decode</a>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/bytes.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

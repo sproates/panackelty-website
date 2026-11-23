@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Decode bytes to text with an explicit error location and category.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-utf8/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>UTF-8 — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">UTF-8</h1><p class="lede">Decode bytes to text with an explicit error location and category.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#decode">decode()</a></li>
+<li class="toc-level-2"><a href="#utf8error">Utf8Error</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Decode bytes to text with an explicit error location and category.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/encoding/utf8 as utf8</code></pre>
+<h2 id="decode">decode()</h2>
+<pre><code class="language-panack">pure decode(data: Bytes): Result[Str,Utf8Error]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>data: Bytes</code> — complete byte sequence to decode.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Str,Utf8Error]</code>.</p>
+<p>Pure and usable from ordinary or async code. Never silently replaces invalid bytes. A truncated final sequence is an error: when processing streamed input, retain incomplete sequences or assemble a bounded complete buffer first. Encoding in the other direction uses the pure <code>text.encode_utf8(): Bytes</code> method.</p>
+<p><strong>Errors:</strong> The error identifies a zero-based byte offset and one of the categories below.</p>
+<h2 id="utf8error">Utf8Error</h2>
+<pre><code class="language-panack">record Utf8Error { offset: Nat, kind: Utf8ErrorKind }
+enum Utf8ErrorKind {
+  InvalidLeadingByte, InvalidContinuationByte, TruncatedSequence,
+  OverlongEncoding, SurrogateCodePoint, CodePointOutOfRange
+}</code></pre>
+<p><code>offset</code> is the offending continuation byte, or otherwise the start of the invalid sequence. <code>render(): Str</code> produces a human explanation including that zero-based location. This pure error contains no host error.</p>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-input-and-files/#complete-example-async-console-input">The console input program</a> decodes a bounded complete buffer and reports invalid input.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/encoding/utf8.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

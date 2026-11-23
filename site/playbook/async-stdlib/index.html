@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read the clock, work with files and subprocesses, and handle HTTP failures.">
+<link rel="canonical" href="https://panackelty.com/playbook/async-stdlib/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Async stdlib in practice — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Async stdlib in practice</h1><p class="lede">Read the clock, work with files and subprocesses, and handle HTTP failures.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#choose-the-effect-at-the-import">Choose the effect at the import</a></li>
+<li class="toc-level-2"><a href="#measure-elapsed-time">Measure elapsed time</a></li>
+<li class="toc-level-2"><a href="#write-and-read-a-temporary-note">Write and read a temporary note</a></li>
+<li class="toc-level-2"><a href="#run-a-bounded-subprocess">Run a bounded subprocess</a></li>
+<li class="toc-level-2"><a href="#return-uptime-from-an-http-handler">Return uptime from an HTTP handler</a></li>
+<li class="toc-level-2"><a href="#keep-http-failures-useful">Keep HTTP failures useful</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-timing">Complete example: async timing</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-temporary-note">Complete example: async temporary note</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-pipe-input">Complete example: async pipe input</a></li>
+<li class="toc-level-2"><a href="#complete-example-http-uptime-service">Complete example: HTTP uptime service</a></li>
+<li class="toc-level-2"><a href="#complete-example-diagnostic-http-client">Complete example: Diagnostic HTTP client</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>These examples target <strong>alpha.16 development</strong>, not the released alpha.15 installation or browser playground. Build the matching native development checkout to run them. The full source is included below each recipe.</p>
+<h2 id="choose-the-effect-at-the-import">Choose the effect at the import</h2>
+<pre><code class="language-panack">import stdlib/time/async as time</code></pre>
+<p>Read the clock with <code>await time.now()</code>. Use pure helpers such as <code>time.seconds(5)</code> without await. An ordinary caller instead imports <code>stdlib/time as time</code> and calls <code>time.now()</code> directly. The function names stay the same.</p>
+<p>Async operations allow the calling task to suspend. They do not make impure work pure and do not mean that every operation starts a new thread.</p>
+<h2 id="measure-elapsed-time">Measure elapsed time</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-timing">The timing example</a> reads a monotonic clock, awaits a short timer and reads again. It reports whether the clock stayed monotonic; actual timings vary, so its output does not claim a precise delay.</p>
+<pre><code class="language-sh">./bin/panack run examples/async_timing.panack</code></pre>
+<pre><code class="language-text">Clock did not move backwards: true</code></pre>
+<p><code>now.difference(start)</code> returns a Duration. The clock is for elapsed time, not calendar dates, and equal consecutive readings are allowed.</p>
+<h2 id="write-and-read-a-temporary-note">Write and read a temporary note</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-temporary-note">The temporary-note example</a> creates a unique file, writes a note, reads it with a byte limit, checks UTF-8 and attempts cleanup on success or failure. It needs a writable current directory.</p>
+<pre><code class="language-sh">./bin/panack run examples/async_temporary_note.panack</code></pre>
+<pre><code class="language-text">remember the milk</code></pre>
+<p>Filesystem errors explain the failed operation. If cleanup also fails, preserve both explanations rather than losing the original failure.</p>
+<h2 id="run-a-bounded-subprocess">Run a bounded subprocess</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-pipe-input">The subprocess example</a> invokes <code>/bin/cat</code> with explicit input, an exact empty environment, a five-second timeout and a 64-byte output limit. It requires a POSIX host with that executable.</p>
+<pre><code class="language-sh">./bin/panack run examples/async_pipe_input.panack</code></pre>
+<pre><code class="language-text">hello λ</code></pre>
+<p>A completed process can return a nonzero status or be terminated by a signal. Check <code>output.termination</code>, not just the outer <code>Result</code>. Decode captured bytes with the checked UTF-8 API.</p>
+<h2 id="return-uptime-from-an-http-handler">Return uptime from an HTTP handler</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-http-uptime-service">The uptime service</a> stores its start Instant and service name in an immutable context. Each <code>/health</code> request awaits a new clock reading. No closure or mutable global is needed.</p>
+<pre><code class="language-sh">./bin/panack run --project examples/network/http_uptime/panack.json 8082</code></pre>
+<p>Open <code>http://127.0.0.1:8082/health</code> on the same machine. The response contains <code>uptime_ns=</code> followed by elapsed nanoseconds. A clock failure returns HTTP 503 with an explanation. Nanosecond representation does not imply nanosecond accuracy. The service binds to loopback; Ctrl-C stops it.</p>
+<h2 id="keep-http-failures-useful">Keep HTTP failures useful</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-diagnostic-http-client">The diagnostic client</a> imports <code>http/client/async</code>. It applies explicit bounds and prints either the HTTP status/body size or the rendered error with available transport detail.</p>
+<pre><code class="language-sh">./bin/panack run --project examples/network/http_diagnostic_client/panack.json https://example.com/</code></pre>
+<p>This command needs network access. A valid HTTP 404 is a received response; this example prints its status and exits unsuccessfully as an application policy. A URL, DNS, connection, TLS or framing failure is an error result. Certificates and hostnames remain verified. The error preserves details rather than guessing a cause; use typed categories for program decisions instead of parsing prose.</p>
+<p>See the <a href="../../reference/standard-library/">stdlib reference</a>, <a href="../../playbook/stdlib-migration/">migration guide</a>, <a href="../../playbook/async-resources/">resource guide</a> and <a href="../../playbook/async-input-and-files/">input/publication guide</a> for the rest of the API.</p>
+<h2 id="complete-example-async-timing">Complete example: async timing</h2>
+<pre><code class="language-panack">import stdlib/time/async as time
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async measure_pause(): Result[Bool,Str] {
+  match await time.now() {
+    Error(clock_error) =&gt; Error(&quot;The monotonic clock is unavailable.&quot;),
+    Ok(start) =&gt; match await time.sleep(time.milliseconds(1)) {
+      Error(problem) =&gt; Error(problem.render()),
+      Ok(slept) =&gt; match await time.now() {
+        Error(second_clock_error) =&gt; Error(&quot;The monotonic clock is unavailable.&quot;),
+        Ok(end) =&gt; Ok(!end.is_before(start))
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await measure_pause() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(monotonic) =&gt; match await console.write_line(&quot;Clock did not move backwards: ${monotonic}&quot;) {
+      Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-async-temporary-note">Complete example: async temporary note</h2>
+<pre><code class="language-panack">import stdlib/encoding/utf8 as utf8
+import stdlib/filesystem/async as files
+import stdlib/path as paths
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async write_and_read(file: Path): Result[Str,Str] {
+  match await files.write(file, &quot;remember the milk&quot;.encode_utf8()) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(written) =&gt; match await files.read(file, 1024) {
+      Error(problem) =&gt; Error(problem.render()),
+      Ok(data) =&gt; match utf8.decode(data) {
+        Error(decode_error) =&gt; Error(&quot;The note is not valid UTF-8.&quot;), Ok(text) =&gt; Ok(text)
+      }
+    }
+  }
+}
+
+async temporary_note(): Result[Str,Str] {
+  match await files.create_temp_file(paths.current()) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(file) =&gt; {
+      result = await write_and_read(file)
+      // Always attempt cleanup, including when writing or reading failed.
+      match await files.remove_file(file) {
+        Ok(removed) =&gt; result,
+        Error(cleanup) =&gt; match result {
+          Ok(text) =&gt; Error(cleanup.render()),
+          Error(original) =&gt; Error(original + &quot;\nCleanup also failed: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await temporary_note() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(text) =&gt; match await console.write_line(text) {
+      Error(write_error) =&gt; await host.exit(1), Ok(displayed) =&gt; ()
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-async-pipe-input">Complete example: async pipe input</h2>
+<pre><code class="language-panack">import stdlib/encoding/utf8 as utf8
+import stdlib/path as paths
+import stdlib/process/async as process
+import stdlib/time/async as time
+import stdlib/console/async as console
+
+async copy_text(): Result[Str,Str] {
+  match paths.from_text(&quot;/bin/cat&quot;) {
+    Error(path_error) =&gt; Error(&quot;The executable path is invalid.&quot;),
+    Ok(executable) =&gt; {
+      command = process.Command(executable, [], &quot;hello λ&quot;.encode_utf8(),
+        paths.current(), process.ExactEnvironment([]), time.seconds(5), 64)
+      match await process.run(command) {
+        Error(problem) =&gt; Error(problem.render()),
+        Ok(output) =&gt; match output.termination {
+          process.Signalled(signal) =&gt; Error(&quot;cat was terminated by signal ${signal}.&quot;),
+          process.Exited(status) =&gt; {
+            if status != 0 { Error(&quot;cat exited with status ${status}.&quot;) }
+            else { match utf8.decode(output.stdout) {
+              Error(decode_error) =&gt; Error(&quot;cat returned invalid UTF-8.&quot;), Ok(text) =&gt; Ok(text)
+            } }
+          }
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await copy_text() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await process.exit(1)
+    },
+    Ok(text) =&gt; match await console.write_line(text) {
+      Error(write_error) =&gt; await process.exit(1), Ok(written) =&gt; ()
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-http-uptime-service">Complete example: HTTP uptime service</h2>
+<pre><code class="language-panack">import http/server as http
+import stdlib/time/async as time
+import stdlib/environment/async as environment
+import stdlib/host/async as host
+
+record AppContext { started: Instant, service_name: Str }
+
+async health(context: AppContext, request: http.Request, response: http.ResponseWriter): Result[Unit,Str] {
+  match await time.now() {
+    Error(problem) =&gt; {
+      response.status(503)
+      response.send(&quot;The monotonic clock is unavailable; uptime cannot be measured.&quot;)
+      Ok(())
+    },
+    Ok(now) =&gt; {
+      elapsed = now.difference(context.started)
+      response.header(&quot;X-Service&quot;, context.service_name)
+      ticks = elapsed.as_nanoseconds()
+      response.send(&quot;uptime_ns=${ticks}&quot;)
+      Ok(())
+    }
+  }
+}
+
+async main(): Unit {
+  arguments = await host.arguments()
+  port = if arguments.len() == 0 { 8082 } else { arguments[0].parse_nat() }
+  service_name = (await environment.get(&quot;PANACK_SERVICE_NAME&quot;)).value_or(&quot;uptime-example&quot;)
+  match await time.now() {
+    Error(problem) =&gt; {
+      reported = await host.stderr(&quot;Cannot start the service: the monotonic clock is unavailable.&quot;)
+      await host.exit(1)
+    },
+    Ok(started) =&gt; {
+      server = http.create_bound_contextual_server(
+        &quot;127.0.0.1&quot;, port, AppContext(started, service_name)
+      )
+      server.get(&quot;/health&quot;, @health)
+      match await server.listen() {
+        Ok(done) =&gt; (),
+        Error(problem) =&gt; {
+          reported = await host.stderr(problem.message)
+          await host.exit(1)
+        }
+      }
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-diagnostic-http-client">Complete example: Diagnostic HTTP client</h2>
+<pre><code class="language-panack">import http/client/async as http
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async main(): Unit {
+  arguments = await host.arguments()
+  if arguments.len() != 1 {
+    reported = await console.write_error_line(&quot;Usage: provide one HTTP or HTTPS URL.&quot;)
+    await host.exit(2)
+  } else {
+    match await http.get_with_limits(arguments[0], http.ClientLimits(5000, 16384, 65536)) {
+      Error(problem) =&gt; {
+        // render includes available transport detail; do not guess a TLS cause.
+        reported = await console.write_error_line(problem.render())
+        await host.exit(1)
+      },
+      Ok(response) =&gt; {
+        status = response.status
+        size = response.body.len()
+        match await console.write_line(&quot;HTTP ${status}; ${size} body bytes.&quot;) {
+          Error(write_error) =&gt; await host.exit(1),
+          Ok(written) =&gt; {
+            // An HTTP error status is still a successfully received response.
+            if status &gt;= 400 { await host.exit(1) }
+            ()
+          }
+        }
+      }
+    }
+  }
+}</code></pre></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

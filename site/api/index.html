@@ -22,9 +22,19 @@
 </section>
 <section class="content-section" aria-labelledby="api-stability">
 <div class="section-heading"><h2 id="api-stability">API stability during alpha</h2></div>
-<p>APIs may change between alpha releases without advance notice. The documentation follows the latest release; we don't maintain documentation for earlier alpha versions.</p>
+<p>APIs may change between alpha releases without advance notice. The released HTTP references follow alpha.15. The separately labelled development section describes the upcoming alpha.16 stdlib; those APIs are not available in the current release or browser playground.</p>
 <p>From the first non-alpha release, each release will have its own versioned documentation, with breaking changes documented and managed through the release process.</p>
 </section>
+<section class="content-section" id="stdlib-development" aria-labelledby="stdlib-title">
+<div class="section-heading"><p class="eyebrow">Alpha.16 · development</p><h2 id="stdlib-title">The standard library.</h2></div>
+<p>Choose ordinary or async imports for clocks, console I/O, files, processes and streams. These guides describe the native development branch, not alpha.15. They include complete examples and explain errors, bounds and resource cleanup.</p>
+<div class="capability-grid">
+<article><h3><a href="../reference/standard-library/">Stdlib reference</a></h3><p>Find modules, operation names, types and limits.</p></article>
+<article><h3><a href="../playbook/async-stdlib/">Async stdlib in practice</a></h3><p>Clock reads, temporary files, subprocesses, HTTP uptime and diagnostic requests.</p></article>
+<article><h3><a href="../playbook/async-input-and-files/">Input and file publication</a></h3><p>Bounded input, EOF, safe publication and confined reads.</p></article>
+<article><h3><a href="../playbook/async-resources/">Async resources</a></h3><p>SHA-256 and gzip with explicit ownership and cleanup.</p></article>
+<article><h3><a href="../playbook/stdlib-migration/">Migration guide</a></h3><p>Canonical names, compatibility imports and changed error handling.</p></article>
+</div></section>
 <section class="content-section" aria-labelledby="http-server">
 <div class="section-heading"><h2 id="http-server">HTTP Server</h2></div>
 <div class="capability-grid">
@@ -37,6 +47,7 @@
 <p><a href="../reference/http-client/">Client Reference</a></p>
 <p>Make HTTP and HTTPS GET requests, read responses and handle errors, with a complete client example.</p>
 </section>
+
 <!-- SITE_CLOSING -->
 </main>
 <!-- SITE_FOOTER -->

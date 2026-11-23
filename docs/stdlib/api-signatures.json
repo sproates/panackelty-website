@@ -1,0 +1,362 @@
+[
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "now",
+    "signature": "now(): Result[Instant,ClockError]"
+  },
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "sleep",
+    "signature": "sleep(duration: Duration): Result[Unit,SleepError]"
+  },
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "seconds",
+    "signature": "pure seconds(value: Int): Duration"
+  },
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "milliseconds",
+    "signature": "pure milliseconds(value: Int): Duration"
+  },
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "nanoseconds",
+    "signature": "pure nanoseconds(value: Int): Duration"
+  },
+  {
+    "source": "src/stdlib/time.panack",
+    "name": "from_fractional_seconds",
+    "signature": "pure from_fractional_seconds(value: Rat): Result[Duration,DurationError]"
+  },
+  {
+    "source": "src/stdlib/environment.panack",
+    "name": "get",
+    "signature": "get(name: Str): Option[Str]"
+  },
+  {
+    "source": "src/stdlib/console.panack",
+    "name": "read",
+    "signature": "read(limit: Nat): Result[Option[Bytes],ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/console.panack",
+    "name": "write",
+    "signature": "write(message: Str): Result[Unit,ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/console.panack",
+    "name": "write_line",
+    "signature": "write_line(message: Str): Result[Unit,ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/console.panack",
+    "name": "write_error",
+    "signature": "write_error(message: Str): Result[Unit,ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/console.panack",
+    "name": "write_error_line",
+    "signature": "write_error_line(message: Str): Result[Unit,ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/process.panack",
+    "name": "run",
+    "signature": "run(command: Command): Result[ProcessOutput,ProcessError]"
+  },
+  {
+    "source": "src/stdlib/process.panack",
+    "name": "arguments",
+    "signature": "arguments(): [Str]"
+  },
+  {
+    "source": "src/stdlib/process.panack",
+    "name": "exit",
+    "signature": "exit(status: Nat): Unit"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "metadata",
+    "signature": "metadata(path: Path): Result[FileMetadata, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "read",
+    "signature": "read(path: Path, limit: Nat): Result[Bytes, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "write",
+    "signature": "write(path: Path, data: Bytes): Result[Unit, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "read_chunk",
+    "signature": "read_chunk(file: Path, offset: Nat, limit: Nat): Result[Bytes,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "write_atomic",
+    "signature": "write_atomic(file: Path, data: Bytes): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "list_directory",
+    "signature": "list_directory(path: Path): Result[[Path], FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "create_directory",
+    "signature": "create_directory(path: Path): Result[Unit, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "remove_file",
+    "signature": "remove_file(path: Path): Result[Unit, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "remove_directory",
+    "signature": "remove_directory(path: Path): Result[Unit, FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "create_temp_file",
+    "signature": "create_temp_file(parent: Path): Result[Path,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "create_temp_directory",
+    "signature": "create_temp_directory(parent: Path): Result[Path,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem.panack",
+    "name": "directories_overlap",
+    "signature": "directories_overlap(left: Path, right: Path): Result[Bool,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/confined.panack",
+    "name": "root_identity",
+    "signature": "root_identity(root: Path): Result[FilesystemRootIdentity,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/confined.panack",
+    "name": "read",
+    "signature": "read(root: Path, relative: Path, limit: Nat): Result[FilesystemRootRead,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/confined.panack",
+    "name": "read_link",
+    "signature": "read_link(root: Path, relative: Path): Result[Bytes,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "create",
+    "signature": "create(parent: Path): Result[DirectoryStage,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "path",
+    "signature": "path(stage: DirectoryStage): Result[Path,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "create_directory",
+    "signature": "create_directory(stage: DirectoryStage, relative: Path): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "write_chunk",
+    "signature": "write_chunk(stage: DirectoryStage, relative: Path, data: Bytes, offset: Nat): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "create_symlink",
+    "signature": "create_symlink(stage: DirectoryStage, relative: Path, target: Path): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "publish",
+    "signature": "publish(stage: DirectoryStage, name: Path, mode: PublishMode): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/filesystem/staging.panack",
+    "name": "discard",
+    "signature": "discard(stage: DirectoryStage): Result[Unit,FilesystemError]"
+  },
+  {
+    "source": "src/stdlib/digest/sha256.panack",
+    "name": "hash",
+    "signature": "pure hash(data: Bytes): Bytes"
+  },
+  {
+    "source": "src/stdlib/digest/sha256.panack",
+    "name": "create",
+    "signature": "create(): Result[Sha256Context,Sha256Error]"
+  },
+  {
+    "source": "src/stdlib/digest/sha256.panack",
+    "name": "update",
+    "signature": "update(context: Sha256Context, data: Bytes): Result[Unit,Sha256Error]"
+  },
+  {
+    "source": "src/stdlib/digest/sha256.panack",
+    "name": "finish",
+    "signature": "finish(context: Sha256Context): Result[Bytes,Sha256Error]"
+  },
+  {
+    "source": "src/stdlib/digest/sha256.panack",
+    "name": "close",
+    "signature": "close(context: Sha256Context): Result[Unit,Sha256Error]"
+  },
+  {
+    "source": "src/stdlib/compression/gzip.panack",
+    "name": "create_decoder",
+    "signature": "create_decoder(output_limit: Nat): Result[GzipDecoder,GzipError]"
+  },
+  {
+    "source": "src/stdlib/compression/gzip.panack",
+    "name": "decode_chunk",
+    "signature": "decode_chunk(decoder: GzipDecoder, data: Bytes, finish: Bool): Result[GzipChunk,GzipError]"
+  },
+  {
+    "source": "src/stdlib/compression/gzip.panack",
+    "name": "close",
+    "signature": "close(decoder: GzipDecoder): Result[Unit,GzipError]"
+  },
+  {
+    "source": "src/stdlib/network/http_stream.panack",
+    "name": "open",
+    "signature": "open(host: Str, port: Nat, tls: Bool, request: Bytes, response_limit: Nat, timeout: Duration): Result[HttpStream,HttpStreamError]"
+  },
+  {
+    "source": "src/stdlib/network/http_stream.panack",
+    "name": "read",
+    "signature": "read(stream: HttpStream): Result[Bytes,HttpStreamError]"
+  },
+  {
+    "source": "src/stdlib/network/http_stream.panack",
+    "name": "close",
+    "signature": "close(stream: HttpStream): Result[Unit,HttpStreamError]"
+  },
+  {
+    "source": "src/stdlib/network/tcp/async.panack",
+    "name": "exchange",
+    "signature": "async exchange(address: Str, port: Nat, request: Bytes, response_limit: Nat, timeout: Duration): Result[Bytes,TcpError]"
+  },
+  {
+    "source": "src/stdlib/network/tcp/async.panack",
+    "name": "serve_bounded",
+    "signature": "async serve_bounded(address: Str, port: Nat, handler: AsyncFn[Bytes,Result[Bytes,Str]], limits: TcpServerLimits): Result[[Result[Unit,TcpError]],TcpError]"
+  },
+  {
+    "source": "src/stdlib/network/tcp/async.panack",
+    "name": "serve_stream",
+    "signature": "async serve_stream[T](address: Str, port: Nat, worker: AsyncFn[T,Result[Bytes,Str]], context: T, limits: TcpServerLimits): Result[[Result[Unit,TcpError]],TcpError]"
+  },
+  {
+    "source": "src/stdlib/network/tcp/async.panack",
+    "name": "serve",
+    "signature": "async serve[T](address: Str, port: Nat, worker: AsyncFn[T,Result[Bytes,Str]], context: T, limits: TcpServiceLimits, ready: AsyncFn[TcpServiceReady,Result[Unit,Str]]): Result[TcpServiceSummary,TcpError]"
+  },
+  {
+    "source": "src/stdlib/network/tcp/async.panack",
+    "name": "read_chunk",
+    "signature": "async read_chunk(limit: Nat): Result[Bytes,TcpError]"
+  },
+  {
+    "source": "src/stdlib/host.panack",
+    "name": "run",
+    "signature": "run(data: Bytes, arguments: [Str]): Void"
+  },
+  {
+    "source": "src/stdlib/path.panack",
+    "name": "from_text",
+    "signature": "pure from_text(value: Str): Result[Path, PathError]"
+  },
+  {
+    "source": "src/stdlib/path.panack",
+    "name": "from_native",
+    "signature": "pure from_native(value: Bytes): Result[Path, PathError]"
+  },
+  {
+    "source": "src/stdlib/path.panack",
+    "name": "current",
+    "signature": "pure current(): Path"
+  },
+  {
+    "source": "src/stdlib/encoding/utf8.panack",
+    "name": "decode",
+    "signature": "pure decode(data: Bytes): Result[Str,Utf8Error]"
+  },
+  {
+    "source": "src/stdlib/bytes.panack",
+    "name": "empty",
+    "signature": "pure empty(): Bytes"
+  },
+  {
+    "source": "src/stdlib/bytes.panack",
+    "name": "slice",
+    "signature": "pure slice(data: Bytes, start: Nat, end: Nat): Bytes"
+  },
+  {
+    "source": "src/stdlib/testing.panack",
+    "name": "expect",
+    "signature": "pure expect(name: Str, condition: Bool, reason: Str): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing.panack",
+    "name": "equal_str",
+    "signature": "pure equal_str(name: Str, actual: Str, expected: Str): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing.panack",
+    "name": "equal_nat",
+    "signature": "pure equal_nat(name: Str, actual: Nat, expected: Nat): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing/reporting.panack",
+    "name": "report",
+    "signature": "report(results: [TestResult]): Result[Nat,ConsoleError]"
+  },
+  {
+    "source": "src/stdlib/testing/filesystem.panack",
+    "name": "create_workspace",
+    "signature": "create_workspace(parent: Path): Result[TestWorkspace,HostError]"
+  },
+  {
+    "source": "src/stdlib/testing_files.panack",
+    "name": "discover_fixtures",
+    "signature": "discover_fixtures(root: Path): Result[[Path],HostError]"
+  },
+  {
+    "source": "src/stdlib/testing/filesystem.panack",
+    "name": "remove_empty",
+    "signature": "remove_empty(workspace: TestWorkspace): Result[Unit,HostError]"
+  },
+  {
+    "source": "src/stdlib/testing/process.panack",
+    "name": "run",
+    "signature": "run(name: Str, command: TestCommand, expected: ProcessOutput): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing_commands.panack",
+    "name": "command_output",
+    "signature": "pure command_output(name: Str, actual: ProcessOutput, expected: ProcessOutput): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing_commands.panack",
+    "name": "command_result",
+    "signature": "pure command_result(name: Str, actual: Result[ProcessOutput,HostError], expected: ProcessOutput): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing_commands.panack",
+    "name": "expect_command_error",
+    "signature": "expect_command_error(name: Str, command: TestCommand, expected_code: Str): TestResult"
+  },
+  {
+    "source": "src/stdlib/testing_commands.panack",
+    "name": "capture_report",
+    "signature": "capture_report(name: Str, command: TestCommand, expected: ProcessOutput, destination: Option[Path]): TestResult"
+  }
+]

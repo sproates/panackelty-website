@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read bounded byte chunks from standard input and write checked text to standard output or standard error.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-console/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Console — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Console</h1><p class="lede">Read bounded byte chunks from standard input and write checked text to standard output or standard error.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#read">read()</a></li>
+<li class="toc-level-2"><a href="#write">write()</a></li>
+<li class="toc-level-2"><a href="#write-line">write_line()</a></li>
+<li class="toc-level-2"><a href="#write-error">write_error()</a></li>
+<li class="toc-level-2"><a href="#write-error-line">write_error_line()</a></li>
+<li class="toc-level-2"><a href="#consoleerror">ConsoleError</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-console-input">Complete example: async console input</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Read bounded byte chunks from standard input and write checked text to standard output or standard error.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/console as console</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/console/async as console</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="read">read()</h2>
+<pre><code class="language-panack">read(limit: Nat): Result[Option[Bytes],ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>limit: Nat</code> — maximum bytes for this read, from 1 through 65,536.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Option[Bytes],ConsoleError]</code>. <code>Ok(Some(data))</code> contains a non-empty chunk; <code>Ok(None())</code> means EOF.</p>
+<p>A read may return fewer bytes than requested. It is not a line reader. UTF-8 characters can span chunks: assemble a bounded complete buffer before decoding, or retain incomplete trailing bytes. Only one async stdin read may be outstanding.</p>
+<p><strong>Errors:</strong> <code>InvalidReadLimit</code> for an invalid limit; <code>ReadBusy</code> for an overlapping read; I/O, worker-resource or unsupported-host failures are reported separately.</p>
+<h2 id="write">write()</h2>
+<pre><code class="language-panack">write(message: Str): Result[Unit,ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>message: Str</code> — at most 16,384 UTF-8 bytes, excluding any added newline.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,ConsoleError]</code>.</p>
+<p>Writes the text to standard output without adding a newline. The async form is awaited. Check the result; a failed diagnostic write cannot reliably report itself through the same broken stream.</p>
+<p><strong>Errors:</strong> <code>OutputTooLarge</code> when the message exceeds the byte limit; I/O, worker-resource and unsupported-host failures are retained.</p>
+<h2 id="write-line">write_line()</h2>
+<pre><code class="language-panack">write_line(message: Str): Result[Unit,ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>message: Str</code> — at most 16,384 UTF-8 bytes, excluding any added newline.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,ConsoleError]</code>.</p>
+<p>Writes the text to standard output and adds a newline. The async form is awaited. Check the result; a failed diagnostic write cannot reliably report itself through the same broken stream.</p>
+<p><strong>Errors:</strong> <code>OutputTooLarge</code> when the message exceeds the byte limit; I/O, worker-resource and unsupported-host failures are retained.</p>
+<h2 id="write-error">write_error()</h2>
+<pre><code class="language-panack">write_error(message: Str): Result[Unit,ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>message: Str</code> — at most 16,384 UTF-8 bytes, excluding any added newline.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,ConsoleError]</code>.</p>
+<p>Writes the text to standard error without adding a newline. The async form is awaited. Check the result; a failed diagnostic write cannot reliably report itself through the same broken stream.</p>
+<p><strong>Errors:</strong> <code>OutputTooLarge</code> when the message exceeds the byte limit; I/O, worker-resource and unsupported-host failures are retained.</p>
+<h2 id="write-error-line">write_error_line()</h2>
+<pre><code class="language-panack">write_error_line(message: Str): Result[Unit,ConsoleError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>message: Str</code> — at most 16,384 UTF-8 bytes, excluding any added newline.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,ConsoleError]</code>.</p>
+<p>Writes the text to standard error and adds a newline. The async form is awaited. Check the result; a failed diagnostic write cannot reliably report itself through the same broken stream.</p>
+<p><strong>Errors:</strong> <code>OutputTooLarge</code> when the message exceeds the byte limit; I/O, worker-resource and unsupported-host failures are retained.</p>
+<h2 id="consoleerror">ConsoleError</h2>
+<pre><code class="language-panack">record ConsoleError { operation: ConsoleOperation, kind: ConsoleErrorKind, native: HostError }</code></pre>
+<p><code>operation</code> distinguishes reading (including the limit), stdout writes and stderr writes. The error does not retain the output text. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum ConsoleErrorKind {
+  InvalidReadLimit, OutputTooLarge, ReadBusy, IOFailure, ResourceLimit, UnsupportedHost, OtherFailure
+}</code></pre>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-input-and-files/#complete-example-async-console-input">Read the complete bounded-input program</a>. It handles EOF, the total input limit, invalid UTF-8 and failed output.</p>
+<h2 id="complete-example-async-console-input">Complete example: async console input</h2>
+<pre><code class="language-panack">import stdlib/console/async as console
+import stdlib/encoding/utf8 as utf8
+import stdlib/host/async as host
+
+async read_message(limit: Nat): Result[Bytes,Str] {
+  mut data = bytes()
+  mut finished = false
+  mut failure: Option[Str] = None()
+  while !finished {
+    match await console.read(512) {
+      Error(problem) =&gt; { failure = Some(problem.render()); finished = true },
+      Ok(input) =&gt; match input {
+        None() =&gt; { finished = true },
+        Some(chunk) =&gt; {
+          if data.len() + chunk.len() &gt; limit {
+            failure = Some(&quot;Input exceeds the ${limit}-byte message limit.&quot;)
+            finished = true
+          } else { data = data.join(chunk) }
+        }
+      }
+    }
+  }
+  match failure { Some(message) =&gt; Error(message), None() =&gt; Ok(data) }
+}
+
+async main(): Unit {
+  match await read_message(4096) {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(data) =&gt; match utf8.decode(data) {
+      Error(problem) =&gt; {
+        reported = await console.write_error_line(&quot;Input is not valid UTF-8.&quot;)
+        await host.exit(1)
+      },
+      Ok(text) =&gt; {
+        count = text.len()
+        match await console.write_line(&quot;Received ${count} characters.&quot;) {
+          Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+        }
+      }
+    }
+  }
+}</code></pre><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/console.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>
