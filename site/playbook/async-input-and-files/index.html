@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read bounded input, publish a complete directory and use confined reads.">
+<link rel="canonical" href="https://panackelty.com/playbook/async-input-and-files/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Input and file publication — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Input and file publication</h1><p class="lede">Read bounded input, publish a complete directory and use confined reads.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#read-bounded-input-until-eof">Read bounded input until EOF</a></li>
+<li class="toc-level-2"><a href="#publish-a-complete-directory-then-read-within-it">Publish a complete directory, then read within it</a></li>
+<li class="toc-level-2"><a href="#confinement-is-an-operation-not-a-string-prefix">Confinement is an operation, not a string prefix</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-console-input">Complete example: async console input</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-publish-note">Complete example: async publish note</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>These examples require the <strong>alpha.16 development toolchain</strong>. They use the ordinary operation names through <code>/async</code> imports and explicitly await host work.</p>
+<h2 id="read-bounded-input-until-eof">Read bounded input until EOF</h2>
+<p><a href="../../playbook/async-input-and-files/#complete-example-async-console-input">async_console_input.panack</a> reads standard input in chunks of at most 512 bytes, with a separate 4096-byte total message limit. It converts the complete message with the checked pure UTF-8 API and prints the Unicode scalar count.</p>
+<pre><code class="language-sh">printf &#39;Aλ🙂&#39; | ./bin/panack run examples/async_console_input.panack</code></pre>
+<pre><code class="language-text">Received 3 characters.</code></pre>
+<p>An empty stream is valid and prints <code>Received 0 characters.</code>. When typing into an interactive terminal, end input with EOF (usually Ctrl-D); this example does not finish merely because a newline arrives. On a terminal with pending input, EOF may first deliver that input and require another EOF to end the stream.</p>
+<p><code>console.read</code> returns <code>Ok(Some(bytes))</code>, <code>Ok(None())</code> for EOF, or an error. A short read is not EOF. The example waits for <code>None()</code> and does not interpret byte chunks as lines. It decodes once, after EOF, so a UTF-8 character split between reads is preserved.</p>
+<p>Oversized input prints <code>Input exceeds the 4096-byte message limit.</code> and exits with status 1. Invalid text prints <code>Input is not valid UTF-8.</code> and also exits 1. An I/O error uses the console error&#39;s explanation. A diagnostic-output failure still leads to a failing exit status.</p>
+<p>The 4096-byte limit is application policy, not the console API&#39;s maximum. Each console read permits a limit of 1 through 65536 bytes. Repeated concatenation is reasonable for this small bounded message; a larger stream should be processed in chunks or use a suitable buffering strategy. Do not collect an unlimited stream just to decode it at EOF.</p>
+<h2 id="publish-a-complete-directory-then-read-within-it">Publish a complete directory, then read within it</h2>
+<p><a href="../../playbook/async-input-and-files/#complete-example-async-publish-note">async_publish_note.panack</a> demonstrates the staging and confined-read APIs together:</p>
+<pre><code class="language-sh">./bin/panack run examples/async_publish_note.panack</code></pre>
+<pre><code class="language-text">Published note: hello</code></pre>
+<p>The example creates a unique temporary parent beneath the current directory, so it needs write permission there. It builds a stage containing a file named <code>note</code>, publishes the stage under the name <code>note</code>, reads the published file, and removes its own file and directories before returning. The resulting path is <code>&lt;temporary parent&gt;/note/note</code>; it never overwrites an existing application file.</p>
+<p>The sequence is:</p>
+<ol>
+<li><code>staging.create(parent)</code> creates an opaque <code>DirectoryStage</code>.</li>
+<li><code>staging.write_chunk(stage, relative, data, offset)</code> writes relative to the stage.</li>
+<li><code>staging.publish(stage, name, CreateOnly())</code> makes the prepared directory available at the chosen sibling name. An existing destination causes failure.</li>
+<li><code>confined.read(published_root, relative, limit)</code> performs the bounded read beneath that root and returns contents plus its physical root identity.</li>
+</ol>
+<p>A successful publication consumes the stage. Do not discard it afterwards. For an operation or pre-commit publication failure, the example attempts <code>discard</code> and preserves any cleanup failure alongside the original error. Publication is not implemented by exposing a partly written directory and hoping readers wait for the last file.</p>
+<p>The API also offers <code>ReplaceExisting</code>, but replacement has additional generation and cleanup rules. This introductory example deliberately uses <code>CreateOnly</code>. Read the <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/docs/STDLIB_API_CONTRACT.md#staging-operations">publication contract</a> and <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/docs/reference/SPEC.md">filesystem specification</a> before implementing replacement. An error after an unrelated operation is not proof that a previously successful publication was rolled back.</p>
+<h2 id="confinement-is-an-operation-not-a-string-prefix">Confinement is an operation, not a string prefix</h2>
+<p><code>confined.read(root, relative, limit)</code> enforces the filesystem boundary using the native confined operation. Joining a root with user-provided text and calling an ordinary read is not equivalent. The read result carries a physical root identity; applications that need to bind multiple operations to an expected root must check the relevant identity contract rather than assuming a pathname never changes.</p>
+<p>The example&#39;s cleanup removes only paths it created beneath its unique parent. It attempts cleanup after a read failure too, and reports cleanup errors instead of claiming that temporary files were removed. It does not promise cleanup code will execute after cancellation or process termination. The native staging resource has its own cancellation and shutdown rules; arbitrary published files do not acquire automatic lifetime management.</p>
+<p>For a simpler file round trip without directory publication, see <a href="../../playbook/async-stdlib/#complete-example-async-temporary-note">async_temporary_note.panack</a>.</p>
+<h2 id="complete-example-async-console-input">Complete example: async console input</h2>
+<pre><code class="language-panack">import stdlib/console/async as console
+import stdlib/encoding/utf8 as utf8
+import stdlib/host/async as host
+
+async read_message(limit: Nat): Result[Bytes,Str] {
+  mut data = bytes()
+  mut finished = false
+  mut failure: Option[Str] = None()
+  while !finished {
+    match await console.read(512) {
+      Error(problem) =&gt; { failure = Some(problem.render()); finished = true },
+      Ok(input) =&gt; match input {
+        None() =&gt; { finished = true },
+        Some(chunk) =&gt; {
+          if data.len() + chunk.len() &gt; limit {
+            failure = Some(&quot;Input exceeds the ${limit}-byte message limit.&quot;)
+            finished = true
+          } else { data = data.join(chunk) }
+        }
+      }
+    }
+  }
+  match failure { Some(message) =&gt; Error(message), None() =&gt; Ok(data) }
+}
+
+async main(): Unit {
+  match await read_message(4096) {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(data) =&gt; match utf8.decode(data) {
+      Error(problem) =&gt; {
+        reported = await console.write_error_line(&quot;Input is not valid UTF-8.&quot;)
+        await host.exit(1)
+      },
+      Ok(text) =&gt; {
+        count = text.len()
+        match await console.write_line(&quot;Received ${count} characters.&quot;) {
+          Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+        }
+      }
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-async-publish-note">Complete example: async publish note</h2>
+<pre><code class="language-panack">import stdlib/filesystem/async as files
+import stdlib/filesystem/staging/async as staging
+import stdlib/filesystem/confined/async as confined
+import stdlib/path as paths
+import stdlib/encoding/utf8 as utf8
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async publish(parent: Path, name: Path): Result[Unit,Str] {
+  match await staging.create(parent) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(stage) =&gt; {
+      result = match await staging.write_chunk(stage, name, &quot;hello&quot;.encode_utf8(), 0) {
+        Error(problem) =&gt; Error(problem),
+        Ok(written) =&gt; await staging.publish(stage, name, staging.CreateOnly())
+      }
+      match result {
+        // Successful publication consumes the stage; do not discard it afterwards.
+        Ok(published) =&gt; Ok(()),
+        Error(problem) =&gt; match await staging.discard(stage) {
+          Ok(discarded) =&gt; Error(problem.render()),
+          Error(cleanup) =&gt; Error(problem.render() + &quot;\nDiscard also failed: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async read_note(root: Path, name: Path): Result[Str,Str] {
+  match await confined.read(root, name, 1024) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(read) =&gt; match utf8.decode(read.contents) {
+      Error(problem) =&gt; Error(&quot;The published note is not valid UTF-8.&quot;),
+      Ok(text) =&gt; Ok(text)
+    }
+  }
+}
+
+async exercise(parent: Path, name: Path): Result[Str,Str] {
+  match parent.join(name) {
+    Error(problem) =&gt; Error(&quot;Cannot form the publication path.&quot;),
+    Ok(published) =&gt; match published.join(name) {
+      Error(problem) =&gt; Error(&quot;Cannot form the note path.&quot;),
+      Ok(file) =&gt; match await publish(parent, name) {
+        Error(problem) =&gt; Error(problem),
+        Ok(done) =&gt; {
+          result = await read_note(published, name)
+          // These exact paths belong to this example&#39;s newly created directory.
+          removed_file = await files.remove_file(file)
+          removed_directory = await files.remove_directory(published)
+          mut combined = result
+          for cleanup in [removed_file, removed_directory] {
+            match cleanup {
+              Ok(removed) =&gt; {},
+              Error(problem) =&gt; {
+                combined = match combined {
+                  Ok(text) =&gt; Error(problem.render()),
+                  Error(original) =&gt; Error(original + &quot;\nCleanup also failed: &quot; + problem.render())
+                }
+              }
+            }
+          }
+          combined
+        }
+      }
+    }
+  }
+}
+
+async run_example(name: Path): Result[Str,Str] {
+  match await files.create_temp_directory(paths.current()) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(parent) =&gt; {
+      result = await exercise(parent, name)
+      match await files.remove_directory(parent) {
+        Ok(removed) =&gt; result,
+        Error(cleanup) =&gt; match result {
+          Ok(text) =&gt; Error(cleanup.render()),
+          Error(original) =&gt; Error(original + &quot;\nCleanup also failed: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  result = match paths.from_text(&quot;note&quot;) {
+    Error(problem) =&gt; Error(&quot;The example&#39;s relative path is invalid.&quot;),
+    Ok(name) =&gt; await run_example(name)
+  }
+  match result {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(text) =&gt; match await console.write_line(&quot;Published note: ${text}&quot;) {
+      Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+    }
+  }
+}</code></pre></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

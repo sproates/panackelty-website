@@ -1,0 +1,96 @@
+{
+  "repository": "sproates/panackelty",
+  "revision": "d57d2473da478424066dc8d4d777fd9a0b979645",
+  "version": "alpha.16 development",
+  "documents": [
+    {
+      "source": "docs/reference/STANDARD_LIBRARY.md",
+      "name": "STANDARD_LIBRARY.md",
+      "route": "reference/standard-library",
+      "title": "Standard library",
+      "intro": "Ordinary and async APIs, error handling and resource limits.",
+      "examples": []
+    },
+    {
+      "source": "docs/guides/STDLIB_MIGRATION.md",
+      "name": "STDLIB_MIGRATION.md",
+      "route": "playbook/stdlib-migration",
+      "title": "Stdlib migration",
+      "intro": "Choose canonical imports while preserving failure handling and bounds.",
+      "examples": []
+    },
+    {
+      "source": "docs/guides/ASYNC_RESOURCES.md",
+      "name": "ASYNC_RESOURCES.md",
+      "route": "playbook/async-resources",
+      "title": "Async resources",
+      "intro": "Use SHA-256 and gzip with explicit ownership and cleanup.",
+      "examples": [
+        {
+          "source": "examples/async_digest.panack",
+          "file": "async_digest.panack",
+          "title": "async digest"
+        },
+        {
+          "source": "examples/async_gzip.panack",
+          "file": "async_gzip.panack",
+          "title": "async gzip"
+        }
+      ]
+    },
+    {
+      "source": "docs/guides/ASYNC_INPUT_AND_FILES.md",
+      "name": "ASYNC_INPUT_AND_FILES.md",
+      "route": "playbook/async-input-and-files",
+      "title": "Input and file publication",
+      "intro": "Read bounded input, publish a complete directory and use confined reads.",
+      "examples": [
+        {
+          "source": "examples/async_console_input.panack",
+          "file": "async_console_input.panack",
+          "title": "async console input"
+        },
+        {
+          "source": "examples/async_publish_note.panack",
+          "file": "async_publish_note.panack",
+          "title": "async publish note"
+        }
+      ]
+    },
+    {
+      "source": "docs/guides/ASYNC_STDLIB_BASICS.md",
+      "name": "ASYNC_STDLIB_BASICS.md",
+      "route": "playbook/async-stdlib",
+      "title": "Async stdlib in practice",
+      "intro": "Read the clock, work with files and subprocesses, and handle HTTP failures.",
+      "examples": [
+        {
+          "source": "examples/async_timing.panack",
+          "file": "async_timing.panack",
+          "title": "async timing"
+        },
+        {
+          "source": "examples/async_temporary_note.panack",
+          "file": "async_temporary_note.panack",
+          "title": "async temporary note"
+        },
+        {
+          "source": "examples/async_pipe_input.panack",
+          "file": "async_pipe_input.panack",
+          "title": "async pipe input"
+        },
+        {
+          "source": "examples/network/http_uptime/src/main.panack",
+          "file": "http_uptime.panack",
+          "title": "HTTP uptime service"
+        },
+        {
+          "source": "examples/network/http_diagnostic_client/src/main.panack",
+          "file": "http_diagnostic_client.panack",
+          "title": "Diagnostic HTTP client"
+        }
+      ],
+      "siteAuthored": true
+    }
+  ]
+}

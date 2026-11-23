@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Use SHA-256 and gzip with explicit ownership and cleanup.">
+<link rel="canonical" href="https://panackelty.com/playbook/async-resources/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Async resources — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Async resources</h1><p class="lede">Use SHA-256 and gzip with explicit ownership and cleanup.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#choose-the-resource-api-when-input-arrives-in-pieces">Choose the resource API when input arrives in pieces</a></li>
+<li class="toc-level-2"><a href="#bound-decompression-before-accepting-input">Bound decompression before accepting input</a></li>
+<li class="toc-level-2"><a href="#resource-ownership-is-part-of-the-api">Resource ownership is part of the API</a></li>
+<li class="toc-level-2"><a href="#using-async-apis-inside-an-http-handler">Using async APIs inside an HTTP handler</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-digest">Complete example: async digest</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-gzip">Complete example: async gzip</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>This guide and its examples require the <strong>alpha.16 development toolchain</strong>. They use existing named functions and explicit state passed as arguments; they do not depend on future closure or shared-state features.</p>
+<h2 id="choose-the-resource-api-when-input-arrives-in-pieces">Choose the resource API when input arrives in pieces</h2>
+<p>For a small buffer already in memory, <code>sha256.hash(data)</code> is a pure one-shot call. For input arriving in pieces, use a SHA-256 context through <code>stdlib/digest/sha256/async</code>. The operation names stay <code>create</code>, <code>update</code>, <code>finish</code> and <code>close</code>.</p>
+<p>Run <a href="../../playbook/async-resources/#complete-example-async-digest">the complete example</a>:</p>
+<pre><code class="language-sh">./bin/panack run examples/async_digest.panack</code></pre>
+<p>It updates one context with <code>a</code>, then <code>bc</code>, and compares the result with the one-shot hash of <code>abc</code>:</p>
+<pre><code class="language-text">Chunked SHA-256 matches one-shot: true</code></pre>
+<p>Each update accepts at most 64 KiB. Split larger input before updating. One-shot hashing accepts at most 16 MiB. The context is an opaque <code>Sha256Context</code>, not a number a caller can manufacture.</p>
+<p><code>finish</code> consumes the context on success <strong>and on failure</strong>. Do not call <code>close</code> after <code>finish</code>. If an earlier operation fails, the example attempts <code>close</code> and preserves the original error; a cleanup failure is reported separately. Some native digest failures already invalidate the context, so a subsequent close may report that it is invalid. Cancellation follows the runtime&#39;s ownership rules; ordinary error branches are not a general cancellation handler.</p>
+<h2 id="bound-decompression-before-accepting-input">Bound decompression before accepting input</h2>
+<p>Run <a href="../../playbook/async-resources/#complete-example-async-gzip">the gzip example</a>:</p>
+<pre><code class="language-sh">./bin/panack run examples/async_gzip.panack</code></pre>
+<pre><code class="language-text">hello</code></pre>
+<p>The compressed greeting is embedded so the example needs no download or setup. The decoder has a 1 KiB total output budget. This is a small-message recipe, not an unbounded file-decompression utility.</p>
+<p>A <code>GzipChunk</code> reports three things:</p>
+<ul>
+<li><code>consumed</code>: how many input bytes this step consumed;</li>
+<li><code>data</code>: the decompressed bytes produced by this step;</li>
+<li><code>finished</code>: whether decoding has completed.</li>
+</ul>
+<p>One step need not consume all the input. Advance by <code>consumed</code>, retain the unconsumed suffix and keep decoding until <code>finished</code>. Passing <code>finish = true</code> means this buffer contains the final input, not that the decoder must complete in one call. Each input step is limited to 64 KiB; each output step produces at most 64 KiB. For input arriving from a file or socket, supply bounded chunks and mark only the final input as final.</p>
+<p>The example joins output chunks because its entire output is bounded to 1 KiB. For larger workloads, process or write each chunk instead of repeatedly growing a single buffer. Decode text only once a complete text buffer is available; UTF-8 characters can cross output-chunk boundaries.</p>
+<p>A gzip decoder still needs <code>close</code> after successful completion, malformed or incomplete input, or an exhausted output budget. The example closes it before returning either the decoded bytes or the original failure. If cleanup also fails, it preserves both explanations. This differs from consuming a SHA-256 context with <code>finish</code>.</p>
+<h2 id="resource-ownership-is-part-of-the-api">Resource ownership is part of the API</h2>
+<p>Copying an opaque handle creates an alias, not a new resource. Closing or consuming one alias invalidates the others. Handles cannot be transferred to another invocation. Closing releases native state, but does not replenish per-invocation creation quotas: 65,536 SHA-256 contexts and 64 gzip decoders, shared with legacy interfaces. Do not use an unbounded create/close loop as a resource pool.</p>
+<p>Async operations yield between bounded work steps. They do not imply that every operation runs on a new thread, or that CPU work is free. The <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/docs/design/STDLIB_DOMAIN_ERRORS.md#sha-256-and-gzip-resources">domain-error contract</a> documents failure categories and lifecycle limits.</p>
+<h2 id="using-async-apis-inside-an-http-handler">Using async APIs inside an HTTP handler</h2>
+<p>The <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/examples/network/http_uptime/README.md">healthcheck service</a> is the worked example of this integration. Its immutable context holds the start <code>Instant</code> and a service name. Each <code>/health</code> request awaits <code>time.now()</code> and computes <code>now.difference(context.started)</code>. The output is elapsed nanoseconds, not a calendar timestamp. Clock failure produces an explanatory HTTP 503 response.</p>
+<p>The context does not need mutable capture to preserve the start value. This example does not count requests: shared mutable state is separate work.</p>
+<p>For network data, the high-level HTTP client is usually easier than raw stream management. <code>http/client/async</code> owns its underlying stream lifecycle and retains detailed transport errors. Use raw <code>network/http_stream/async</code> only when the application needs to handle request/response bytes and explicit stream ownership.</p>
+<h2 id="complete-example-async-digest">Complete example: async digest</h2>
+<pre><code class="language-panack">import stdlib/digest/sha256/async as digest
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async hash_parts(parts: [Bytes]): Result[Bytes,Str] {
+  match await digest.create() {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(context) =&gt; {
+      mut failure: Option[Str] = None()
+      for part in parts {
+        if failure == None() {
+          match await digest.update(context, part) {
+            Ok(updated) =&gt; (), Error(problem) =&gt; { failure = Some(problem.render()); () }
+          }
+        }
+      }
+      match failure {
+        None() =&gt; {
+          // finish consumes the context, even if finalisation fails.
+          match await digest.finish(context) {
+            Ok(hash) =&gt; Ok(hash), Error(problem) =&gt; Error(problem.render())
+          }
+        },
+        Some(message) =&gt; match await digest.close(context) {
+          Ok(closed) =&gt; Error(message),
+          Error(cleanup) =&gt; Error(message + &quot;\nCleanup also reported: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await hash_parts([&quot;a&quot;.encode_utf8(), &quot;bc&quot;.encode_utf8()]) {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(hash) =&gt; {
+      matches = hash == digest.hash(&quot;abc&quot;.encode_utf8())
+      match await console.write_line(&quot;Chunked SHA-256 matches one-shot: ${matches}&quot;) {
+        Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+      }
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-async-gzip">Complete example: async gzip</h2>
+<pre><code class="language-panack">import stdlib/compression/gzip/async as gzip
+import stdlib/encoding/utf8 as utf8
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+// A complete gzip member containing &quot;hello&quot;; no external file is required.
+pure compressed_greeting(): Bytes {
+  mut data = bytes()
+  for value in [31, 139, 8, 0, 0, 0, 0, 0, 0, 19, 203, 72, 205, 201, 201, 7, 0, 134, 166, 16, 54, 5, 0, 0, 0] { data = data.push(value) }
+  data
+}
+
+async decode_small_message(data: Bytes): Result[Bytes,Str] {
+  // This recipe accepts one complete, small message with a 1 KiB output budget.
+  match await gzip.create_decoder(1024) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(decoder) =&gt; {
+      mut result: Result[Bytes,Str] = Ok(bytes())
+      mut offset: Nat = 0
+      mut finished = false
+      mut failed = false
+      while !finished &amp;&amp; !failed {
+        match await gzip.decode_chunk(decoder, data.slice(offset, data.len()), true) {
+          Error(problem) =&gt; { result = Error(problem.render()); failed = true },
+          Ok(chunk) =&gt; {
+            offset = offset + chunk.consumed
+            finished = chunk.finished
+            result = match result {
+              Error(message) =&gt; Error(message),
+              Ok(output) =&gt; Ok(output.join(chunk.data))
+            }
+          }
+        }
+      }
+      // Unlike SHA-256 finish, completing gzip decoding does not close the handle.
+      match await gzip.close(decoder) {
+        Ok(closed) =&gt; result,
+        Error(cleanup) =&gt; match result {
+          Ok(output) =&gt; Error(cleanup.render()),
+          Error(message) =&gt; Error(message + &quot;\nCleanup also failed: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await decode_small_message(compressed_greeting()) {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(data) =&gt; match utf8.decode(data) {
+      Error(decode_error) =&gt; {
+        reported = await console.write_error_line(&quot;The decompressed message is not valid UTF-8.&quot;)
+        await host.exit(1)
+      },
+      Ok(message) =&gt; match await console.write_line(message) {
+        Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+      }
+    }
+  }
+}</code></pre></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

@@ -1,5 +1,16 @@
 # Website roadmap
 
+## In review: alpha.16 standard library documentation
+
+23 November 2026: five development pages cover the module reference, migration,
+async resources, bounded input and file publication, and practical async stdlib
+usage. Nine complete examples are copied from validated core revision
+`d57d2473da478424066dc8d4d777fd9a0b979645`. Local website checks pass; owner preview
+review, integration and publication remain pending. This delivers the website
+part of core RM#162 / AS5 without changing released downloads, the playground
+or published articles. No compiler/runtime performance impact: static pages and
+scoped table styles only; browser assets are unchanged.
+
 ## Completed: alpha.15 promotion
 
 Published 6 November 2026. Native downloads, installer source pin, release notes,

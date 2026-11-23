@@ -14,4 +14,9 @@
   <url><loc>https://panackelty.com/reference/http-client/</loc></url>
   <url><loc>https://panackelty.com/reference/http-server/</loc></url>
   <url><loc>https://panackelty.com/playbook/http-server/</loc></url>
+  <url><loc>https://panackelty.com/reference/standard-library/</loc></url>
+  <url><loc>https://panackelty.com/playbook/stdlib-migration/</loc></url>
+  <url><loc>https://panackelty.com/playbook/async-resources/</loc></url>
+  <url><loc>https://panackelty.com/playbook/async-input-and-files/</loc></url>
+  <url><loc>https://panackelty.com/playbook/async-stdlib/</loc></url>
 </urlset>
