@@ -21,8 +21,8 @@ test('matching tested tree is reused across different commit IDs and verified be
   assert.deepEqual(candidate,{run_id:'123',attempt:'2',artifact_name:`pages-candidate-${tree}-2`,artifact_id:'456'});
   await verifyCandidate(f.github,context,candidate,tree);
 });
-test('PRs, manual runs and non-main pushes always validate afresh',async()=>{
-  for(const override of [{eventName:'pull_request'},{eventName:'workflow_dispatch'},{ref:'refs/heads/feature/test'}])
+test('PRs and non-main runs always validate afresh',async()=>{
+  for(const override of [{eventName:'pull_request'},{eventName:'schedule'},{ref:'refs/heads/feature/test'}])
     assert.equal(await findCandidate({}, {...context,...override},tree),null);
 });
 test('failed, pending, foreign and unrelated workflows cannot supply candidates',async()=>{
@@ -63,11 +63,21 @@ test('workflow gate accepts only successful fresh validation or a complete reuse
     [['success','123','success','skipped','skipped'],1],
     [['success','123','skipped','skipped','cancelled'],1]
   ]) {
-    const env=Object.fromEntries(['LOOKUP','REUSED_RUN','ASSEMBLY','RELEASE','BROWSER'].map((key,i)=>[key,states[i]]));
+    const env={SCOPE:'full',...Object.fromEntries(['LOOKUP','REUSED_RUN','ASSEMBLY','RELEASE','BROWSER'].map((key,i)=>[key,states[i]]))};
     assert.equal(spawnSync('/bin/sh',['-e','-c',gate],{env}).status,expected,JSON.stringify(states));
   }
   assert.match(workflow,/if: always\(\) && needs.checks.result == 'success'/);
   assert.match(workflow,/run-id: \$\{\{ needs.reuse.outputs.run_id \|\| github.run_id \}\}/);
   assert.match(workflow,/artifact_name=pages-candidate-\$\(git rev-parse 'HEAD\^\{tree\}'\)-\$\{\{ github.run_attempt \}\}/);
   assert.match(workflow,/artifact_name: \$\{\{ needs.prepare.outputs.artifact_name \}\}/);
+});
+
+test('manual main publication reuses the same exact-tree validation as a push',async()=>{
+  const f=fixture();
+  const manual={...context,eventName:'workflow_dispatch'};
+  const candidate=await findCandidate(f.github,manual,tree);
+  assert.equal(candidate.run_id,'123');
+  await verifyCandidate(f.github,manual,candidate,tree);
+  f.artifact.name=`pages-candidate-${'b'.repeat(40)}-2`;
+  assert.equal(await findCandidate(f.github,manual,tree),null);
 });

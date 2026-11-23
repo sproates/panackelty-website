@@ -52,3 +52,27 @@ publication order as the archive. Drafts are excluded, even in preview builds.
 Add an optional single-line `summary:` to the article metadata for the homepage
 blurb; otherwise the build uses a short excerpt. With no published articles,
 the homepage omits the strip.
+
+## Fast article publication
+
+A change containing only regular Markdown files directly in `content/articles/`
+or `drafts/` uses article validation. It tests rendering and article metadata,
+assembles the complete site with the pinned playground assets, and checks local
+links, navigation and required pages. It does not rebuild the native preview
+server, recheck unchanged release archives, or execute the unchanged playground.
+The normal `Website checks` gate still has to pass before publication.
+
+Changes to images, templates, styles, scripts, workflows, release pins or any
+other files keep the existing broader validation. Missing comparison history or
+unusual Git entries also use that broader path. Code examples still need their
+appropriate authoring checks; article routing does not prove that a snippet runs.
+
+Production pushes and manual runs on `main` can reuse a successful PR artifact
+only when its exact source tree matches. Expired, missing or mismatched artifacts
+fall back to fresh validation. Manual runs without a reusable artifact also use
+broader validation because they have no reliable change baseline.
+
+When merging for publication, use a clean squash commit message without a draft's
+`[skip ci]` marker. If automatic deployment was skipped, manually run `Check` on
+`main`; it can now reuse the same checked PR artifact. Publication still verifies
+current `main` immediately before deployment and the deployed files afterwards.

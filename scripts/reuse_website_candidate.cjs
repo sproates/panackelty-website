@@ -13,7 +13,7 @@ function selectArtifact(run, artifacts, tree) {
   return matches.length === 1 ? matches[0] : null;
 }
 async function findCandidate(github, context, tree) {
-  if (context.eventName !== 'push' || context.ref !== 'refs/heads/main') return null;
+  if (!['push', 'workflow_dispatch'].includes(context.eventName) || context.ref !== 'refs/heads/main') return null;
   if (!/^[a-f0-9]{40}$/.test(tree)) throw new Error('Invalid source tree');
   const repository = `${context.repo.owner}/${context.repo.repo}`;
   const {data} = await github.rest.actions.listWorkflowRuns({...context.repo,

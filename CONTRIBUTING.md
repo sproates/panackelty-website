@@ -18,7 +18,7 @@ source review instead of a rendered preview when the file is not published.
 
 For other changes, run `make check` after your final edit.
 Run `make release-check` for release pins,
-examples and download changes; hosted CI runs it for every change. Explicit
+examples and download changes; hosted CI runs it except for the strictly article-only path described in docs/ARTICLES.md. Explicit
 documentation/presentation-only paths use the pinned three-engine smoke suite;
 HTML, pins, integration code, unknown paths and unavailable comparison history
 retain full browser integration. See README.md for the exact boundary. Provide a working preview

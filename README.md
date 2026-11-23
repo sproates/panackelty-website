@@ -102,7 +102,11 @@ website examples using the matching released native toolchain. It supports
 Linux x86-64 and macOS arm64 and requires network access.
 
 Article authoring, draft previews and publication metadata are described in
-[Writing and publishing articles](docs/ARTICLES.md).
+[Writing and publishing articles](docs/ARTICLES.md). Article-only Markdown changes
+use focused rendering, metadata and complete-site link checks, without rebuilding
+the preview server or rerunning native-release/playground execution checks. Mixed
+or unknown changes retain broader validation. Manual main publication can reuse
+the exact validated PR artifact, just like an automatic main push.
 
 ### Analytics
 
