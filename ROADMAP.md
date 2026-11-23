@@ -329,3 +329,7 @@ Website PR #77 now includes nineteen module pages and 72 function entries with
 signatures, parameters, results, errors and lifetime/bounds information. The index
 links to those pages; source links are supplementary. The standard library stays
 ahead of HTTP on API Docs. Preview review and publication remain pending.
+
+Owner accepted the documentation approach and preview on 23 November 2026.
+This is preview approval, not permission to publish. PR #77 remains unmerged;
+website integration/publication requires separate authorisation.
