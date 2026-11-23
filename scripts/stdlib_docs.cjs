@@ -39,10 +39,10 @@ function render(doc) {
     source+='\n## Complete example: '+example.title+'\n\n```panack\n'+code.trimEnd()+'\n```\n';
   }
   source=source.split(/(```[\s\S]*?```)/g).map(part=>part.startsWith('```')?part:part.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,label,target)=>{
-    if(/^https?:/.test(target))return `[${label}](${target})`;
+    if(/^(https?:|\/)/.test(target))return `[${label}](${target})`;
     const [file,fragment]=target.split('#');
     const resolved=file?path.posix.normalize(path.posix.join(path.posix.dirname(doc.source),file)):doc.source;
-    const destination=metadata.documents.find(d=>d.source===resolved);
+    const destination=metadata.documents.find(d=>d.source===resolved||(d.aliases||[]).includes(resolved));
     if(destination)return `[${label}](/${destination.route}/${fragment?'#'+fragment:''})`;
     for(const page of metadata.documents){const example=page.examples.find(e=>e.source===resolved);if(example)return `[${label}](/${page.route}/#${slug('Complete example: '+example.title)})`;}
     return `[${label}](https://github.com/${metadata.repository}/blob/${metadata.revision}/${resolved}${fragment?'#'+fragment:''})`;
@@ -59,14 +59,14 @@ function render(doc) {
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <!-- SITE_HEADER -->
-<main id="main" class="capabilities-page http-docs">
+<main id="main" class="capabilities-page http-docs${doc.apiReference ? ' stdlib-api-reference' : ''}">
 <section class="capabilities-hero" aria-labelledby="page-title">
 <p class="eyebrow">Alpha.16 · development documentation</p>
 <h1 id="page-title">${escape(doc.title)}</h1><p class="lede">${escape(doc.intro)}</p>
 <p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul>${toc}</ul></nav>
-<article class="capabilities-content http-docs-content">${renderMarkdown(source)}</article></div>
+<article class="capabilities-content http-docs-content">${doc.apiReference ? '<p><a href="../standard-library/">All standard library modules</a></p>' : ''}${renderMarkdown(source)}${doc.apiReference ? '<p class="source-reference">Implementation: <a href="https://github.com/'+metadata.repository+'/blob/'+metadata.revision+'/'+doc.source+'">view source on GitHub</a>.</p>' : ''}</article></div>
 <!-- SITE_CLOSING -->
 </main><!-- SITE_FOOTER -->
 <script src="../../site.js" defer></script>

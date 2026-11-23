@@ -320,3 +320,12 @@ The v0.1.3 browser archive retained a hard-coded alpha.12 label despite its
 alpha.13 compiler. Website assembly now owns that presentation text, using
 reviewed compiler/bytecode metadata alongside the immutable browser pin. Runtime
 asset bytes and checksums are unchanged. Publication acceptance remains pending.
+
+## Stdlib reference review correction — 23 November 2026
+
+Owner feedback: reference pages must explain the APIs directly, in the style of
+Node API documentation, rather than send readers to GitHub for essential detail.
+Website PR #77 now includes nineteen module pages and 72 function entries with
+signatures, parameters, results, errors and lifetime/bounds information. The index
+links to those pages; source links are supplementary. The standard library stays
+ahead of HTTP on API Docs. Preview review and publication remain pending.

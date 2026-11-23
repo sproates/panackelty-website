@@ -26,7 +26,9 @@ All pages use the homepage-owned shared navigation and footer.
 
 The alpha.16 stdlib pages use a reviewed core snapshot in
 [docs/stdlib](docs/stdlib/README.md). Update the snapshot and run
-`node scripts/stdlib_docs.cjs` to regenerate the five reference and guide pages.
+`node scripts/stdlib_docs.cjs` to regenerate the reference and guide pages. Module references include signatures,
+parameters, results, behaviour and errors directly on the site; GitHub links are
+supplementary implementation references.
 `make check` verifies generated content, complete examples and local links.
 These pages are explicitly development documentation; they do not advance the
 native release or browser playground pins.

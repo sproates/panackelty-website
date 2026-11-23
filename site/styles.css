@@ -385,3 +385,9 @@ footer { color: var(--muted); }
 .stdlib-table th, .stdlib-table td { padding: .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; min-width: 8rem; }
 .stdlib-table th { font-weight: 700; }
 .stdlib-table code { overflow-wrap: anywhere; }
+
+/* Dense, scannable API entries within the existing site layout. */
+.stdlib-api-reference .capabilities-content h2 { font-size:clamp(1.35rem,2.5vw,2rem); overflow-wrap:anywhere; }
+.stdlib-api-reference .capabilities-content h3 { font-size:1.15rem; }
+.stdlib-api-reference pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+.stdlib-api-reference .source-reference { margin-top:3rem; font-size:.9rem; }

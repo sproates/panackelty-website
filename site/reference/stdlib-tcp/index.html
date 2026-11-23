@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Exchange bytes or serve bounded and continuous TCP clients through async callbacks.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-tcp/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>TCP — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">TCP</h1><p class="lede">Exchange bytes or serve bounded and continuous TCP clients through async callbacks.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#exchange">exchange()</a></li>
+<li class="toc-level-2"><a href="#serve-bounded">serve_bounded()</a></li>
+<li class="toc-level-2"><a href="#serve-stream">serve_stream()</a></li>
+<li class="toc-level-2"><a href="#serve">serve()</a></li>
+<li class="toc-level-2"><a href="#read-chunk">read_chunk()</a></li>
+<li class="toc-level-2"><a href="#server-limits-and-results">Server limits and results</a></li>
+<li class="toc-level-2"><a href="#tcperror">TcpError</a></li>
+<li class="toc-level-2"><a href="#higher-level-service-example">Higher-level service example</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Exchange bytes or serve bounded and continuous TCP clients through async callbacks.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/network/tcp/async as tcp</code></pre>
+<p>This module is async-only. Await every operation. It provides raw TCP, not HTTP framing, DNS, TLS or IPv6. Addresses use the supported numeric IPv4 form.</p>
+<h2 id="exchange">exchange()</h2>
+<pre><code class="language-panack">async exchange(address: Str, port: Nat, request: Bytes, response_limit: Nat, timeout: Duration): Result[Bytes,TcpError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address: Str</code> — numeric IPv4 destination.</li>
+<li><code>port: Nat</code> — destination port.</li>
+<li><code>request: Bytes</code> — bytes to send.</li>
+<li><code>response_limit: Nat</code> — maximum received response bytes.</li>
+<li><code>timeout: Duration</code> — positive deadline, no more than 60 seconds, in whole milliseconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,TcpError]</code>.</p>
+<p>Sends one request and half-closes the write side so the peer sees request EOF, then receives the bounded response. Duration conversion never rounds.</p>
+<p><strong>Errors:</strong> Invalid address/configuration, connection failure, timeout, response limit and socket failures are reported.</p>
+<h2 id="serve-bounded">serve_bounded()</h2>
+<pre><code class="language-panack">async serve_bounded(address: Str, port: Nat, handler: AsyncFn[Bytes,Result[Bytes,Str]], limits: TcpServerLimits): Result[[Result[Unit,TcpError]],TcpError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address: Str</code> — numeric IPv4 bind address.</li>
+<li><code>port: Nat</code> — listening port.</li>
+<li><code>handler: AsyncFn[Bytes,Result[Bytes,Str]]</code> — callback receiving one complete EOF-delimited request.</li>
+<li><code>limits: TcpServerLimits</code> — admission, concurrency, byte and time limits.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[[Result[Unit,TcpError]],TcpError]</code>.</p>
+<p>Accepts a finite number of clients. Each sends one request terminated by a write-half close. The server calls the handler once, writes the returned bytes and closes the socket. Results retain client order. No framing bytes are added.</p>
+<p><strong>Errors:</strong> Outer errors describe setup; individual client failures are inner errors with <code>ClientFailure</code>. Handler-returned text cannot reliably be separated from native client failures.</p>
+<h2 id="serve-stream">serve_stream()</h2>
+<pre><code class="language-panack">async serve_stream[T](address: Str, port: Nat, worker: AsyncFn[T,Result[Bytes,Str]], context: T, limits: TcpServerLimits): Result[[Result[Unit,TcpError]],TcpError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address: Str</code> — bind address.</li>
+<li><code>port: Nat</code> — listening port.</li>
+<li><code>worker: AsyncFn[T,Result[Bytes,Str]]</code> — callback invoked as soon as a client is accepted.</li>
+<li><code>context: T</code> — value passed to each worker.</li>
+<li><code>limits: TcpServerLimits</code> — finite-server limits.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[[Result[Unit,TcpError]],TcpError]</code>.</p>
+<p>Starts the worker before receiving a complete request. The worker calls <code>read_chunk</code> to implement its own framing. This supports peers that wait for a response before half-closing.</p>
+<p><strong>Errors:</strong> Setup and ordered per-client failures follow <code>serve_bounded</code>.</p>
+<h2 id="serve">serve()</h2>
+<pre><code class="language-panack">async serve[T](address: Str, port: Nat, worker: AsyncFn[T,Result[Bytes,Str]], context: T, limits: TcpServiceLimits, ready: AsyncFn[TcpServiceReady,Result[Unit,Str]]): Result[TcpServiceSummary,TcpError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>address: Str</code> — bind address.</li>
+<li><code>port: Nat</code> — listening port.</li>
+<li><code>worker: AsyncFn[T,Result[Bytes,Str]]</code> — streaming worker.</li>
+<li><code>context: T</code> — value supplied to workers.</li>
+<li><code>limits: TcpServiceLimits</code> — concurrency, per-client bytes/deadline and drain.</li>
+<li><code>ready: AsyncFn[TcpServiceReady,Result[Unit,Str]]</code> — readiness callback.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[TcpServiceSummary,TcpError]</code>.</p>
+<p>Runs a continuous service rather than stopping after a fixed admission count. Workers use <code>read_chunk</code>. The ready callback receives the bound address and port.</p>
+<p><strong>Errors:</strong> Service and callback failures use <code>ServiceOrCallbackFailure</code> because the existing runtime does not distinguish their provenance.</p>
+<h2 id="read-chunk">read_chunk()</h2>
+<pre><code class="language-panack">async read_chunk(limit: Nat): Result[Bytes,TcpError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>limit: Nat</code> — maximum bytes in this read, from 1 through 16,384.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,TcpError]</code>.</p>
+<p>Available only inside an active streaming worker. Returns available bytes up to the limit; empty bytes mean peer EOF. Cumulative request limits and client deadlines still apply. Calling it outside an active worker traps.</p>
+<p><strong>Errors:</strong> Read failures and exceeded per-client bounds return <code>TcpError</code>.</p>
+<h2 id="server-limits-and-results">Server limits and results</h2>
+<pre><code class="language-panack">record TcpServerLimits {
+  clients: Nat, concurrency: Nat, request_limit: Nat, response_limit: Nat,
+  client_timeout: Duration, admission_timeout: Duration, drain: Duration
+}
+record TcpServiceLimits {
+  concurrency: Nat, request_limit: Nat, response_limit: Nat,
+  client_timeout: Duration, drain: Duration
+}</code></pre>
+<ul>
+<li><code>clients</code>: 1–256 total admissions for a finite server.</li>
+<li><code>concurrency</code>: 1–32 simultaneous clients, no greater than <code>clients</code> for a finite server.</li>
+<li><code>request_limit</code> and <code>response_limit</code>: 0–1,048,576 bytes per client.</li>
+<li><code>client_timeout</code>: acceptance through response completion.</li>
+<li><code>admission_timeout</code>: finite-server admission deadline from successful listen.</li>
+<li><code>drain</code>: time allowed after admission stops.</li>
+</ul>
+<p>All durations must be whole milliseconds and no more than 60 seconds. Client/admission deadlines must be positive; drain may be zero.</p>
+<pre><code class="language-panack">record TcpServiceReady { address: Str, port: Nat }
+record TcpServiceSummary { accepted: Nat, succeeded: Nat, failed: Nat }</code></pre>
+<p>The summary counts accepted, successful and failed clients.</p>
+<h2 id="tcperror">TcpError</h2>
+<pre><code class="language-panack">record TcpError { operation: TcpOperation, kind: TcpErrorKind, native: Str }</code></pre>
+<p><code>native</code> is the preserved runtime/callback text. No errno is invented and no request or response contents are retained. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum TcpErrorKind { InvalidArguments, InvalidAddress, TimedOut, ConnectFailed, SocketFailed, BindFailed, ListenFailed, AcceptFailed, ReadFailed, WriteFailed, ShutdownFailed, PeerClosed, ResponseLimitExceeded, RequestLimitExceeded, ClockFailed, PollFailed, Unavailable, InvalidDuration, ClientFailure, ServiceOrCallbackFailure, OtherFailure }</code></pre>
+<h2 id="higher-level-service-example">Higher-level service example</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-http-uptime-service">The HTTP uptime service</a> uses the HTTP package built on this transport.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/network/tcp/async.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

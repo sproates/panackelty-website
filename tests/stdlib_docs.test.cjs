@@ -30,3 +30,29 @@ test('module and migration comparisons render as tables, not pipe-delimited pros
     assert.doesNotMatch(html,/<p>\|/);
   }
 });
+
+test('API entries retain reviewed signatures and explain parameters and results',()=>{
+  const signatures=require('../docs/stdlib/api-signatures.json');
+  const modules=documents.filter(d=>d.apiReference);
+  assert.equal(modules.length,19);
+  const source=modules.map(d=>fs.readFileSync(`docs/stdlib/${d.name}`,'utf8')).join('\n');
+  assert.equal(signatures.length,72);
+  for(const {signature}of signatures)assert(source.includes(signature),`missing signature: ${signature}`);
+  for(const d of modules){
+    const md=fs.readFileSync(`docs/stdlib/${d.name}`,'utf8');
+    for(const section of md.split(/^## /m).slice(1)){
+      if(!section.split('\n')[0].endsWith('()'))continue;
+      assert(section.includes('**Parameters**'),`${d.route}: missing parameter explanation`);
+      assert(section.includes('**Returns:**'),`${d.route}: missing result explanation`);
+    }
+  }
+});
+test('module map links lead to website references rather than source files',()=>{
+  const html=fs.readFileSync('site/reference/standard-library/index.html','utf8');
+  const table=html.match(/<table>[\s\S]*?<\/table>/)[0];
+  assert.doesNotMatch(table,/github\.com/);
+  assert.match(table,/reference\/stdlib-time\//);
+  assert.match(table,/reference\/stdlib-filesystem\//);
+  const landing=fs.readFileSync('site/api/index.html','utf8');
+  assert(landing.indexOf('id="stdlib-development"')<landing.indexOf('id="http-server"'));
+});

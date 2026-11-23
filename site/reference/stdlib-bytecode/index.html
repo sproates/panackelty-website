@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Execute bytecode synchronously in a nested VM. This is not an operating-system subprocess.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-bytecode/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Nested bytecode execution — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Nested bytecode execution</h1><p class="lede">Execute bytecode synchronously in a nested VM. This is not an operating-system subprocess.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#run">run()</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Execute bytecode synchronously in a nested VM. This is not an operating-system subprocess.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/runtime/bytecode as bytecode</code></pre>
+<h2 id="run">run()</h2>
+<pre><code class="language-panack">run(data: Bytes, arguments: [Str]): Void</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>data: Bytes</code> — compiled Panack bytecode.</li>
+<li><code>arguments: [Str]</code> — arguments for the nested invocation.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Void</code>.</p>
+<p>Runs the nested bytecode through the VM. This is an ordinary effectful call: it is not allowed as an async handler operation. For operating-system programs, use <code>process.run</code>.</p>
+<p><strong>Errors:</strong> Bytecode verification and VM failures are runtime diagnostics, not a <code>Result</code> returned by this API.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/runtime/bytecode.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

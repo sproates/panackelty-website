@@ -28,8 +28,8 @@ result depends on when the call occurs.
 ## Module map
 
 Paths below follow `stdlib/`. An `/async` counterpart exports the same value and
-error identities where both interfaces exist. The source links provide complete
-signatures, including parameter order.
+error identities where both interfaces exist. Each module page includes signatures, parameters, return values, behaviour and
+errors. Ordinary and async forms are documented together.
 
 | Need | Ordinary module | Async module | Main operations |
 | --- | --- | --- | --- |
@@ -178,3 +178,10 @@ there is no universal error record or universal `.render()` method.
 The [domain-error contract](../design/STDLIB_DOMAIN_ERRORS.md) lists categories,
 context, lifecycle restrictions and known limits. The
 [migration guide](../guides/STDLIB_MIGRATION.md) explains compatibility imports.
+
+## Testing reference
+
+- [Assertions](/reference/stdlib-testing/)
+- [Checked reporting](/reference/stdlib-testing-reporting/)
+- [Filesystem helpers](/reference/stdlib-testing-filesystem/)
+- [Process helpers](/reference/stdlib-testing-process/)

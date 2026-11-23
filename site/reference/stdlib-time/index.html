@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read a monotonic clock, construct exact durations and wait without blocking an async task.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-time/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Time — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Time</h1><p class="lede">Read a monotonic clock, construct exact durations and wait without blocking an async task.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#now">now()</a></li>
+<li class="toc-level-2"><a href="#sleep">sleep()</a></li>
+<li class="toc-level-2"><a href="#seconds">seconds()</a></li>
+<li class="toc-level-2"><a href="#milliseconds">milliseconds()</a></li>
+<li class="toc-level-2"><a href="#nanoseconds">nanoseconds()</a></li>
+<li class="toc-level-2"><a href="#from-fractional-seconds">from_fractional_seconds()</a></li>
+<li class="toc-level-2"><a href="#instant-and-duration">Instant and Duration</a></li>
+<li class="toc-level-2"><a href="#sleeperror">SleepError</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-timing">Complete example: async timing</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Read a monotonic clock, construct exact durations and wait without blocking an async task.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/time as time</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/time/async as time</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="now">now()</h2>
+<pre><code class="language-panack">now(): Result[Instant,ClockError]</code></pre>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+<p><strong>Returns:</strong> <code>Result[Instant,ClockError]</code>. <code>Ok</code> contains the current monotonic instant.</p>
+<p>Use <code>await time.now()</code> with the async import. A clock read is impure, even though it completes in the current task turn. Instants from the same invocation share a clock domain; consecutive readings may be equal. An instant is not a calendar timestamp and must not be persisted for comparison with another invocation.</p>
+<p><strong>Errors:</strong> <code>ClockUnavailable</code> if the host cannot supply the monotonic clock.</p>
+<h2 id="sleep">sleep()</h2>
+<pre><code class="language-panack">sleep(duration: Duration): Result[Unit,SleepError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>duration: Duration</code> — a wait from zero through 365 days.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,SleepError]</code>. <code>Ok(())</code> means the wait completed.</p>
+<p>The ordinary form blocks. <code>await time.sleep(duration)</code> suspends the current task, allowing other tasks to progress. Zero completes immediately. Cancellation discards the async timer; it does not produce a normal successful return.</p>
+<p><strong>Errors:</strong> Negative durations produce <code>NegativeDuration</code>; waits beyond the host range produce <code>DurationTooLarge</code>. Timer, resource or host failures remain errors.</p>
+<h2 id="seconds">seconds()</h2>
+<pre><code class="language-panack">pure seconds(value: Int): Duration</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Int</code> — a signed number of seconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Duration</code>, exactly representing the supplied value.</p>
+<p>Pure. Negative durations are valid values, though APIs such as <code>sleep</code> reject them.</p>
+<h2 id="milliseconds">milliseconds()</h2>
+<pre><code class="language-panack">pure milliseconds(value: Int): Duration</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Int</code> — a signed number of milliseconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Duration</code>, exactly representing the supplied value.</p>
+<p>Pure. Negative durations are valid values, though APIs such as <code>sleep</code> reject them.</p>
+<h2 id="nanoseconds">nanoseconds()</h2>
+<pre><code class="language-panack">pure nanoseconds(value: Int): Duration</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Int</code> — a signed number of nanoseconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Duration</code>, exactly representing the supplied value.</p>
+<p>Pure. Negative durations are valid values, though APIs such as <code>sleep</code> reject them.</p>
+<h2 id="from-fractional-seconds">from_fractional_seconds()</h2>
+<pre><code class="language-panack">pure from_fractional_seconds(value: Rat): Result[Duration,DurationError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Rat</code> — an exact number of seconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Duration,DurationError]</code>.</p>
+<p>Pure. Conversion requires an exact whole number of nanoseconds. No rounding is performed.</p>
+<p><strong>Errors:</strong> <code>FractionalNanosecond</code> when the input cannot be represented exactly.</p>
+<h2 id="instant-and-duration">Instant and Duration</h2>
+<p><code>end.difference(start): Duration</code> subtracts two instants and returns a signed duration. <code>duration.as_nanoseconds(): Int</code> and <code>duration.as_seconds(): Rat</code> expose exact values.</p>
+<p>Duration methods are pure:</p>
+<ul>
+<li><code>add(right: Duration): Duration</code> and <code>subtract(right: Duration): Duration</code> perform exact arithmetic.</li>
+<li><code>scale(factor: Int): Duration</code> multiplies by a signed integer.</li>
+<li><code>is_less_than(right: Duration): Bool</code> compares durations.</li>
+<li><code>divide(divisor: Int): Result[Duration,DurationError]</code> rejects zero and results requiring fractional nanoseconds.</li>
+<li><code>ratio(right: Duration): Result[Rat,DurationError]</code> returns an exact ratio and rejects a zero right-hand duration.</li>
+</ul>
+<p><code>DurationError</code> has <code>FractionalNanosecond</code> and <code>ZeroDurationDivisor</code>. Compatibility factories <code>from_nanoseconds</code> and <code>from_seconds</code> retain the behaviour of <code>nanoseconds</code> and <code>from_fractional_seconds</code>.</p>
+<h2 id="sleeperror">SleepError</h2>
+<pre><code class="language-panack">record SleepError { duration: Duration, kind: SleepErrorKind, native: HostError }</code></pre>
+<p><code>duration</code> is the requested wait. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum SleepErrorKind { NegativeDuration, DurationTooLarge, TimerFailure, UnsupportedHost, OtherFailure }</code></pre>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-timing">Read the complete timing program</a>, including clock failures and the difference between two instants.</p>
+<h2 id="complete-example-async-timing">Complete example: async timing</h2>
+<pre><code class="language-panack">import stdlib/time/async as time
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async measure_pause(): Result[Bool,Str] {
+  match await time.now() {
+    Error(clock_error) =&gt; Error(&quot;The monotonic clock is unavailable.&quot;),
+    Ok(start) =&gt; match await time.sleep(time.milliseconds(1)) {
+      Error(problem) =&gt; Error(problem.render()),
+      Ok(slept) =&gt; match await time.now() {
+        Error(second_clock_error) =&gt; Error(&quot;The monotonic clock is unavailable.&quot;),
+        Ok(end) =&gt; Ok(!end.is_before(start))
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await measure_pause() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(monotonic) =&gt; match await console.write_line(&quot;Clock did not move backwards: ${monotonic}&quot;) {
+      Error(write_error) =&gt; await host.exit(1), Ok(written) =&gt; ()
+    }
+  }
+}</code></pre><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/time.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

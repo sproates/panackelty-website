@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Read and write files, inspect directories and manage temporary paths with explicit bounds and checked failures.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-filesystem/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Filesystem — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Filesystem</h1><p class="lede">Read and write files, inspect directories and manage temporary paths with explicit bounds and checked failures.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#metadata">metadata()</a></li>
+<li class="toc-level-2"><a href="#read">read()</a></li>
+<li class="toc-level-2"><a href="#write">write()</a></li>
+<li class="toc-level-2"><a href="#read-chunk">read_chunk()</a></li>
+<li class="toc-level-2"><a href="#write-atomic">write_atomic()</a></li>
+<li class="toc-level-2"><a href="#list-directory">list_directory()</a></li>
+<li class="toc-level-2"><a href="#create-directory">create_directory()</a></li>
+<li class="toc-level-2"><a href="#remove-file">remove_file()</a></li>
+<li class="toc-level-2"><a href="#remove-directory">remove_directory()</a></li>
+<li class="toc-level-2"><a href="#create-temp-file">create_temp_file()</a></li>
+<li class="toc-level-2"><a href="#create-temp-directory">create_temp_directory()</a></li>
+<li class="toc-level-2"><a href="#directories-overlap">directories_overlap()</a></li>
+<li class="toc-level-2"><a href="#paths-cancellation-and-ownership">Paths, cancellation and ownership</a></li>
+<li class="toc-level-2"><a href="#filemetadata">FileMetadata</a></li>
+<li class="toc-level-2"><a href="#filesystemerror">FilesystemError</a></li>
+<li class="toc-level-2"><a href="#example-and-compatibility">Example and compatibility</a></li>
+<li class="toc-level-2"><a href="#complete-example-async-temporary-note">Complete example: async temporary note</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Read and write files, inspect directories and manage temporary paths with explicit bounds and checked failures.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/filesystem as filesystem</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/filesystem/async as filesystem</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="metadata">metadata()</h2>
+<pre><code class="language-panack">metadata(path: Path): Result[FileMetadata, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — entry to inspect.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[FileMetadata,FilesystemError]</code>.</p>
+<p>Inspects the final directory entry without following a final symlink. Intermediate symlinks and trailing separators use host path resolution. Size is the host byte-size field, not a recursive directory total.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="read">read()</h2>
+<pre><code class="language-panack">read(path: Path, limit: Nat): Result[Bytes, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — regular file to read.</li>
+<li><code>limit: Nat</code> — whole-file byte limit, at most 128 MiB.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,FilesystemError]</code>.</p>
+<p>Follows symlinks and preserves bytes. Exceeding the limit fails without returning partial data. Special files are rejected; use stream APIs for streams.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="write">write()</h2>
+<pre><code class="language-panack">write(path: Path, data: Bytes): Result[Unit, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — file to create or truncate.</li>
+<li><code>data: Bytes</code> — complete contents, at most 128 MiB.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,FilesystemError]</code>.</p>
+<p>Follows symlinks. May leave partial contents on failure. It is neither atomic replacement nor a durability guarantee.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="read-chunk">read_chunk()</h2>
+<pre><code class="language-panack">read_chunk(file: Path, offset: Nat, limit: Nat): Result[Bytes,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>file: Path</code> — regular file to read without following a final symlink.</li>
+<li><code>offset: Nat</code> — byte offset, at most 256 MiB.</li>
+<li><code>limit: Nat</code> — maximum bytes for this chunk, at most 65,536.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,FilesystemError]</code>.</p>
+<p>Reads a bounded portion of a regular file. With a positive limit, empty bytes indicate no remaining data at the offset. This does not establish directory confinement.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="write-atomic">write_atomic()</h2>
+<pre><code class="language-panack">write_atomic(file: Path, data: Bytes): Result[Unit,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>file: Path</code> — destination file.</li>
+<li><code>data: Bytes</code> — complete replacement contents, at most 32 MiB.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,FilesystemError]</code>.</p>
+<p>Uses atomic replacement so readers do not observe an incrementally written destination. Atomic visibility does not promise persistence after a crash.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="list-directory">list_directory()</h2>
+<pre><code class="language-panack">list_directory(path: Path): Result[[Path], FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — directory to enumerate.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[[Path],FilesystemError]</code>, immediate relative child names.</p>
+<p>Excludes <code>.</code> and <code>..</code>. Orders names lexicographically by unsigned native bytes. Join each name to its parent before accessing it. Fails without a partial list beyond 65,536 entries or 16 MiB of names. Enumeration is not a snapshot against concurrent changes.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="create-directory">create_directory()</h2>
+<pre><code class="language-panack">create_directory(path: Path): Result[Unit, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — single directory to create.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,FilesystemError]</code>.</p>
+<p>Creates one level; it does not create missing ancestors. Fails if the entry already exists. Permissions are subject to the host umask.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="remove-file">remove_file()</h2>
+<pre><code class="language-panack">remove_file(path: Path): Result[Unit, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — file or symbolic link to unlink.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,FilesystemError]</code>.</p>
+<p>Removes that entry. Does not recursively remove directories.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="remove-directory">remove_directory()</h2>
+<pre><code class="language-panack">remove_directory(path: Path): Result[Unit, FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>path: Path</code> — empty directory to remove.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,FilesystemError]</code>.</p>
+<p>Refuses a nonempty directory. It does not recursively delete contents.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="create-temp-file">create_temp_file()</h2>
+<pre><code class="language-panack">create_temp_file(parent: Path): Result[Path,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>parent: Path</code> — existing parent directory.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Path,FilesystemError]</code>, the already-created file.</p>
+<p>Atomically chooses a unique name and creates a file with permissions 0600 subject to umask. The caller owns cleanup; this is not merely a name reservation.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="create-temp-directory">create_temp_directory()</h2>
+<pre><code class="language-panack">create_temp_directory(parent: Path): Result[Path,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>parent: Path</code> — existing parent directory.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Path,FilesystemError]</code>, the already-created directory.</p>
+<p>Atomically chooses a unique name and creates a directory with permissions 0700 subject to umask. The caller must remove its contents and directory.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="directories-overlap">directories_overlap()</h2>
+<pre><code class="language-panack">directories_overlap(left: Path, right: Path): Result[Bool,FilesystemError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>left: Path</code> — first directory.</li>
+<li><code>right: Path</code> — second directory.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bool,FilesystemError]</code>.</p>
+<p>Checks physical directory overlap rather than comparing path spellings. The result describes that operation, not a permanent guarantee against later changes.</p>
+<p><strong>Errors:</strong> Returns <code>FilesystemError</code>; see the error categories below.</p>
+<h2 id="paths-cancellation-and-ownership">Paths, cancellation and ownership</h2>
+<p>Construct paths using <a href="../../reference/stdlib-path/">the path module</a>. Ordinary paths do not confine access: relative paths, <code>..</code> and symlinks follow host rules. Use <a href="../../reference/stdlib-filesystem-confined/">confined reads</a> when access must remain under a root. Async operations run on bounded workers. Cancelling a wait does not undo an already-started filesystem side effect. Temporary paths do not gain automatic cleanup.</p>
+<h2 id="filemetadata">FileMetadata</h2>
+<pre><code class="language-panack">record FileMetadata { kind: FileKind, size: Nat }
+enum FileKind { RegularFile, Directory, SymbolicLink, OtherFile }</code></pre>
+<h2 id="filesystemerror">FilesystemError</h2>
+<pre><code class="language-panack">record FilesystemError { operation: FilesystemOperation, kind: FilesystemErrorKind, native: HostError }</code></pre>
+<p><code>operation</code> records the requested operation and its paths/bounds. Missing entries, permissions, existing destinations, wrong entry types and exceeded limits have distinct categories. Unknown host codes remain <code>OtherFailure</code>. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum FilesystemErrorKind {
+  NotFound,
+  PermissionDenied,
+  AlreadyExists,
+  NotDirectory,
+  IsDirectory,
+  NotRegularFile,
+  DirectoryNotEmpty,
+  SymlinkRejected,
+  OutputLimitExceeded,
+  LimitExceeded,
+  InvalidArgument,
+  InvalidPath,
+  InvalidParent,
+  InvalidStage,
+  StageBusy,
+  ParentChanged,
+  StageChanged,
+  DestinationConflict,
+  PublicationFailed,
+  CleanupFailed,
+  StageCreationFailed,
+  StageOpenFailed,
+  FilesystemFailure,
+  IOFailure,
+  ResourceLimit,
+  OutOfMemory,
+  Cancelled,
+  UnsupportedHost,
+  OtherFailure
+}</code></pre>
+<h2 id="example-and-compatibility">Example and compatibility</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-temporary-note">The temporary-note program</a> preserves both the primary failure and a cleanup failure. <code>temp_file</code> and <code>temp_directory</code> remain compatibility names for the canonical creation operations.</p>
+<h2 id="complete-example-async-temporary-note">Complete example: async temporary note</h2>
+<pre><code class="language-panack">import stdlib/encoding/utf8 as utf8
+import stdlib/filesystem/async as files
+import stdlib/path as paths
+import stdlib/console/async as console
+import stdlib/host/async as host
+
+async write_and_read(file: Path): Result[Str,Str] {
+  match await files.write(file, &quot;remember the milk&quot;.encode_utf8()) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(written) =&gt; match await files.read(file, 1024) {
+      Error(problem) =&gt; Error(problem.render()),
+      Ok(data) =&gt; match utf8.decode(data) {
+        Error(decode_error) =&gt; Error(&quot;The note is not valid UTF-8.&quot;), Ok(text) =&gt; Ok(text)
+      }
+    }
+  }
+}
+
+async temporary_note(): Result[Str,Str] {
+  match await files.create_temp_file(paths.current()) {
+    Error(problem) =&gt; Error(problem.render()),
+    Ok(file) =&gt; {
+      result = await write_and_read(file)
+      // Always attempt cleanup, including when writing or reading failed.
+      match await files.remove_file(file) {
+        Ok(removed) =&gt; result,
+        Error(cleanup) =&gt; match result {
+          Ok(text) =&gt; Error(cleanup.render()),
+          Error(original) =&gt; Error(original + &quot;\nCleanup also failed: &quot; + cleanup.render())
+        }
+      }
+    }
+  }
+}
+
+async main(): Unit {
+  match await temporary_note() {
+    Error(message) =&gt; {
+      reported = await console.write_error_line(message)
+      await host.exit(1)
+    },
+    Ok(text) =&gt; match await console.write_line(text) {
+      Error(write_error) =&gt; await host.exit(1), Ok(displayed) =&gt; ()
+    }
+  }
+}</code></pre><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/filesystem.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

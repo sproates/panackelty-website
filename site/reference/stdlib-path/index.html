@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Construct and manipulate opaque filesystem paths without accessing the filesystem.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-path/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Paths — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Paths</h1><p class="lede">Construct and manipulate opaque filesystem paths without accessing the filesystem.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#from-text">from_text()</a></li>
+<li class="toc-level-2"><a href="#from-native">from_native()</a></li>
+<li class="toc-level-2"><a href="#current">current()</a></li>
+<li class="toc-level-2"><a href="#path-methods">Path methods</a></li>
+<li class="toc-level-2"><a href="#example">Example</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Construct and manipulate opaque filesystem paths without accessing the filesystem.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/path as path</code></pre>
+<h2 id="from-text">from_text()</h2>
+<pre><code class="language-panack">pure from_text(value: Str): Result[Path, PathError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Str</code> — nonempty path text without NUL.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Path,PathError]</code>.</p>
+<p>Pure. Encodes path text without checking whether it exists.</p>
+<p><strong>Errors:</strong> <code>EmptyPath</code> or <code>PathContainsNul</code>.</p>
+<h2 id="from-native">from_native()</h2>
+<pre><code class="language-panack">pure from_native(value: Bytes): Result[Path, PathError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>value: Bytes</code> — nonempty native POSIX path bytes without NUL.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Path,PathError]</code>.</p>
+<p>Preserves native bytes, including names which are not valid UTF-8. Does not access the filesystem.</p>
+<p><strong>Errors:</strong> <code>EmptyPath</code> or <code>PathContainsNul</code>.</p>
+<h2 id="current">current()</h2>
+<pre><code class="language-panack">pure current(): Path</code></pre>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+<p><strong>Returns:</strong> <code>Path</code>, the lexical current-directory path.</p>
+<p>Pure. This is not a host call resolving an absolute working directory.</p>
+<h2 id="path-methods">Path methods</h2>
+<p>All methods are pure.</p>
+<ul>
+<li><code>join(child: Path): Result[Path,PathError]</code> appends a relative child; an absolute child produces <code>AbsolutePathAppend</code>. This does not establish confinement.</li>
+<li><code>parent(): Path</code> returns the lexical parent, retaining the behaviour of the compatibility name <code>directory()</code>.</li>
+<li><code>filename(): Option[Path]</code> returns the final path component when there is one.</li>
+<li><code>is_absolute(): Bool</code> tests the path form.</li>
+<li><code>native_bytes(): Bytes</code> preserves the exact native representation.</li>
+<li><code>to_text(): Result[Str,PathError]</code> requires valid UTF-8; otherwise returns <code>PathNotUtf8</code>.</li>
+<li><code>display(): Str</code> provides text for diagnostics even when the path is not valid UTF-8. Do not use display text to reconstruct a native path.</li>
+</ul>
+<p><code>PathError</code> is <code>EmptyPath</code>, <code>PathContainsNul</code>, <code>PathNotUtf8</code> or <code>AbsolutePathAppend</code>. These are path-value failures, separate from <code>FilesystemError</code> returned by host operations.</p>
+<h2 id="example">Example</h2>
+<p><a href="../../playbook/async-stdlib/#complete-example-async-temporary-note">The temporary-file example</a> uses paths without treating them as strings.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/path.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

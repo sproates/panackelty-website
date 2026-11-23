@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Send raw HTTP request bytes and read a bounded response stream. Parsing and framing belong to the HTTP package.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-http-stream/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Raw HTTP streams — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Raw HTTP streams</h1><p class="lede">Send raw HTTP request bytes and read a bounded response stream. Parsing and framing belong to the HTTP package.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#open">open()</a></li>
+<li class="toc-level-2"><a href="#read">read()</a></li>
+<li class="toc-level-2"><a href="#close">close()</a></li>
+<li class="toc-level-2"><a href="#httpstreamerror">HttpStreamError</a></li>
+<li class="toc-level-2"><a href="#use-the-http-package-for-urls">Use the HTTP package for URLs</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Send raw HTTP request bytes and read a bounded response stream. Parsing and framing belong to the HTTP package.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/network/http_stream as transport</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/network/http_stream/async as transport</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="open">open()</h2>
+<pre><code class="language-panack">open(host: Str, port: Nat, tls: Bool, request: Bytes, response_limit: Nat, timeout: Duration): Result[HttpStream,HttpStreamError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>host: Str</code> — destination hostname.</li>
+<li><code>port: Nat</code> — destination port.</li>
+<li><code>tls: Bool</code> — whether to use TLS.</li>
+<li><code>request: Bytes</code> — complete request bytes, at most 65,536 bytes.</li>
+<li><code>response_limit: Nat</code> — total raw-response bound, at most 256 MiB.</li>
+<li><code>timeout: Duration</code> — positive overall deadline, at most 60 seconds.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[HttpStream,HttpStreamError]</code>.</p>
+<p>Allocates a transport; it does not confirm a connection or response. Reads drive DNS, connection, request transmission and response receipt. The deadline starts at open and includes time between reads. At most 512 opens are allowed per invocation; slots are not reused.</p>
+<p><strong>Errors:</strong> Invalid configuration, allocation and transport setup failures are reported. Network failures may appear on read.</p>
+<h2 id="read">read()</h2>
+<pre><code class="language-panack">read(stream: HttpStream): Result[Bytes,HttpStreamError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>stream: HttpStream</code> — live stream with no overlapping read.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Bytes,HttpStreamError]</code>, up to 16,384 bytes.</p>
+<p>Empty bytes mean EOF, repeatable until close. Ordinary reads block; async reads yield through transport polling without occupying an I/O worker. Cancelling a pending read consumes the stream, even if bytes arrived before cancellation. Cancellation cannot undo a request already sent.</p>
+<p><strong>Errors:</strong> DNS, TLS verification, connection, timeout, response-limit and read failures retain transport detail. Overlapping reads return <code>ReadBusy</code>; closed/foreign handles return <code>InvalidStream</code>.</p>
+<h2 id="close">close()</h2>
+<pre><code class="language-panack">close(stream: HttpStream): Result[Unit,HttpStreamError]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>stream: HttpStream</code> — live stream with no read in progress.</li>
+</ul>
+<p><strong>Returns:</strong> <code>Result[Unit,HttpStreamError]</code>.</p>
+<p>Closes the transport and invalidates every alias. Explicit close releases it early; invocation teardown provides final cleanup.</p>
+<p><strong>Errors:</strong> A pending read prevents close (<code>ReadBusy</code>). Closed or foreign handles are invalid.</p>
+<h2 id="httpstreamerror">HttpStreamError</h2>
+<pre><code class="language-panack">record HttpStreamError { operation: HttpStreamOperation, kind: HttpStreamErrorKind, native: Str }</code></pre>
+<p>Here <code>native</code> is the original transport text, not a <code>HostError</code>. Available libcurl and TLS detail is preserved; request bytes are not retained. Use <code>problem.kind</code> for control flow and <code>problem.render()</code> for a human-readable explanation. The <code>native</code> field preserves the original failure. Host-backed native errors contain <code>operation: Str</code>, <code>code: Str</code> and <code>native_code: Nat</code>; a zero native number means no host error number was supplied.</p>
+<pre><code class="language-panack">enum HttpStreamErrorKind {
+  InvalidArguments, TimedOut, NameResolutionFailed, TlsVerificationFailed, TlsFailed, ConnectionFailed, WriteFailed, ReadFailed, ResponseLimitExceeded, InvalidStream, ReadBusy, ResourceLimit, Unavailable, ResolverUnavailable, ClockFailed, InitializationFailed, PollingFailed, InvocationEnded, OtherFailure
+}</code></pre>
+<h2 id="use-the-http-package-for-urls">Use the HTTP package for URLs</h2>
+<p>Most applications should use <code>http/client/async</code>, not construct raw HTTP bytes. <a href="../../playbook/async-stdlib/#complete-example-diagnostic-http-client">The diagnostic client example</a> shows URL requests, status handling and detailed errors. Browser/WASI hosts do not provide this native transport.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/network/http_stream.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

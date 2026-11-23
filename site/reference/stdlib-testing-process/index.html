@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Run a command under explicit bounds and compare its output with an expected observation.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-testing-process/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Process test helpers — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Process test helpers</h1><p class="lede">Run a command under explicit bounds and compare its output with an expected observation.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#run">run()</a></li>
+<li class="toc-level-2"><a href="#command-output">command_output()</a></li>
+<li class="toc-level-2"><a href="#command-result">command_result()</a></li>
+<li class="toc-level-2"><a href="#expect-command-error">expect_command_error()</a></li>
+<li class="toc-level-2"><a href="#capture-report">capture_report()</a></li>
+<li class="toc-level-2"><a href="#command-and-output-records">Command and output records</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Run a command under explicit bounds and compare its output with an expected observation.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/testing/process as commands</code></pre>
+<p>For an async function, select the async module instead:</p>
+<pre><code class="language-panack">import stdlib/testing/process/async as commands</code></pre>
+<p>Await effectful operations. In the signatures below, an ordinary effectful function becomes <code>async</code> under the async import; parameter and result types stay the same. Pure functions and value methods remain ordinary calls. The two imports share their value and error types.</p>
+<h2 id="run">run()</h2>
+<pre><code class="language-panack">run(name: Str, command: TestCommand, expected: ProcessOutput): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>command: TestCommand</code> — exact executable and resource bounds.</li>
+<li><code>expected: ProcessOutput</code> — expected compatibility output.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Runs the command and compares termination, stdout and stderr exactly. Launch errors become failed test results. The async form awaits execution.</p>
+<p><strong>Errors:</strong> Returns a failed <code>TestResult</code> rather than throwing for an ordinary command mismatch.</p>
+<h2 id="command-output">command_output()</h2>
+<pre><code class="language-panack">pure command_output(name: Str, actual: ProcessOutput, expected: ProcessOutput): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>actual: ProcessOutput</code> — observed output.</li>
+<li><code>expected: ProcessOutput</code> — expected output.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Pure comparison of exit code, signal, stdout and stderr, in that order. Performs no subprocess I/O.</p>
+<h2 id="command-result">command_result()</h2>
+<pre><code class="language-panack">pure command_result(name: Str, actual: Result[ProcessOutput,HostError], expected: ProcessOutput): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>actual: Result[ProcessOutput,HostError]</code> — completed observation or host failure.</li>
+<li><code>expected: ProcessOutput</code> — expected output.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Pure. Turns a host failure into a failed test, otherwise compares output.</p>
+<h2 id="expect-command-error">expect_command_error()</h2>
+<pre><code class="language-panack">expect_command_error(name: Str, command: TestCommand, expected_code: Str): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>command: TestCommand</code> — command to execute.</li>
+<li><code>expected_code: Str</code> — expected native HostError code.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Passes only if execution returns a HostError with the requested code. A completed nonzero exit is not a host error.</p>
+<h2 id="capture-report">capture_report()</h2>
+<pre><code class="language-panack">capture_report(name: Str, command: TestCommand, expected: ProcessOutput, destination: Option[Path]): TestResult</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>name: Str</code> — test name.</li>
+<li><code>command: TestCommand</code> — command to execute.</li>
+<li><code>expected: ProcessOutput</code> — expected complete output.</li>
+<li><code>destination: Option[Path]</code> — optional stdout capture destination.</li>
+</ul>
+<p><strong>Returns:</strong> <code>TestResult</code>.</p>
+<p>Writes stdout only after the complete observation matches. A failed capture write turns the test into a failure. The mismatch diagnostic may decode actual stdout as UTF-8; use this helper for textual reports, not arbitrary invalid byte sequences.</p>
+<p><strong>Errors:</strong> Invalid UTF-8 in that diagnostic path may trap. Other command/capture failures become failed results.</p>
+<h2 id="command-and-output-records">Command and output records</h2>
+<pre><code class="language-panack">record TestCommand {
+  executable: Path,
+  arguments: [Str],
+  stdin: Bytes,
+  working_directory: Path,
+  environment: [Str],
+  timeout: Duration,
+  output_limit: Nat
+}
+record ProcessOutput { exit_code: Nat, signal: Nat, stdout: Bytes, stderr: Bytes }</code></pre>
+<p><code>TestCommand.environment</code> is a list of inherited-environment overrides (<code>NAME=value</code>), not the canonical <code>ProcessEnvironment</code> enum. Execution uses the <a href="../../reference/stdlib-process/#command">process bounds</a>. The compatibility output has <code>exit_code</code> and <code>signal</code>: a normal exit has signal zero, and a signal termination has exit code zero. These are deliberately different from the canonical <code>ProcessOutput.termination</code> record. <code>command_result</code> accepts <code>HostError { operation: Str, code: Str, native_code: Nat }</code>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/testing/process.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

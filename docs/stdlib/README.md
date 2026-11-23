@@ -1,21 +1,26 @@
-# Website stdlib documentation snapshot
+# Website standard library documentation
 
-`snapshot.json` records the reviewed core commit and the five public routes.
-Four Markdown documents and all nine example sources are copied from that
-commit. `ASYNC_STDLIB_BASICS.md` is website-authored narrative using those exact
-examples; its metadata marks it as site-authored. The core revision is a content
-reference, not a new release pin or a request to build the compiler.
+`snapshot.json` records the reviewed core revision and all public routes. The
+reference is self-contained: module pages must document imports, function
+signatures, each parameter, return values, behaviour, errors and relevant bounds
+and ownership. Ordinary and async forms belong together. Link to other website
+reference entries and complete examples; GitHub is an optional implementation
+reference, never a substitute for API documentation.
 
-Run `node scripts/stdlib_docs.cjs` to regenerate the five HTML pages.
+The nineteen `API_*.md` module pages, standard-library index and practical
+walkthrough are website-authored. Three other guides and nine examples are copied
+from the recorded core revision. `api-signatures.json` records the 72 reviewed
+public function signatures and their defining source files, including re-exports.
+Compatibility and internal support APIs are identified where relevant rather
+than presented as the recommended application interface.
+
+Run `node scripts/stdlib_docs.cjs` to regenerate pages.
 `node scripts/stdlib_docs.cjs --check` checks synchronization; `make check`
-includes code-preservation, anchor, table, assembly and preview tests.
+checks signature presence, parameter/return sections, local module navigation,
+examples, anchors, assembly and preview behaviour. When the core API changes,
+review the prose and limits as well as refreshing signatures and example bytes.
+A signature check alone does not verify behaviour.
 
-Update copied Markdown and source examples together with their core revision.
-External code/specification links use that revision so development references
-work before integration and cannot silently point at a different API. Internal
-links between the guides and embedded examples stay on this website.
-
-These pages are labelled alpha.16 development. They do not change alpha.15
-release pins, the playground, released HTTP references or published articles.
-Owner preview review and a separately approved website merge/publication remain
-required. CI remains off for this development branch under the owner's trial.
+Development labelling does not advance alpha.15 release pins or the playground.
+Published articles are unchanged. Owner preview review and separately approved
+website integration/publication remain required.

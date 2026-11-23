@@ -19,4 +19,23 @@
   <url><loc>https://panackelty.com/playbook/async-resources/</loc></url>
   <url><loc>https://panackelty.com/playbook/async-input-and-files/</loc></url>
   <url><loc>https://panackelty.com/playbook/async-stdlib/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-time/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-environment/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-console/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-process/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-filesystem/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-filesystem-confined/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-filesystem-staging/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-sha256/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-gzip/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-http-stream/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-tcp/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-bytecode/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-path/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-utf8/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-bytes/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-testing/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-testing-reporting/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-testing-filesystem/</loc></url>
+  <url><loc>https://panackelty.com/reference/stdlib-testing-process/</loc></url>
 </urlset>
