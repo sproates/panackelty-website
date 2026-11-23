@@ -1,7 +1,8 @@
 ---
 title: A more useful standard library
 summary: Panackelty's standard library now has ordinary and async imports, more consistent APIs, proper error information and documentation you can actually read on the site.
-status: draft
+status: published
+date: 2026-11-23
 tags:
   - development
   - language design
