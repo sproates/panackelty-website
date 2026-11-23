@@ -333,3 +333,8 @@ ahead of HTTP on API Docs. Preview review and publication remain pending.
 Owner accepted the documentation approach and preview on 23 November 2026.
 This is preview approval, not permission to publish. PR #77 remains unmerged;
 website integration/publication requires separate authorisation.
+
+The owner authorised PR #77 checks and publication on 23 November 2026, conditional
+on passing checks. Completion takes effect after merge, successful deployment and
+live verification of the module reference/navigation. Until then, publication
+acceptance remains pending. Released version pins and articles are unchanged.
