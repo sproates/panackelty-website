@@ -22,6 +22,7 @@ jobs:
       contents: read
       actions: read
     outputs:
+      scope: ${{ steps.scope.outputs.mode }}
       run_id: ${{ steps.candidate.outputs.run_id }}
       attempt: ${{ steps.candidate.outputs.attempt }}
       artifact_name: ${{ steps.candidate.outputs.artifact_name }}
@@ -30,6 +31,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Select publication validation
+        id: scope
+        env:
+          SCOPE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          SCOPE_HEAD: ${{ github.sha }}
+        run: echo "mode=$(node scripts/publication_scope.cjs)" >> "$GITHUB_OUTPUT"
       - name: Find successful PR validation for this source tree
         id: candidate
         uses: actions/github-script@v8
@@ -71,9 +79,11 @@ jobs:
           SCOPE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: echo "mode=$(node scripts/browser_scope.cjs)" >> "$GITHUB_OUTPUT"
       - name: Read pinned preview tool revision
+        if: needs.reuse.outputs.scope != 'articles'
         id: preview-tool
         run: node -e 'console.log("revision=" + require("./preview-tool.json").revision)' >> "$GITHUB_OUTPUT"
       - name: Check out pinned preview tool source
+        if: needs.reuse.outputs.scope != 'articles'
         uses: actions/checkout@v6
         with:
           repository: sproates/panackelty
@@ -81,14 +91,17 @@ jobs:
           path: build/preview-tool-source
           persist-credentials: false
       - name: Install native tool build prerequisites
+        if: needs.reuse.outputs.scope != 'articles'
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y libcurl4-openssl-dev
       - name: Build the preview tool once
+        if: needs.reuse.outputs.scope != 'articles'
         run: |
           make -C build/preview-tool-source -j2 install PREFIX="$GITHUB_WORKSPACE/build/preview-tool"
           echo "PANACK_HTTP_SERVER=$GITHUB_WORKSPACE/build/preview-tool/bin/panack-http-server" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v7
+        if: needs.reuse.outputs.scope != 'articles'
         with:
           name: preview-tool
           overwrite: true
@@ -96,6 +109,10 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       - run: make check
+        if: needs.reuse.outputs.scope != 'articles'
+      - name: Validate article rendering and publication metadata
+        if: needs.reuse.outputs.scope == 'articles'
+        run: node --test tests/articles.test.cjs tests/sitemap.test.cjs
       - run: make build
       - uses: actions/upload-artifact@v7
         with:
@@ -120,7 +137,7 @@ jobs:
   release:
     name: Published release integrity
     needs: reuse
-    if: needs.reuse.outputs.run_id == ''
+    if: needs.reuse.outputs.run_id == '' && needs.reuse.outputs.scope != 'articles'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -134,7 +151,7 @@ jobs:
 
   browser:
     needs: [reuse, prepare]
-    if: needs.reuse.outputs.run_id == '' && needs.prepare.result == 'success'
+    if: needs.reuse.outputs.run_id == '' && needs.reuse.outputs.scope != 'articles' && needs.prepare.result == 'success'
     uses: ./.github/workflows/browser-validation.yml
     with:
       mode: ${{ needs.prepare.outputs.browser_mode }}
@@ -153,6 +170,7 @@ jobs:
         env:
           LOOKUP: ${{ needs.reuse.result }}
           REUSED_RUN: ${{ needs.reuse.outputs.run_id }}
+          SCOPE: ${{ needs.reuse.outputs.scope }}
           ASSEMBLY: ${{ needs.prepare.result }}
           RELEASE: ${{ needs.release.result }}
           BROWSER: ${{ needs.browser.result }}
@@ -160,7 +178,10 @@ jobs:
           test "$LOOKUP" = success
           if [ -n "$REUSED_RUN" ]; then
             test "$ASSEMBLY" = skipped && test "$RELEASE" = skipped && test "$BROWSER" = skipped
+          elif [ "$SCOPE" = articles ]; then
+            test "$ASSEMBLY" = success && test "$RELEASE" = skipped && test "$BROWSER" = skipped
           else
+            test "$SCOPE" = full
             test "$ASSEMBLY" = success && test "$RELEASE" = success && test "$BROWSER" = success
           fi
 

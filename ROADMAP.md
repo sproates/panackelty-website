@@ -338,3 +338,16 @@ The owner authorised PR #77 checks and publication on 23 November 2026, conditio
 on passing checks. Completion takes effect after merge, successful deployment and
 live verification of the module reference/navigation. Until then, publication
 acceptance remains pending. Released version pins and articles are unchanged.
+
+
+## Faster article publication, 23 November 2026
+
+Article-only Markdown changes now select focused rendering/metadata tests and
+complete website assembly/link checks. Native preview-tool builds, release archive
+verification and browser/playground execution remain for other changes. Manual
+main publication can reuse the same exact-tree PR artifact as a push, with the
+existing expiration, attempt, repository, current-main and deployed-byte checks.
+This addresses the repeated work observed while publishing the stdlib article.
+Regression checks cover mixed changes, unavailable history, symlinks, publication
+and deletion, failed/skipped gates and manual artifact reuse. No product runtime
+or release pins change. Hosted acceptance and merge remain pending.
