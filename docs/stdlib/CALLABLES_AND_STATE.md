@@ -1,54 +1,20 @@
-# Anonymous functions, closures and shared State
+# Functions and State cookbook
 
-These features require the alpha.16 development toolchain. They are not available
-in the alpha.15 release or browser playground.
+These complete programs combine [anonymous functions](/playbook/anonymous-functions/),
+[closures](/playbook/closures/) and [State](/playbook/state/). Start with those
+pages if the concepts are new to you. These examples require the alpha.16
+development toolchain; they do not run in alpha.15 or the browser playground.
 
-## Pass a small function where it is used
+## Keep a counter between calls
 
-An anonymous function lets you write the callback alongside the operation that
-uses it. With `values: [Nat]`, `values.map((value) => value + 1)` adds one to each
-element. The known element type supplies the parameter type. Without that context,
-write an annotation, such as `(value: Nat) => value + 1`.
+The [standalone counter](../../examples/state/counter.panack) creates one cell,
+then stores a closure named `next` that retains its handle. Calling `next`
+updates that same cell each time. The pure `increment` callback receives the
+current count and returns its replacement.
 
-The body determines whether an unmarked function is pure or has ordinary effects.
-Use `async (...) => { ... }` for an async callback. Creating a callback does not
-run it. Call a stored function using `callback.call(...)`, or pass it to an API
-that expects a callback. Named functions still use `@name` when passed as values.
-
-## Retain the values a callback needs
-
-A closure retains the immutable bindings it refers to. Those values remain
-available after the function that created the closure returns. Capturing a value
-does not capture a mutable variable that someone can silently change later.
-Implicit capture of `mut` bindings is rejected: pass the value explicitly, take
-an immutable snapshot, or use State for changes that calls should share.
-
-Request writers, connections and other native resources cannot be captured.
-Receive them as callback parameters. The HTTP closure example captures its start
-instant and State handle; the request and response writer are parameters.
-
-## Make shared mutation explicit
-
-Import `stdlib/state`, or `stdlib/state/async` from async code. Both expose
-`create`, `read` and `update` and use the same `State[T]` handle. All three
-operations are effectful, including creation. Await them with the async import.
-
-`create(initial)` creates a cell. Copying its handle shares that cell. `read(cell)`
-returns an immutable snapshot. `update(cell, callback)` passes the current value
-to one pure callback, commits its result and returns the committed value.
-
-The callback is called once. Competing reads and updates on that cell wait while
-the update is running. Other cells and runnable tasks can progress. Keep a
-read-modify-write operation inside the callback: reading first and replacing the
-value later can overwrite someone else's update.
-
-The payload can contain immutable data, including records and collections. It
-cannot contain cells, callbacks, tasks or native resources. Closures can retain
-cells, so the shared mutation is visible at the `state.update` call. Handle
-equality compares cell identity, not the current contents.
-
-The [standalone counter](../../examples/state/counter.panack) demonstrates a pure
-transform and a retained cell without HTTP. It prints `1`, `2`, then `2`.
+The program prints `1`, `2`, then `2`: two increments followed by a read.
+The callback expresses the calculation; the State operation makes the shared
+change explicit.
 
 ## Combine state and an async HTTP handler
 
@@ -73,8 +39,8 @@ successfully delivered responses. Restarting the server resets the count.
 
 ## Keep external work outside an update
 
-An update callback cannot read the clock, perform I/O, await work or read/update
-another cell. Do that work before or after the update. If the update needs a value
+An update callback cannot read the clock, perform I/O, await work or create, read or update
+a cell. Do that work before or after the update. If the update needs a value
 obtained asynchronously, await it first and pass the resulting immutable data
 into the callback. There are no callback retries, public locks or multi-cell
 transactions in this API.

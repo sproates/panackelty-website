@@ -97,5 +97,6 @@ Closures may retain State handles. `a == b` compares cell identity without readi
 or reserving either payload. Cells cannot be Map keys or Set elements, including
 when nested in another value, but may be stored as Map values.
 
-See the [callable and State guide](../../docs/guides/CALLABLES_AND_STATE.md) for
+See [Shared State](/playbook/state/) for an introduction, or the
+[Functions and State cookbook](../../docs/guides/CALLABLES_AND_STATE.md) for
 the closure-based and named contextual HTTP examples and their counting rules.

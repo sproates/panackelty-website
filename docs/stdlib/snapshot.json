@@ -387,8 +387,8 @@
       "source": "docs/guides/CALLABLES_AND_STATE.md",
       "name": "CALLABLES_AND_STATE.md",
       "route": "playbook/callables-and-state",
-      "title": "Anonymous functions, closures and State",
-      "intro": "Use retained values and explicit shared state in ordinary code and async request handlers.",
+      "title": "Functions and State cookbook",
+      "intro": "Build a retained counter and HTTP services with request counts and uptime.",
       "examples": [
         {
           "source": "examples/state/counter.panack",
@@ -405,7 +405,35 @@
           "file": "http_state_contextual.panack",
           "title": "Request count and uptime with a named handler"
         }
-      ]
+      ],
+      "siteAuthored": true
+    },
+    {
+      "source": "docs/guides/ANONYMOUS_FUNCTIONS.md",
+      "name": "ANONYMOUS_FUNCTIONS.md",
+      "route": "playbook/anonymous-functions",
+      "title": "Anonymous functions",
+      "intro": "Define a small function where you need it, then call it or pass it to another function.",
+      "siteAuthored": true,
+      "examples": []
+    },
+    {
+      "source": "docs/guides/CLOSURES.md",
+      "name": "CLOSURES.md",
+      "route": "playbook/closures",
+      "title": "Closures",
+      "intro": "Keep the immutable values a callback needs from its surrounding scope.",
+      "siteAuthored": true,
+      "examples": []
+    },
+    {
+      "source": "docs/guides/STATE.md",
+      "name": "STATE.md",
+      "route": "playbook/state",
+      "title": "Shared State",
+      "intro": "Share a value across calls and update it safely.",
+      "siteAuthored": true,
+      "examples": []
     }
   ]
 }

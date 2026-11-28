@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Define a small function where you need it, then call it or pass it to another function.">
+<link rel="canonical" href="https://panackelty.com/playbook/anonymous-functions/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Anonymous functions — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Anonymous functions</h1><p class="lede">Define a small function where you need it, then call it or pass it to another function.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#define-and-call-a-function">Define and call a function</a></li>
+<li class="toc-level-2"><a href="#pass-a-function-directly">Pass a function directly</a></li>
+<li class="toc-level-2"><a href="#effects-and-async-functions">Effects and async functions</a></li>
+<li class="toc-level-2"><a href="#next-steps">Next steps</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>An anonymous function is a function you define without giving it a declaration name. Use one when a small operation is easiest to understand beside the code that calls it.</p>
+<h2 id="define-and-call-a-function">Define and call a function</h2>
+<pre><code class="language-panack">main(): Void {
+  increment = (value: Nat) =&gt; value + 1
+  print(increment.call(4))
+}</code></pre>
+<p>This prints <code>5</code>. The parameter is <code>value</code>, its type is <code>Nat</code>, and the expression after <code>=&gt;</code> supplies the result. Assigning the function to <code>increment</code> stores it; <code>increment.call(4)</code> runs it. Defining a function does not run its body.</p>
+<h2 id="pass-a-function-directly">Pass a function directly</h2>
+<pre><code class="language-panack">main(): Void {
+  values: [Nat] = [1, 2, 3]
+  increased = values.map((value) =&gt; value + 1)
+  print(increased)
+}</code></pre>
+<p>The result is a list containing <code>2</code>, <code>3</code> and <code>4</code>. Here <code>map</code> supplies the parameter type from the list&#39;s element type, so the callback does not need <code>value: Nat</code>. Without that context, write the parameter type explicitly.</p>
+<p>Named functions remain useful for reusable operations. Pass a named function as a value using <code>@name</code>.</p>
+<h2 id="effects-and-async-functions">Effects and async functions</h2>
+<p>The body determines whether an unmarked anonymous function is pure or has ordinary effects. An async anonymous function starts with <code>async</code>, for example <code>async (...) =&gt; { ... }</code>. Call an async function with <code>await</code> inside an async function. Making a function anonymous does not relax the usual effect rules.</p>
+<h2 id="next-steps">Next steps</h2>
+<p>An anonymous function can also retain values from its surrounding scope. Read <a href="../../playbook/closures/">Closures</a> for that behaviour, or the <a href="../../playbook/callables-and-state/">cookbook</a> for complete programs.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>
