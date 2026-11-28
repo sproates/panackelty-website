@@ -32,7 +32,7 @@ You don't need to build the compiler from this checkout. The installed `panack` 
 
 ## The complete program
 
-This is the entire `src/main.panack` file in that released project:
+Replace the contents of the example’s `src/main.panack` file with this version. It formats uptime as decimal seconds:
 
 ```panack
 import http/server as http
@@ -62,7 +62,7 @@ async main(): Unit {
           },
           Ok(now) => {
             elapsed = now.difference(started)
-            seconds = elapsed.as_seconds()
+            seconds = elapsed.as_seconds().dec()
             response.send("Requests counted: ${total}; uptime: ${seconds} seconds")
             Ok(())
           }
@@ -104,7 +104,7 @@ This is an excerpt from the program above. The inner anonymous function is pure:
 
 Each update uses the current value supplied to its callback. Two completed increments can't overwrite each other by both calculating from the same old count.
 
-The handler then gets a fresh clock reading. Subtracting the retained startup instant gives an elapsed duration, and `as_seconds()` expresses it in seconds. The response writer sends the count and uptime as text.
+The handler then gets a fresh clock reading. Subtracting the retained startup instant gives an elapsed duration, and `as_seconds()` expresses it as an exact fraction of a second. Calling `.dec()` converts that to decimal seconds for the response. This conversion is exact: the clock measures whole nanoseconds, so these values always have a finite decimal representation.
 
 The imports select `stdlib/time/async` and `stdlib/state/async`, so their effectful calls use `await`. Registering the route happens before `await server.listen()` starts serving requests.
 
@@ -124,14 +124,14 @@ Leave that terminal running. In another terminal, request the endpoint:
 curl -i http://127.0.0.1:8082/status
 ```
 
-The response has HTTP status 200. On a fresh run, the first two requests produced these response bodies during testing:
+The response has HTTP status 200. The first two response bodies will look like this:
 
 ```text
-Requests counted: 1; uptime: 37701/500000 seconds
-Requests counted: 2; uptime: 5561/62500 seconds
+Requests counted: 1; uptime: 0.075402 seconds
+Requests counted: 2; uptime: 0.088976 seconds
 ```
 
-Your uptime values will differ. The fractions are exact elapsed seconds; this example doesn't round them for display. The count should increase each time the handler is called.
+Your uptime values will differ. The count should increase each time the handler is called.
 
 Now request a route that doesn't exist:
 
