@@ -1,8 +1,9 @@
 ---
 title: Making shared state explicit
 summary: Panackelty's new State API gives several calls a safe way to share a changing value. Here's what a cell is, why updates use pure functions, and where the guarantees stop.
-status: draft
-previewOrder: 2
+status: published
+date: 2026-11-28
+publishedAt: 2026-11-28T11:38:08.182Z
 tags:
   - language design
   - standard library
