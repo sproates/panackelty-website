@@ -4,11 +4,11 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {run,documents}=require('../scripts/stdlib_docs.cjs');
 const decode=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
-test('stdlib development pages retain exact examples and resolve local anchors',()=>{
+test('stdlib release pages retain exact examples and resolve local anchors',()=>{
   run(true);
   for(const doc of documents){
     const html=fs.readFileSync(`site/${doc.route}/index.html`,'utf8');
-    assert.match(html,/Not available in the alpha\.15 release or browser playground/);
+    assert.match(html,/These pages describe alpha\.16/);
     assert(!html.includes('\u0000'));
     const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
     assert.equal(new Set(ids).size,ids.length);

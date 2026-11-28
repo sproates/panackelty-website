@@ -2,8 +2,9 @@
 
 These complete programs combine [anonymous functions](/playbook/anonymous-functions/),
 [closures](/playbook/closures/) and [State](/playbook/state/). Start with those
-pages if the concepts are new to you. These examples require the alpha.16
-development toolchain; they do not run in alpha.15 or the browser playground.
+pages if the concepts are new to you. These examples require alpha.16. The
+standalone counter also runs in the matching browser playground; the HTTP
+services require the native toolchain.
 
 ## Keep a counter between calls
 

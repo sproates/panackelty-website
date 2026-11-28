@@ -61,9 +61,9 @@ function render(doc) {
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs${doc.apiReference ? ' stdlib-api-reference' : ''}">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">${escape(doc.title)}</h1><p class="lede">${escape(doc.intro)}</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul>${toc}</ul></nav>
 <article class="capabilities-content http-docs-content">${doc.apiReference ? '<p><a href="../standard-library/">All standard library modules</a></p>' : ''}${renderMarkdown(source)}${doc.apiReference ? '<p class="source-reference">Implementation: <a href="https://github.com/'+metadata.repository+'/blob/'+metadata.revision+'/'+doc.source+'">view source on GitHub</a>.</p>' : ''}</article></div>

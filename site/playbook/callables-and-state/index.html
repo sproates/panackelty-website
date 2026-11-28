@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Functions and State cookbook</h1><p class="lede">Build a retained counter and HTTP services with request counts and uptime.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#keep-a-counter-between-calls">Keep a counter between calls</a></li>
 <li class="toc-level-2"><a href="#combine-state-and-an-async-http-handler">Combine state and an async HTTP handler</a></li>
@@ -21,7 +21,7 @@
 <li class="toc-level-2"><a href="#complete-example-a-counter-without-http">Complete example: A counter without HTTP</a></li>
 <li class="toc-level-2"><a href="#complete-example-request-count-and-uptime-with-a-closure">Complete example: Request count and uptime with a closure</a></li>
 <li class="toc-level-2"><a href="#complete-example-request-count-and-uptime-with-a-named-handler">Complete example: Request count and uptime with a named handler</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>These complete programs combine <a href="../../playbook/anonymous-functions/">anonymous functions</a>, <a href="../../playbook/closures/">closures</a> and <a href="../../playbook/state/">State</a>. Start with those pages if the concepts are new to you. These examples require the alpha.16 development toolchain; they do not run in alpha.15 or the browser playground.</p>
+<article class="capabilities-content http-docs-content"><p>These complete programs combine <a href="../../playbook/anonymous-functions/">anonymous functions</a>, <a href="../../playbook/closures/">closures</a> and <a href="../../playbook/state/">State</a>. Start with those pages if the concepts are new to you. These examples require alpha.16. The standalone counter also runs in the matching browser playground; the HTTP services require the native toolchain.</p>
 <h2 id="keep-a-counter-between-calls">Keep a counter between calls</h2>
 <p>The <a href="../../playbook/callables-and-state/#complete-example-a-counter-without-http">standalone counter</a> creates one cell, then stores a closure named <code>next</code> that retains its handle. Calling <code>next</code> updates that same cell each time. The pure <code>increment</code> callback receives the current count and returns its replacement.</p>
 <p>The program prints <code>1</code>, <code>2</code>, then <code>2</code>: two increments followed by a read. The callback expresses the calculation; the State operation makes the shared change explicit.</p>

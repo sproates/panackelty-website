@@ -1,7 +1,7 @@
 {
   "repository": "sproates/panackelty",
   "revision": "df1aaf861eb1b89a8f28cac92e02d4d6d8107d31",
-  "version": "alpha.16 development",
+  "version": "alpha.16",
   "documents": [
     {
       "source": "docs/reference/STANDARD_LIBRARY.md",
@@ -18,7 +18,8 @@
       "route": "playbook/stdlib-migration",
       "title": "Stdlib migration",
       "intro": "Choose canonical imports while preserving failure handling and bounds.",
-      "examples": []
+      "examples": [],
+      "siteAuthored": true
     },
     {
       "source": "docs/guides/ASYNC_RESOURCES.md",
@@ -37,7 +38,8 @@
           "file": "async_gzip.panack",
           "title": "async gzip"
         }
-      ]
+      ],
+      "siteAuthored": true
     },
     {
       "source": "docs/guides/ASYNC_INPUT_AND_FILES.md",
@@ -56,7 +58,8 @@
           "file": "async_publish_note.panack",
           "title": "async publish note"
         }
-      ]
+      ],
+      "siteAuthored": true
     },
     {
       "source": "docs/guides/ASYNC_STDLIB_BASICS.md",

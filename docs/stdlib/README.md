@@ -9,7 +9,9 @@ reference, never a substitute for API documentation.
 
 The twenty `API_*.md` module pages, standard-library index, practical walkthrough,
 three concept pages and Functions and State cookbook are website-authored.
-Three other guides and twelve examples are copied from the recorded core revision.
+The migration, resource and input guides retain the core examples with
+website-specific release guidance. Twelve example files are copied from the
+recorded core revision.
 `api-signatures.json` records the 75 reviewed
 public function signatures and their defining source files, including re-exports.
 Compatibility and internal support APIs are identified where relevant rather
@@ -22,6 +24,6 @@ examples, anchors, assembly and preview behaviour. When the core API changes,
 review the prose and limits as well as refreshing signatures and example bytes.
 A signature check alone does not verify behaviour.
 
-Development labelling does not advance alpha.15 release pins or the playground.
+Release guidance is promoted together with native and playground pins.
 Published articles are unchanged. Owner preview review and separately approved
 website integration/publication remain required.
