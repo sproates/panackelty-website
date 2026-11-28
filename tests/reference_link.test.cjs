@@ -14,6 +14,7 @@ test('pinned playground artifacts link to the relocated language reference', () 
   assert.ok(!result.includes(old));
   assert.ok(result.includes('<noscript><a href="../get-started/">Install</a></noscript>'));
   assert.ok(!result.includes('href="../#start"'));
+  assert.ok(!result.includes('src="../site.js"'), 'the playground has no clipboard controls');
   assert.ok(render(home, artifact.replace(old, current), 'playground').includes(`href="${current}"`));
 });
 

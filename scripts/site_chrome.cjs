@@ -44,7 +44,7 @@ function render(home, html, page, release) {
     html = once(html, shell, header);
     if (page === 'home') html = once(html, footers[0][0], footer);
     else {
-      html = once(html, '</body>', footer + '\n<script src="../site.js" defer></script>\n</body>');
+      html = once(html, '</body>', footer + '\n</body>');
       html = once(html, '</head>', '<link rel="stylesheet" href="../chrome.css">\n</head>');
     }
   } else {

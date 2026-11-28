@@ -35,7 +35,7 @@ renderer remains based on the immutable reviewed changelog snapshot.
 - Available now means the deliberately promoted native release, not core main
   or next. Browser capabilities follow their separately promoted artifact.
 - Alpha.16 is the promoted native release (`site/native-release.txt`); the
-  matching browser release is v0.4.0 (`site/playground.json`).
+  matching browser release is v0.4.1 (`site/playground.json`).
   Alpha.17–alpha.20 cover useful programs, everyday development,
   interactive/connected applications and language ergonomics.
 - Keep the homepage outline and detailed roadmap consistent with core's agreed

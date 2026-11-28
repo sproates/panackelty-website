@@ -178,3 +178,11 @@ and publication. Do not introduce a second writer for the production domain.
 Domain reassignment, including rollback, requires a fresh deployment afterwards
 and browser/live-byte verification. A settings change alone is not acceptance.
 See [migration acceptance](docs/MIGRATION.md) for the procedure and current evidence.
+
+### Bounded preview requests
+
+The Panack HTTP preview server admits four handlers at once. The assembled
+playground embeds its unchanged stylesheet contents in cascade order and omits
+the clipboard script, which it does not use. Browser package v0.4.1 imports only
+the WASI modules required for execution. Run browser integration with one worker
+against this shared server; all scenarios and all three engines still run.

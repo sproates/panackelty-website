@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: sproates/panackelty-browser
-          ref: 5345b56a8bfc3842fe8d9998d22a6cb585618e0b
+          ref: 7c29a28a6a7ac807f01817a363c6f61b01b04008
           path: build/browser-tests
           persist-credentials: false
 
@@ -78,6 +78,8 @@ jobs:
         # root execution with a home owned by another user; do not redefine HOME.
         run: chown "$(id -u):$(id -g)" /github/home
 
+      # The preview server admits four handlers at once. Keep all browser
+      # scenarios, but run one browser worker at a time against this shared server.
       - name: Test browser execution before publishing
         env:
           BROWSER_MODE: ${{ inputs.mode }}
@@ -86,8 +88,8 @@ jobs:
           export PLAYGROUND_BUILD_DIR="$GITHUB_WORKSPACE/build/website/playground"
           cd build/browser-tests
           case "$BROWSER_MODE" in
-            smoke) npx playwright test --config preview.playwright.config.mjs --workers=3 --grep 'footer resources|real worker compiles|homepage navigation' ;;
-            full) npx playwright test --config preview.playwright.config.mjs --workers=3 ;;
+            smoke) npx playwright test --config preview.playwright.config.mjs --workers=1 --grep 'footer resources|real worker compiles|homepage navigation' ;;
+            full) npx playwright test --config preview.playwright.config.mjs --workers=1 ;;
             *) echo 'Invalid browser coverage mode' >&2; exit 1 ;;
           esac
 
@@ -98,4 +100,4 @@ jobs:
           export PLAYGROUND_SITE_DIR="$GITHUB_WORKSPACE/build/website"
           export PLAYGROUND_BUILD_DIR="$GITHUB_WORKSPACE/build/website/playground"
           cd build/browser-tests
-          npx playwright test --config website.playwright.config.mjs --workers=3
+          npx playwright test --config website.playwright.config.mjs --workers=1
