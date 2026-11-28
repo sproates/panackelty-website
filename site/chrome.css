@@ -6,7 +6,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: .5rem 1rem; max-width: 34rem; 
 footer nav a { font-size: .75rem; }
 .home-page .hero { grid-template-columns: 1fr; min-height: 0; padding-block: 3rem 2rem; }
 .home-page .hero-copy { max-width: 850px; }
-.home-page h1 { font-size: clamp(3rem, 7vw, 5.5rem); }
+.home-page h1.eyebrow { font-family: var(--sans); font-size: .74rem; font-weight: 750; letter-spacing: .14em; line-height: 1.65; }
 .home-page .lede { margin-block: 1.5rem; max-width: 65ch; }
 .home-page .content-section { padding-block: 2rem; }
 .home-page h2 { font-size: clamp(2rem, 4vw, 3rem); }
