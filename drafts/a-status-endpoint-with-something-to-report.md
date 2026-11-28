@@ -1,6 +1,6 @@
 ---
 title: A status endpoint with something to report
-summary: A working alpha.16 service brings the async clock, closures and explicit State together to report its uptime and request count.
+summary: Build and run an alpha.16 HTTP service that combines an anonymous async handler, retained values and shared State to report its uptime and request count.
 status: draft
 previewOrder: 1
 tags:
@@ -9,87 +9,152 @@ tags:
   - HTTP
 ---
 
-An HTTP endpoint that reports a service's uptime and request count sounds quite unremarkable. That's part of why I like it as an example.
+The previous articles looked at [closures](/articles/closures-without-hidden-mutation/) and [shared State](/articles/making-shared-state-explicit/) separately. Now I want to put them to work in a complete program.
 
-It needs to read the clock, retain a startup time and share a counter between calls. Those are ordinary things for a service to do, and they give the new async APIs, closures and State a useful job together.
+The service will have one endpoint, `GET /status`. Each call returns the number of requests counted and how long the service has been running. The handler needs a fresh clock reading, a startup time that stays fixed, and a counter shared between calls.
 
-There is now a [complete example in the alpha.16 source](https://github.com/sproates/panackelty/tree/v0.1.0-alpha.16/examples/network/http_state_closure). Here's how it works.
+That gives each feature a job. The anonymous function is the handler, its closure retains the startup time and counter handle, and State coordinates changes to the count. The async standard library supplies the clock and State operations.
 
-## Read the clock at startup
+## Get the project ready
 
-The example selects the async versions of the modules:
+Install [Panackelty alpha.16](/get-started/) or use an existing alpha.16 installation. This is a native HTTP service: the browser playground can't open a listening socket.
 
-```panack
-import stdlib/time/async as time
-import stdlib/state/async as state
-```
-
-Inside async startup code, `await time.now()` reads the monotonic clock. A monotonic clock is for measuring elapsed time; it isn't the time of day. The result is either an instant or a clock error.
-
-The service checks that result before starting. If the clock isn't available, startup reports the problem and exits. Otherwise, it retains the instant as `started` and creates a shared request counter:
-
-```panack
-requests = await state.create[Nat](0)
-```
-
-That line belongs inside the successful startup branch, rather than at the top level of the file. The counter starts again at zero whenever the program restarts.
-
-## Give the handler its context
-
-The following is the route-registration part of the complete program. `server` has already been created, and `started` and `requests` come from startup:
-
-```panack
-server.get("/status", async (request: http.Request, response: http.ResponseWriter): Result[Unit,Str] => {
-  total = await state.update(requests, (current: Nat) => current + 1)
-  reading: Result[Instant,time.ClockError] = await time.now()
-  match reading {
-    Error(problem) => {
-      response.status(503)
-      response.send("Requests counted: ${total}; uptime unavailable: the clock could not be read.")
-      Ok(())
-    },
-    Ok(now) => {
-      elapsed = now.difference(started)
-      seconds = elapsed.as_seconds()
-      response.send("Requests counted: ${total}; uptime: ${seconds} seconds")
-      Ok(())
-    }
-  }
-})
-```
-
-The outer anonymous function is the async request handler. Its closure retains the startup instant and the handle to the counter. The request and response writer arrive as parameters; the handler doesn't capture those resources from elsewhere.
-
-The small inner function describes the counter update. It takes the current count and returns the next one. The State API commits that change as one operation, so two requests can't both read the same count and overwrite each other's increment.
-
-The handler then reads the clock again and measures the difference from startup. The response contains the count and elapsed seconds. Panackelty's exact numeric representation means the duration may be fractional; the example doesn't round it for display.
-
-## What does the counter actually count?
-
-It counts committed increments in the `/status` handler. It doesn't count requests for other routes or requests rejected before entering that handler.
-
-The increment happens before the clock read. If the clock read fails, the response is HTTP 503 and that request is still counted. If a response fails after the increment has committed, the increment isn't undone either.
-
-That's a small distinction, but it matters. “Requests handled” could sound like a count of successfully delivered responses, so the example says “Requests counted”. The code and the description need to agree about what the number means.
-
-## Run the example
-
-With alpha.16 installed, get the matching source and run the project:
+Get the matching example project and its HTTP package:
 
 ```sh
 git clone --depth 1 --branch v0.1.0-alpha.16 https://github.com/sproates/panackelty.git panack-alpha16
 cd panack-alpha16
+```
+
+Git is used here to obtain the source, not by the running service. The project manifest at `examples/network/http_state_closure/panack.json` points to `src/main.panack` and declares the local HTTP package dependency. Keep the repository layout intact so that dependency can be found.
+
+You don't need to build the compiler from this checkout. The installed `panack` command runs the example.
+
+## The complete program
+
+This is the entire `examples/network/http_state_closure/src/main.panack` file in the released project:
+
+```panack
+import http/server as http
+import stdlib/time/async as time
+import stdlib/state/async as state
+import stdlib/host/async as host
+
+async main(): Unit {
+  arguments = await host.arguments()
+  port = if arguments.len() == 0 { 8082 } else { arguments[0].parse_nat() }
+  match await time.now() {
+    Error(problem) => {
+      reported = await host.stderr("Cannot start: the monotonic clock is unavailable.")
+      await host.exit(1)
+    },
+    Ok(started) => {
+      requests = await state.create[Nat](0)
+      server = http.create_bound_server("127.0.0.1", port)
+      server.get("/status", async (request: http.Request, response: http.ResponseWriter): Result[Unit,Str] => {
+        total = await state.update(requests, (current: Nat) => current + 1)
+        reading: Result[Instant,time.ClockError] = await time.now()
+        match reading {
+          Error(problem) => {
+            response.status(503)
+            response.send("Requests counted: ${total}; uptime unavailable: the clock could not be read.")
+            Ok(())
+          },
+          Ok(now) => {
+            elapsed = now.difference(started)
+            seconds = elapsed.as_seconds()
+            response.send("Requests counted: ${total}; uptime: ${seconds} seconds")
+            Ok(())
+          }
+        }
+      })
+      match await server.listen() {
+        Ok(done) => (),
+        Error(problem) => {
+          reported = await host.stderr(problem.message)
+          await host.exit(1)
+        }
+      }
+    }
+  }
+}
+```
+
+## Capture what belongs to the service
+
+Startup reads the monotonic clock with `await time.now()`. A monotonic clock measures elapsed time; it isn't a calendar date. If that first read fails, the program reports the problem and exits before starting the server.
+
+On success, `started` holds the startup instant. `await state.create[Nat](0)` creates a counter initially containing zero. Both are created once, before registering the route.
+
+The function passed to `server.get` is anonymous and explicitly async. It refers to `started` and `requests` from the enclosing code, so its closure retains those values for later requests.
+
+The startup instant is immutable. The counter handle is also retained through an immutable binding, but the value in its cell can change. That's the distinction from the earlier articles, now doing something useful in a service.
+
+The request and response writer are parameters supplied for each invocation. The closure doesn't capture either resource, or the server itself.
+
+## Count, then read the clock
+
+At the beginning of the handler, this update increments the shared counter:
+
+```panack
+total = await state.update(requests, (current: Nat) => current + 1)
+```
+
+This is an excerpt from the program above. The inner anonymous function is pure: it calculates the next count. The State operation commits the change and returns that new count as `total`.
+
+Each update uses the current value supplied to its callback. Two completed increments can't overwrite each other by both calculating from the same old count.
+
+The handler then gets a fresh clock reading. Subtracting the retained startup instant gives an elapsed duration, and `as_seconds()` expresses it in seconds. The response writer sends the count and uptime as text.
+
+The imports select `stdlib/time/async` and `stdlib/state/async`, so their effectful calls use `await`. Registering the route happens before `await server.listen()` starts serving requests.
+
+The handler returns `Result[Unit,Str]`. Here, `Ok(())` says the handler completed successfully, with no additional value to return. Sending an HTTP 503 response for a failed clock read is still a handled outcome: the program has deliberately sent an explanation to the caller.
+
+## Run it and make a request
+
+From the repository root, start the service:
+
+```sh
 panack run --project examples/network/http_state_closure/panack.json 8082
 ```
 
-In another terminal:
+Leave that terminal running. In another terminal, request the endpoint:
 
 ```sh
-curl http://127.0.0.1:8082/status
+curl -i http://127.0.0.1:8082/status
 ```
 
-Run the request again and the count increases. The server binds to loopback, so this example is local to your machine. Ctrl-C stops it. Git is used here to obtain the example source; it isn't a runtime dependency of the service.
+The response has HTTP status 200. On a fresh run, the first two requests produced these response bodies during testing:
 
-HTTP services need the native toolchain. The browser playground can't open a listening socket, but its shared-counter example lets you try the closure and State part without installing anything.
+```text
+Requests counted: 1; uptime: 37701/500000 seconds
+Requests counted: 2; uptime: 5561/62500 seconds
+```
 
-There's also an [equivalent version with an explicit context parameter](https://github.com/sproates/panackelty/tree/v0.1.0-alpha.16/examples/network/http_state_contextual). Closures aren't mandatory. I want the language to support both approaches so the program can use whichever makes the ownership and flow easiest to understand.
+Your uptime values will differ. The fractions are exact elapsed seconds; this example doesn't round them for display. The count should increase each time the handler is called.
+
+Now request a route that doesn't exist:
+
+```sh
+curl -i http://127.0.0.1:8082/missing
+```
+
+That returns 404. Call `/status` again and, assuming no other requests, the count is 3. The missing route didn't run the handler or update its counter.
+
+The server binds to `127.0.0.1`, so it is accessible from this machine. Ctrl-C stops it. Start it again and the first `/status` request reports 1, with uptime measured from the new startup. If port 8082 is occupied, use another available port in both the run command and the URL.
+
+## Be precise about what the number means
+
+The counter records committed increments in this handler. It isn't a count of all connections to the server, or a guarantee that every counted response reached its caller.
+
+The increment happens before the clock read. If that read fails, the handler sends HTTP 503 with the count and an uptime-unavailable explanation. The request remains counted. A failure or cancellation after the update commits doesn't undo the increment either.
+
+Requests rejected before entering the handler aren't counted. That includes the server rejecting work when its capacity is full; an HTTP 503 response from that earlier rejection won't have incremented this cell.
+
+This is why the response says “Requests counted”. The wording describes what the program actually measures.
+
+## Try a change
+
+Change the increment from `current + 1` to `current + 2`, stop the service and run it again. The first two counts will now be 2 and 4. Then restore the increment and change the route from `/status` to `/health`, updating the URL you request as well.
+
+If you'd rather make the context an explicit parameter, there is an [equivalent named-handler version](https://github.com/sproates/panackelty/tree/v0.1.0-alpha.16/examples/network/http_state_contextual). State works with either approach. The closure version keeps the setup and the behaviour that uses it together, which I think makes this particular example easy to follow.
