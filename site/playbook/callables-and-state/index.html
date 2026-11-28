@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Use retained values and explicit shared state in ordinary code and async request handlers.">
+<link rel="canonical" href="https://panackelty.com/playbook/callables-and-state/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Anonymous functions, closures and State — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Anonymous functions, closures and State</h1><p class="lede">Use retained values and explicit shared state in ordinary code and async request handlers.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#pass-a-small-function-where-it-is-used">Pass a small function where it is used</a></li>
+<li class="toc-level-2"><a href="#retain-the-values-a-callback-needs">Retain the values a callback needs</a></li>
+<li class="toc-level-2"><a href="#make-shared-mutation-explicit">Make shared mutation explicit</a></li>
+<li class="toc-level-2"><a href="#combine-state-and-an-async-http-handler">Combine state and an async HTTP handler</a></li>
+<li class="toc-level-2"><a href="#keep-external-work-outside-an-update">Keep external work outside an update</a></li>
+<li class="toc-level-2"><a href="#complete-example-a-counter-without-http">Complete example: A counter without HTTP</a></li>
+<li class="toc-level-2"><a href="#complete-example-request-count-and-uptime-with-a-closure">Complete example: Request count and uptime with a closure</a></li>
+<li class="toc-level-2"><a href="#complete-example-request-count-and-uptime-with-a-named-handler">Complete example: Request count and uptime with a named handler</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>These features require the alpha.16 development toolchain. They are not available in the alpha.15 release or browser playground.</p>
+<h2 id="pass-a-small-function-where-it-is-used">Pass a small function where it is used</h2>
+<p>An anonymous function lets you write the callback alongside the operation that uses it. With <code>values: [Nat]</code>, <code>values.map((value) =&gt; value + 1)</code> adds one to each element. The known element type supplies the parameter type. Without that context, write an annotation, such as <code>(value: Nat) =&gt; value + 1</code>.</p>
+<p>The body determines whether an unmarked function is pure or has ordinary effects. Use <code>async (...) =&gt; { ... }</code> for an async callback. Creating a callback does not run it. Call a stored function using <code>callback.call(...)</code>, or pass it to an API that expects a callback. Named functions still use <code>@name</code> when passed as values.</p>
+<h2 id="retain-the-values-a-callback-needs">Retain the values a callback needs</h2>
+<p>A closure retains the immutable bindings it refers to. Those values remain available after the function that created the closure returns. Capturing a value does not capture a mutable variable that someone can silently change later. Implicit capture of <code>mut</code> bindings is rejected: pass the value explicitly, take an immutable snapshot, or use State for changes that calls should share.</p>
+<p>Request writers, connections and other native resources cannot be captured. Receive them as callback parameters. The HTTP closure example captures its start instant and State handle; the request and response writer are parameters.</p>
+<h2 id="make-shared-mutation-explicit">Make shared mutation explicit</h2>
+<p>Import <code>stdlib/state</code>, or <code>stdlib/state/async</code> from async code. Both expose <code>create</code>, <code>read</code> and <code>update</code> and use the same <code>State[T]</code> handle. All three operations are effectful, including creation. Await them with the async import.</p>
+<p><code>create(initial)</code> creates a cell. Copying its handle shares that cell. <code>read(cell)</code> returns an immutable snapshot. <code>update(cell, callback)</code> passes the current value to one pure callback, commits its result and returns the committed value.</p>
+<p>The callback is called once. Competing reads and updates on that cell wait while the update is running. Other cells and runnable tasks can progress. Keep a read-modify-write operation inside the callback: reading first and replacing the value later can overwrite someone else&#39;s update.</p>
+<p>The payload can contain immutable data, including records and collections. It cannot contain cells, callbacks, tasks or native resources. Closures can retain cells, so the shared mutation is visible at the <code>state.update</code> call. Handle equality compares cell identity, not the current contents.</p>
+<p>The <a href="../../playbook/callables-and-state/#complete-example-a-counter-without-http">standalone counter</a> demonstrates a pure transform and a retained cell without HTTP. It prints <code>1</code>, <code>2</code>, then <code>2</code>.</p>
+<h2 id="combine-state-and-an-async-http-handler">Combine state and an async HTTP handler</h2>
+<p>The <a href="../../playbook/callables-and-state/#complete-example-request-count-and-uptime-with-a-closure">closure example</a> keeps its start instant and request counter in an anonymous handler. The <a href="../../playbook/callables-and-state/#complete-example-request-count-and-uptime-with-a-named-handler">contextual example</a> uses a named handler and passes the same values through an explicit context. Neither style is required by State; choose the one that makes your code clearest.</p>
+<p>Both examples count committed increments for <code>/status</code> and report monotonic uptime. An unrecognised route does not increment the count. A request rejected before entering the handler is not counted either.</p>
+<p>The handler increments before reading the clock. If that clock read fails, the response is HTTP 503 and includes the committed count. Failure to read the clock at startup prints an explanation and exits instead of starting an unusable service.</p>
+<p>Cancellation or a trap before commit preserves the old cell value. Cancellation or response failure after commit does not undo it. A cancelled waiter never runs the callback. These rules define what the counter measures; it is not a count of successfully delivered responses. Restarting the server resets the count.</p>
+<h2 id="keep-external-work-outside-an-update">Keep external work outside an update</h2>
+<p>An update callback cannot read the clock, perform I/O, await work or read/update another cell. Do that work before or after the update. If the update needs a value obtained asynchronously, await it first and pass the resulting immutable data into the callback. There are no callback retries, public locks or multi-cell transactions in this API.</p>
+<h2 id="complete-example-a-counter-without-http">Complete example: A counter without HTTP</h2>
+<pre><code class="language-panack">import stdlib/state as state
+
+main(): Void {
+  count = state.create[Nat](0)
+  increment = (current: Nat) =&gt; current + 1
+  next = () =&gt; state.update(count, increment)
+  print(next.call())
+  print(next.call())
+  print(state.read(count))
+}</code></pre>
+<h2 id="complete-example-request-count-and-uptime-with-a-closure">Complete example: Request count and uptime with a closure</h2>
+<pre><code class="language-panack">import http/server as http
+import stdlib/time/async as time
+import stdlib/state/async as state
+import stdlib/host/async as host
+
+async main(): Unit {
+  arguments = await host.arguments()
+  port = if arguments.len() == 0 { 8082 } else { arguments[0].parse_nat() }
+  match await time.now() {
+    Error(problem) =&gt; {
+      reported = await host.stderr(&quot;Cannot start: the monotonic clock is unavailable.&quot;)
+      await host.exit(1)
+    },
+    Ok(started) =&gt; {
+      requests = await state.create[Nat](0)
+      server = http.create_bound_server(&quot;127.0.0.1&quot;, port)
+      server.get(&quot;/status&quot;, async (request: http.Request, response: http.ResponseWriter): Result[Unit,Str] =&gt; {
+        total = await state.update(requests, (current: Nat) =&gt; current + 1)
+        reading: Result[Instant,time.ClockError] = await time.now()
+        match reading {
+          Error(problem) =&gt; {
+            response.status(503)
+            response.send(&quot;Requests counted: ${total}; uptime unavailable: the clock could not be read.&quot;)
+            Ok(())
+          },
+          Ok(now) =&gt; {
+            elapsed = now.difference(started)
+            seconds = elapsed.as_seconds()
+            response.send(&quot;Requests counted: ${total}; uptime: ${seconds} seconds&quot;)
+            Ok(())
+          }
+        }
+      })
+      match await server.listen() {
+        Ok(done) =&gt; (),
+        Error(problem) =&gt; {
+          reported = await host.stderr(problem.message)
+          await host.exit(1)
+        }
+      }
+    }
+  }
+}</code></pre>
+<h2 id="complete-example-request-count-and-uptime-with-a-named-handler">Complete example: Request count and uptime with a named handler</h2>
+<pre><code class="language-panack">import http/server as http
+import stdlib/time/async as time
+import stdlib/state/async as state
+import stdlib/host/async as host
+
+record AppContext { started: Instant, requests: State[Nat] }
+
+async status(context: AppContext, request: http.Request, response: http.ResponseWriter): Result[Unit,Str] {
+  started = context.started
+  requests = context.requests
+  total = await state.update(requests, (current: Nat) =&gt; current + 1)
+  reading: Result[Instant,time.ClockError] = await time.now()
+  match reading {
+    Error(problem) =&gt; {
+      response.status(503)
+      response.send(&quot;Requests counted: ${total}; uptime unavailable: the clock could not be read.&quot;)
+      Ok(())
+    },
+    Ok(now) =&gt; {
+      elapsed = now.difference(started)
+      seconds = elapsed.as_seconds()
+      response.send(&quot;Requests counted: ${total}; uptime: ${seconds} seconds&quot;)
+      Ok(())
+    }
+  }
+}
+
+async main(): Unit {
+  arguments = await host.arguments()
+  port = if arguments.len() == 0 { 8082 } else { arguments[0].parse_nat() }
+  match await time.now() {
+    Error(problem) =&gt; {
+      reported = await host.stderr(&quot;Cannot start: the monotonic clock is unavailable.&quot;)
+      await host.exit(1)
+    },
+    Ok(started) =&gt; {
+      requests = await state.create[Nat](0)
+      server = http.create_bound_contextual_server(&quot;127.0.0.1&quot;, port, AppContext(started, requests))
+      server.get(&quot;/status&quot;, @status)
+      match await server.listen() {
+        Ok(done) =&gt; (),
+        Error(problem) =&gt; {
+          reported = await host.stderr(problem.message)
+          await host.exit(1)
+        }
+      }
+    }
+  }
+}</code></pre></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

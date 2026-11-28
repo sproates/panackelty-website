@@ -34,6 +34,7 @@ errors. Ordinary and async forms are documented together.
 | Need | Ordinary module | Async module | Main operations |
 | --- | --- | --- | --- |
 | Monotonic clock and timers | [time](../../src/stdlib/time.panack) | [time/async](../../src/stdlib/time/async.panack) | `now`, `sleep`; pure duration factories |
+| Shared cells | [state](../../src/stdlib/state.panack) | [state/async](../../src/stdlib/state/async.panack) | `create`, `read`, `update` |
 | Environment | [environment](../../src/stdlib/environment.panack) | [environment/async](../../src/stdlib/environment/async.panack) | `get` |
 | Checked console I/O | [console](../../src/stdlib/console.panack) | [console/async](../../src/stdlib/console/async.panack) | `read`, `write`, `write_line`, `write_error`, `write_error_line` |
 | Subprocesses | [process](../../src/stdlib/process.panack) | [process/async](../../src/stdlib/process/async.panack) | `run(Command)`, `arguments`, `exit` |
@@ -185,3 +186,8 @@ context, lifecycle restrictions and known limits. The
 - [Checked reporting](/reference/stdlib-testing-reporting/)
 - [Filesystem helpers](/reference/stdlib-testing-filesystem/)
 - [Process helpers](/reference/stdlib-testing-process/)
+
+## Anonymous functions, closures and State
+
+The [callable and State guide](../../docs/guides/CALLABLES_AND_STATE.md) combines
+these features in a standalone counter and equivalent async HTTP handlers.

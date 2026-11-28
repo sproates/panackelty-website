@@ -1,6 +1,6 @@
 {
   "repository": "sproates/panackelty",
-  "revision": "d57d2473da478424066dc8d4d777fd9a0b979645",
+  "revision": "df1aaf861eb1b89a8f28cac92e02d4d6d8107d31",
   "version": "alpha.16 development",
   "documents": [
     {
@@ -368,6 +368,43 @@
       "examples": [],
       "aliases": [
         "src/stdlib/testing/process/async.panack"
+      ]
+    },
+    {
+      "source": "src/stdlib/state.panack",
+      "name": "API_STATE.md",
+      "route": "reference/stdlib-state",
+      "title": "State",
+      "intro": "Shared cells with ordinary and async operations, pure updates and explicit cancellation rules.",
+      "apiReference": true,
+      "siteAuthored": true,
+      "examples": [],
+      "aliases": [
+        "src/stdlib/state/async.panack"
+      ]
+    },
+    {
+      "source": "docs/guides/CALLABLES_AND_STATE.md",
+      "name": "CALLABLES_AND_STATE.md",
+      "route": "playbook/callables-and-state",
+      "title": "Anonymous functions, closures and State",
+      "intro": "Use retained values and explicit shared state in ordinary code and async request handlers.",
+      "examples": [
+        {
+          "source": "examples/state/counter.panack",
+          "file": "state_counter.panack",
+          "title": "A counter without HTTP"
+        },
+        {
+          "source": "examples/network/http_state_closure/src/main.panack",
+          "file": "http_state_closure.panack",
+          "title": "Request count and uptime with a closure"
+        },
+        {
+          "source": "examples/network/http_state_contextual/src/main.panack",
+          "file": "http_state_contextual.panack",
+          "title": "Request count and uptime with a named handler"
+        }
       ]
     }
   ]

@@ -40,7 +40,7 @@
 <p>Pure compatibility function. New code may use <code>data.slice(start,end)</code> with the same bounds contract.</p>
 <p><strong>Errors:</strong> Bounds must satisfy <code>start &lt;= end &lt;= data.len()</code>. Invalid bounds trap; this operation does not return a <code>Result</code>.</p>
 <h2 id="value-methods">Value methods</h2>
-<p><code>data.len(): Nat</code> returns the byte count. <code>data.slice(start: Nat,end: Nat): Bytes</code> takes the same bounded half-open slice as the module function. <code>length()</code> remains the compatibility length name. UTF-8 decoding is a separate checked operation: <a href="../../reference/stdlib-utf8/#decode">utf8.decode</a>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/d57d2473da478424066dc8d4d777fd9a0b979645/src/stdlib/bytes.panack">view source on GitHub</a>.</p></article></div>
+<p><code>data.len(): Nat</code> returns the byte count. <code>data.slice(start: Nat,end: Nat): Bytes</code> takes the same bounded half-open slice as the module function. <code>length()</code> remains the compatibility length name. UTF-8 decoding is a separate checked operation: <a href="../../reference/stdlib-utf8/#decode">utf8.decode</a>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/src/stdlib/bytes.panack">view source on GitHub</a>.</p></article></div>
 <!-- SITE_CLOSING -->
 </main><!-- SITE_FOOTER -->
 <script src="../../site.js" defer></script>

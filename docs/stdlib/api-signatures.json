@@ -358,5 +358,20 @@
     "source": "src/stdlib/testing_commands.panack",
     "name": "capture_report",
     "signature": "capture_report(name: Str, command: TestCommand, expected: ProcessOutput, destination: Option[Path]): TestResult"
+  },
+  {
+    "source": "src/stdlib/state.panack",
+    "name": "create",
+    "signature": "create[T](initial: T): State[T]"
+  },
+  {
+    "source": "src/stdlib/state.panack",
+    "name": "read",
+    "signature": "read[T](cell: State[T]): T"
+  },
+  {
+    "source": "src/stdlib/state.panack",
+    "name": "update",
+    "signature": "update[T](cell: State[T], transform: PureFn[T,T]): T"
   }
 ]
