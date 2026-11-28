@@ -11,12 +11,13 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">API reference · alpha.15</p>
+<p class="eyebrow">API reference · alpha.16</p>
 <h1 id="page-title">HTTP Client</h1><p class="lede">GET requests, response types and errors for the native HTTP client.</p>
 <p>Want to get started quickly? See the <a href="../../playbook/http-server/">HTTP Server Playbook</a></p>
 </section>
 <div class="capabilities-layout">
-<nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import-and-dependency">Import and dependency</a></li>
+<nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#diagnostic-async-client">Diagnostic async client</a></li>
+<li class="toc-level-2"><a href="#import-and-dependency">Import and dependency</a></li>
 <li class="toc-level-2"><a href="#get">get</a></li>
 <li class="toc-level-2"><a href="#get-with-limits">get_with_limits</a></li>
 <li class="toc-level-2"><a href="#clientlimits">ClientLimits</a></li>
@@ -24,10 +25,13 @@
 <li class="toc-level-2"><a href="#shared-request-record">Shared Request record</a></li>
 <li class="toc-level-2"><a href="#supported-urls-and-http-behaviour">Supported URLs and HTTP behaviour</a></li>
 <li class="toc-level-2"><a href="#httperror">HttpError</a></li>
-<li class="toc-level-2"><a href="#try-a-complete-client">Try a complete client</a></li></ul></nav>
+<li class="toc-level-2"><a href="#try-a-complete-client">Try a complete client</a></li>
+<li class="toc-level-2"><a href="#alpha-16-detailed-errors">Alpha.16: detailed errors</a></li></ul></nav>
 <article class="capabilities-content http-docs-content"><p><strong>API stability during alpha:</strong> APIs may change between alpha releases without advance notice. This reference follows the latest release; earlier alpha versions aren&#39;t maintained. Versioned documentation starts with the first non-alpha release.</p>
 <p>Use <code>http/client</code> to make HTTP or HTTPS GET requests from a native Panackelty program. The client checks TLS certificates and hostnames, limits response sizes and returns errors as values. It isn&#39;t available in the browser playground.</p>
 <p>For incoming requests, see the <a href="../../reference/http-server/">Server Reference</a> and <a href="../../playbook/http-server/">Server Playbook</a>.</p>
+<h2 id="diagnostic-async-client">Diagnostic async client</h2>
+<p>The package also exports <code>http/client/async</code>. Its <code>get</code> and <code>get_with_limits</code> return <code>Result[Response,HttpClientError]</code>, retaining the existing HTTP category plus optional transport details and scheme/host/port context. This includes detailed TLS failures. The released <code>http/client</code> contract documented below remains available. See the <a href="https://github.com/sproates/panackelty/blob/next/docs/reference/STANDARD_LIBRARY.md#streams-and-owned-resources">stdlib reference</a> and <a href="https://github.com/sproates/panackelty/blob/next/docs/guides/STDLIB_MIGRATION.md">migration guide</a>, or run the complete <a href="https://github.com/sproates/panackelty/blob/next/examples/network/http_diagnostic_client/README.md">diagnostic client example</a>.</p>
 <h2 id="import-and-dependency">Import and dependency</h2>
 <pre><code class="language-panack">import http/client as client</code></pre>
 <p>Add an <code>http</code> dependency pointing to the release package&#39;s <code>packages/http</code> directory. Dependency paths are relative to your application&#39;s <code>panack.json</code>. The client re-exports <code>Header</code>, <code>Response</code> and <code>HttpError</code> from <code>http/types</code>.</p>
@@ -123,7 +127,7 @@ async main(): Unit {
   &quot;package&quot;: &quot;examples.http_client&quot;,
   &quot;version&quot;: &quot;0.1.0&quot;,
   &quot;language&quot;: &quot;modules-v1&quot;,
-  &quot;toolchain&quot;: &quot;0.1.0-alpha.15&quot;,
+  &quot;toolchain&quot;: &quot;0.1.0-alpha.16&quot;,
   &quot;source&quot;: &quot;src&quot;,
   &quot;entry&quot;: &quot;main.panack&quot;,
   &quot;exports&quot;: {},
@@ -134,7 +138,9 @@ async main(): Unit {
 <p>From the directory containing both folders, run:</p>
 <pre><code class="language-sh">./panackelty/bin/panack deps lock --project http-client-example/panack.json
 ./panackelty/bin/panack run --project http-client-example/panack.json</code></pre>
-<p>The output starts with <code>Status: 200</code>, followed by <code>hello from Panackelty HTTP server</code>. The body already ends with a newline, so printing it adds a blank line. To try custom limits, replace <code>client.get(...)</code> with <code>client.get_with_limits(&quot;http://127.0.0.1:8080/&quot;, client.ClientLimits(5000, 16384, 65536))</code>.</p></article>
+<p>The output starts with <code>Status: 200</code>, followed by <code>hello from Panackelty HTTP server</code>. The body already ends with a newline, so printing it adds a blank line. To try custom limits, replace <code>client.get(...)</code> with <code>client.get_with_limits(&quot;http://127.0.0.1:8080/&quot;, client.ClientLimits(5000, 16384, 65536))</code>.</p>
+<h2 id="alpha-16-detailed-errors">Alpha.16: detailed errors</h2>
+<p><code>import http/client/async as http</code> selects the diagnostic client. <code>get</code> and <code>get_with_limits</code> retain ClientLimits and Response but return HttpClientError. Inspect <code>kind</code> for the existing HttpError category, <code>transport</code> for optional HttpStreamError and <code>endpoint</code> for optional scheme/host/port. <code>render()</code> explains the failure including available TLS details. This import was added in alpha.16. The original <code>http/client</code> and blocking <code>http/stream</code> remain compatible.</p></article>
 </div>
 <!-- SITE_CLOSING -->
 </main>
