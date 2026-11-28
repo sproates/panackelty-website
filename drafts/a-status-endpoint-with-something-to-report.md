@@ -29,7 +29,7 @@ This should report `panack 0.1.0-alpha.16 (bytecode 9)`.
 
 [Download the complete status-service project](/downloads/status-service-alpha16.zip) and extract it. The download includes the program, its manifest and lockfile, and the matching HTTP package. You don't need to create or copy any project files.
 
-Open a terminal in the extracted `status-service` directory. To extract it from the command line instead:
+Extract the ZIP and open a terminal in its `status-service` directory. Alternatively, from the directory containing the downloaded ZIP, run:
 
 ```sh
 unzip status-service-alpha16.zip
@@ -37,6 +37,40 @@ cd status-service
 ```
 
 The installed alpha.16 toolchain provides the compiler and standard library. The project includes everything else it needs.
+
+## Run it and make a request
+
+From the extracted `status-service` directory, start the service:
+
+```sh
+panack run --project panack.json 8082
+```
+
+Leave that terminal running. In another terminal, make two requests:
+
+```sh
+curl -i --write-out '\n' http://127.0.0.1:8082/status
+curl -i --write-out '\n' http://127.0.0.1:8082/status
+```
+
+Each response has HTTP status 200. The `-i` option prints the response headers, and `--write-out` adds a newline after each body. The two bodies will look like this:
+
+```text
+Requests counted: 1; uptime: 0.075402 seconds
+Requests counted: 2; uptime: 0.088976 seconds
+```
+
+Your uptime values will differ. The count should increase each time the handler is called.
+
+Now request a route that doesn't exist:
+
+```sh
+curl -i --write-out '\n' http://127.0.0.1:8082/missing
+```
+
+That returns 404. Call `/status` again and, assuming no other requests, the count is 3. The missing route didn't run the handler or update its counter.
+
+The server binds to `127.0.0.1`, so only this machine can connect. Ctrl-C stops it. Start it again and the first `/status` request reports 1, with uptime measured from the new startup. If port 8082 is occupied, use another available port in both the run command and the URL.
 
 ## The complete program
 
@@ -90,13 +124,15 @@ async main(): Unit {
 
 ## Capture what belongs to the service
 
+`main` is async because startup uses async operations: reading the clock, creating State and running the server. The HTTP handler is async too, so each request can await the State update and a fresh clock reading.
+
 Startup reads the monotonic clock with `await time.now()`. A monotonic clock measures elapsed time; it isn't a calendar date. If that first read fails, the program reports the problem and exits before starting the server.
 
 On success, `started` holds the startup instant. `await state.create[Nat](0)` creates a counter initially containing zero. Both are created once, before registering the route.
 
 The function passed to `server.get` is anonymous and explicitly async. It refers to `started` and `requests` from the enclosing code, so its closure retains those values for later requests.
 
-The startup instant is immutable. The counter handle is also retained through an immutable binding, but the value in its cell can change. That's the distinction from the earlier articles, now doing something useful in a service.
+The startup instant is immutable. The `requests` handle keeps referring to the same State cell, the shared storage holding the count. Updating that cell changes the count for subsequent requests; it doesn't reassign the captured handle.
 
 The request and response writer are parameters supplied for each invocation. The closure doesn't capture either resource, or the server itself.
 
@@ -108,61 +144,26 @@ At the beginning of the handler, this update increments the shared counter:
 total = await state.update(requests, (current: Nat) => current + 1)
 ```
 
-This is an excerpt from the program above. The inner anonymous function is pure: it calculates the next count. The State operation commits the change and returns that new count as `total`.
+The inner anonymous function is pure: it calculates the next count. The State operation commits the change and returns that new count as `total`.
 
 Each update uses the current value supplied to its callback. Two completed increments can't overwrite each other by both calculating from the same old count.
 
 The handler then gets a fresh clock reading. Subtracting the retained startup instant gives an elapsed duration, and `as_seconds()` expresses it as an exact fraction of a second. Calling `.dec()` converts that to decimal seconds for the response. This conversion is exact: the clock measures whole nanoseconds, so these values always have a finite decimal representation.
 
-The imports select `stdlib/time/async` and `stdlib/state/async`, so their effectful calls use `await`. Registering the route happens before `await server.listen()` starts serving requests.
+The async imports keep the familiar names: `time.now()`, `state.create()` and `state.update()`. Their calls use `await`. Registering the route happens before `await server.listen()` starts serving requests.
 
 The handler returns `Result[Unit,Str]`. Here, `Ok(())` says the handler completed successfully, with no additional value to return. Sending an HTTP 503 response for a failed clock read is still a handled outcome: the program has deliberately sent an explanation to the caller.
 
-## Run it and make a request
-
-From the extracted `status-service` directory, start the service:
-
-```sh
-panack run --project panack.json 8082
-```
-
-Leave that terminal running. In another terminal, request the endpoint:
-
-```sh
-curl -i http://127.0.0.1:8082/status
-```
-
-The response has HTTP status 200. The first two response bodies will look like this:
-
-```text
-Requests counted: 1; uptime: 0.075402 seconds
-Requests counted: 2; uptime: 0.088976 seconds
-```
-
-Your uptime values will differ. The count should increase each time the handler is called.
-
-Now request a route that doesn't exist:
-
-```sh
-curl -i http://127.0.0.1:8082/missing
-```
-
-That returns 404. Call `/status` again and, assuming no other requests, the count is 3. The missing route didn't run the handler or update its counter.
-
-The server binds to `127.0.0.1`, so it is accessible from this machine. Ctrl-C stops it. Start it again and the first `/status` request reports 1, with uptime measured from the new startup. If port 8082 is occupied, use another available port in both the run command and the URL.
-
 ## Be precise about what the number means
 
-The counter records committed increments in this handler. It isn't a count of all connections to the server, or a guarantee that every counted response reached its caller.
+“Requests counted” means requests whose counter update completed in the `/status` handler. A missing route or a request rejected because the server is at capacity never reaches that update.
 
 The increment happens before the clock read. If that read fails, the handler sends HTTP 503 with the count and an uptime-unavailable explanation. The request remains counted. A failure or cancellation after the update commits doesn't undo the increment either.
 
-Requests rejected before entering the handler aren't counted. That includes the server rejecting work when its capacity is full; an HTTP 503 response from that earlier rejection won't have incremented this cell.
-
-This is why the response says “Requests counted”. The wording describes what the program actually measures.
+The count is kept in memory. Restarting the service creates a new State cell starting at zero.
 
 ## Try a change
 
 Change the increment from `current + 1` to `current + 2`, stop the service and run it again. The first two counts will now be 2 and 4. Then restore the increment and change the route from `/status` to `/health`, updating the URL you request as well.
 
-If you'd rather make the context an explicit parameter, there is an [equivalent named-handler version](https://github.com/sproates/panackelty/tree/v0.1.0-alpha.16/examples/network/http_state_contextual). State works with either approach. The closure version keeps the setup and the behaviour that uses it together, which I think makes this particular example easy to follow.
+If you'd rather make the context an explicit parameter, there is a [named-handler example](https://github.com/sproates/panackelty/tree/v0.1.0-alpha.16/examples/network/http_state_contextual). State works with either approach. The closure version keeps the setup and the behaviour that uses it together, which I think makes this particular example easy to follow.
