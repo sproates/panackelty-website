@@ -7,6 +7,26 @@ container is called a **cell**.
 Use State when separate calls need to share changes: a request count, for example,
 must keep increasing rather than start again for every request.
 
+## Why use State instead of a mutable variable?
+
+A mutable variable is useful when one function owns a changing value—for example,
+a running total inside a loop. Keep using mutable variables for that.
+
+State is useful when several calls or async tasks need to share a changing value.
+A request counter belongs to the running service, so each request must update
+the same counter.
+
+Sharing a mutable variable alone would not make that update safe. Two requests
+could both read `10`, both add one, and both write `11`. One request would go
+uncounted.
+
+With `state.update`, reading the current value and replacing it happen as one
+coordinated operation. Two increments take the count from `10` to `12`.
+
+Panack also rejects mutable-variable capture in closures. A closure can retain
+a State handle instead, making shared changes explicit at each `state.update`
+call.
+
 ## Create, update and read a cell
 
 ```panack
@@ -29,10 +49,9 @@ separate container, even if both start with the same value.
 
 ## Keep the whole update together
 
-Two requests might both read a count of zero before either writes a replacement.
-If each then stores one, an increment is lost. Keeping the read and calculation
-inside `update` prevents that: Panack coordinates competing operations on the
-same cell, and each update uses the value left by the previous committed update.
+Keep the read and calculation inside `update`. Reading a snapshot with `read`
+and calculating a replacement before calling `update` can still lose someone
+else's change. Use the current value supplied to the update callback.
 
 The update callback is pure and runs once. It cannot perform I/O, read the clock,
 await work or create, read or update a cell. Obtain external values before the
