@@ -13,9 +13,10 @@ function inline(text, root = '') {
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
   return text.replace(/\u0000(\d+)\u0000/g, (_, i) => tokens[+i]);
 }
-function markdown(source, root = '') {
+function markdown(source, root = '', {copyCode = false} = {}) {
   const lines = source.replace(/\r\n/g, '\n').split('\n');
   const out = []; let paragraph = [], list = '', itemLines = [], code = false, language = '', codeLines = [];
+  let codeNumber = 0;
   const flush = () => { if (paragraph.length) { out.push(`<p>${inline(paragraph.join(' '), root)}</p>`); paragraph = []; } };
   const flushItem = () => { if (itemLines.length) { out.push(`<li>${inline(itemLines.join(' '), root)}</li>`); itemLines = []; } };
   const closeList = () => { flushItem(); if (list) { out.push(`</${list}>`); list = ''; } };
@@ -23,7 +24,12 @@ function markdown(source, root = '') {
     const fence = line.match(/^```([\w-]*)\s*$/);
     if (fence) {
       flush(); closeList();
-      if (code) { out.push(`<pre><code${language ? ` class="language-${escape(language)}"` : ''}>${escape(codeLines.join('\n'))}</code></pre>`); codeLines = []; code = false; }
+      if (code) {
+        const id = `article-code-${++codeNumber}`;
+        const block = `<pre><code${copyCode ? ` id="${id}"` : ''}${language ? ` class="language-${escape(language)}"` : ''}>${escape(codeLines.join('\n'))}</code></pre>`;
+        out.push(copyCode ? `<div class="copy-command">${block}<button class="copy-command-button" type="button" data-copy-target="${id}" aria-label="Copy code block ${codeNumber}" aria-describedby="${id}-copy-status" title="Copy code" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></div><p id="${id}-copy-status" class="copy-command-status" role="status" aria-live="polite" aria-atomic="true"></p>` : block);
+        codeLines = []; code = false;
+      }
       else { code = true; language = fence[1]; }
       continue;
     }
@@ -130,7 +136,7 @@ function renderDetail(article, isPreview) {
   const tags = article.tags.map(tag => `<a class="article-tag" href="../tag/${tagSlug(tag)}/">${escape(tag)}</a>`).join(' ');
   const date = article.date ? ` on <time datetime="${escape(article.publishedAt || article.date)}">${dateLabel(article.date)}</time>` : '';
   const notice = isPreview ? '<p class="preview-notice">Draft preview. This article is not published.</p>' : '';
-  const body = markdown(article.body, '../../');
+  const body = markdown(article.body, '../../', {copyCode: true});
   const permalink = position => `<div class="article-permalink article-permalink-${position}"><a class="permalink-link" href="./">Permalink</a><button class="icon-copy" type="button" data-copy-link="${escape(urlFor(article.slug))}" aria-label="Copy article link" title="Copy article link"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg></button><span class="copy-status" aria-live="polite"></span></div>`;
   const html = `${metadataHead(article.title, excerpt(article.body), urlFor(article.slug), '../../')}<main id="main" class="article-layout article-detail">${notice}<p class="eyebrow">Article</p><h1>${escape(article.title)}</h1><p class="article-byline">Posted by <a href="https://sproates.net">Ian Sproates</a>${date}</p>${permalink('top')}<div class="article-body">${body}</div><div class="article-meta"><div class="article-tags" aria-label="Topics">${tags}</div>${permalink('bottom')}</div><p><a href="../">← All articles</a></p></main><!-- SITE_FOOTER --><script src="../../site.js" defer></script></body></html>`;
   return renderChrome(fs.readFileSync(path.join(__dirname, '../site/index.html'), 'utf8'), html, 'article');

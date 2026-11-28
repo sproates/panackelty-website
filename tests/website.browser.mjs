@@ -95,3 +95,29 @@ test('homepage latest article opens the matching published page', async ({page})
     await expect(page.locator('.preview-notice')).toHaveCount(0);
   }
 });
+
+test('article code copies complete text and keeps controls visible on phones', async ({page, context, browserName}) => {
+  await page.setViewportSize({width:390, height:844});
+  await page.goto('/articles/making-shared-state-explicit/');
+  const buttons = page.locator('[data-copy-target]');
+  expect(await buttons.count()).toBeGreaterThan(0);
+  const button = buttons.first();
+  const id = await button.getAttribute('data-copy-target');
+  const code = page.locator(`#${id}`);
+  const status = page.locator(`#${id}-copy-status`);
+  await code.evaluate(el => { el.parentElement.scrollLeft = el.parentElement.scrollWidth; });
+  await button.scrollIntoViewIfNeeded();
+  const bounds = await button.boundingBox();
+  expect(bounds.x).toBeGreaterThanOrEqual(0);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
+  if (browserName === 'chromium') {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await button.click();
+    await expect(status).toHaveText('Copied to clipboard.');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(await code.textContent());
+  }
+  await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', {value:{writeText:async () => {throw new Error('denied');}}, configurable:true}));
+  await button.click();
+  await expect(status).toContainText('Select and copy this text manually');
+  await expect(button).toBeEnabled();
+});
