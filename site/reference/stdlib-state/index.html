@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Shared cells with ordinary and async operations, pure updates and explicit cancellation rules.">
+<link rel="canonical" href="https://panackelty.com/reference/stdlib-state/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>State — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs stdlib-api-reference">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">State</h1><p class="lede">Shared cells with ordinary and async operations, pure updates and explicit cancellation rules.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
+<li class="toc-level-2"><a href="#create">create()</a></li>
+<li class="toc-level-2"><a href="#read">read()</a></li>
+<li class="toc-level-2"><a href="#update">update()</a></li>
+<li class="toc-level-2"><a href="#identity-and-use-in-closures">Identity and use in closures</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>State provides a shared container for a value. Functions can read that value or update it safely, even when several async tasks use the same container. This container is called a <strong>cell</strong>.</p>
+<p>For example, several HTTP request handlers can share a cell holding a request count. Each handler can increment the count with <code>update()</code>. Panack coordinates these updates so that two requests cannot overwrite each other&#39;s increment.</p>
+<h2 id="import">Import</h2>
+<pre><code class="language-panack">import stdlib/state as state</code></pre>
+<p>To use the async State API, import:</p>
+<pre><code class="language-panack">import stdlib/state/async as state</code></pre>
+<p>Both imports use the same <code>State[T]</code> type. All three operations are effectful; the async versions have the same names and types. Call these functions with <code>await</code> inside an async function.</p>
+<h2 id="create">create()</h2>
+<pre><code class="language-panack">create[T](initial: T): State[T]</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>initial: T</code> — the immutable data to store initially.</li>
+</ul>
+<p><strong>Returns:</strong> A new <code>State[T]</code> handle. Copying the handle shares this cell; creating another cell with the same initial value does not.</p>
+<p>Payloads may contain primitives, records, variants and collections. Cells, callbacks, tasks and native resources are rejected, including nested occurrences. Creation is effectful, so a pure function cannot allocate a cell.</p>
+<p><strong>Errors:</strong> There is no recoverable <code>Result</code> wrapper. Invalid payloads are rejected by the compiler and runtime safety checks. Allocation failure follows the VM&#39;s normal failure behaviour. The cell is reclaimed when its last reference is released; there is no manual close operation.</p>
+<h2 id="read">read()</h2>
+<pre><code class="language-panack">read[T](cell: State[T]): T</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>cell: State[T]</code> — the cell to read.</li>
+</ul>
+<p><strong>Returns:</strong> An immutable snapshot of its current value.</p>
+<p>If an update owns the cell, the read waits until that update commits or is aborted. An async read yields while waiting. Later updates do not change an earlier snapshot.</p>
+<p><strong>Errors:</strong> There is no recoverable <code>Result</code> wrapper. A cancelled wait does not return a snapshot. Ordinary calls made within a host scheduler let it progress while waiting; the API does not introduce threads or a new timeout.</p>
+<h2 id="update">update()</h2>
+<pre><code class="language-panack">update[T](cell: State[T], transform: PureFn[T,T]): T</code></pre>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>cell: State[T]</code> — the cell to reserve and update.</li>
+<li><code>transform: PureFn[T,T]</code> — a pure function receiving the current value and returning its replacement.</li>
+</ul>
+<p><strong>Returns:</strong> The newly committed value, not the previous value.</p>
+<p>The callback runs exactly once after the cell is reserved. Competing reads and updates wait; unrelated cells and runnable tasks may progress. Keep the whole read-modify-write operation here. Reading a snapshot and later replacing the cell based on it can overwrite an intervening change.</p>
+<p>The callback cannot perform I/O, read the clock, await work or create, read or update a cell. Obtain external values first and capture those immutable values if needed.</p>
+<p><strong>Errors:</strong> There is no recoverable <code>Result</code> wrapper. A callback trap or cancellation before commit leaves the old value intact and releases the reservation. Cancellation after commit does not undo the change. Cancelling a waiter never runs its callback. There are no implicit retries, public locks or multi-cell transactions.</p>
+<h2 id="identity-and-use-in-closures">Identity and use in closures</h2>
+<p>Closures may retain State handles. <code>a == b</code> compares cell identity without reading or reserving either payload. Cells cannot be Map keys or Set elements, including when nested in another value, but may be stored as Map values.</p>
+<p>See <a href="../../playbook/state/">Shared State</a> for an introduction, or the <a href="../../playbook/callables-and-state/">Functions and State cookbook</a> for the closure-based and named contextual HTTP examples and their counting rules.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/src/stdlib/state.panack">view source on GitHub</a>.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

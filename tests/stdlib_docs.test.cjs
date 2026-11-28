@@ -34,9 +34,9 @@ test('module and migration comparisons render as tables, not pipe-delimited pros
 test('API entries retain reviewed signatures and explain parameters and results',()=>{
   const signatures=require('../docs/stdlib/api-signatures.json');
   const modules=documents.filter(d=>d.apiReference);
-  assert.equal(modules.length,19);
+  assert.equal(modules.length,20);
   const source=modules.map(d=>fs.readFileSync(`docs/stdlib/${d.name}`,'utf8')).join('\n');
-  assert.equal(signatures.length,72);
+  assert.equal(signatures.length,75);
   for(const {signature}of signatures)assert(source.includes(signature),`missing signature: ${signature}`);
   for(const d of modules){
     const md=fs.readFileSync(`docs/stdlib/${d.name}`,'utf8');

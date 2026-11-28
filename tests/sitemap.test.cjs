@@ -50,6 +50,11 @@ test('sitemap lists the canonical public website routes once', () => {
     'https://panackelty.com/reference/stdlib-testing-reporting/',
     'https://panackelty.com/reference/stdlib-testing-filesystem/',
     'https://panackelty.com/reference/stdlib-testing-process/',
+    'https://panackelty.com/reference/stdlib-state/',
+    'https://panackelty.com/playbook/callables-and-state/',
+    'https://panackelty.com/playbook/anonymous-functions/',
+    'https://panackelty.com/playbook/closures/',
+    'https://panackelty.com/playbook/state/',
   ]);
   assert.equal(new Set(urls).size, urls.length);
   for (const url of urls) assert.match(url, /^https:\/\/panackelty\.com\//);

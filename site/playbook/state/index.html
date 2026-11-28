@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#15130f"><meta name="description" content="Share a value across calls and update it safely.">
+<link rel="canonical" href="https://panackelty.com/playbook/state/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../chrome.css">
+<title>Shared State — Panackelty</title>
+</head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<!-- SITE_HEADER -->
+<main id="main" class="capabilities-page http-docs">
+<section class="capabilities-hero" aria-labelledby="page-title">
+<p class="eyebrow">Alpha.16 · development documentation</p>
+<h1 id="page-title">Shared State</h1><p class="lede">Share a value across calls and update it safely.</p>
+<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+</section>
+<div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#why-use-state-instead-of-a-mutable-variable">Why use State instead of a mutable variable?</a></li>
+<li class="toc-level-2"><a href="#create-update-and-read-a-cell">Create, update and read a cell</a></li>
+<li class="toc-level-2"><a href="#keep-the-whole-update-together">Keep the whole update together</a></li>
+<li class="toc-level-2"><a href="#use-state-with-async-functions">Use State with async functions</a></li>
+<li class="toc-level-2"><a href="#choose-what-to-store">Choose what to store</a></li></ul></nav>
+<article class="capabilities-content http-docs-content"><p>State provides a shared container for a value. Functions can read that value or update it safely, even when several async tasks use the same container. This container is called a <strong>cell</strong>.</p>
+<p>Use State when separate calls need to share changes: a request count, for example, must keep increasing rather than start again for every request.</p>
+<h2 id="why-use-state-instead-of-a-mutable-variable">Why use State instead of a mutable variable?</h2>
+<p>A mutable variable is useful when one function owns a changing value—for example, a running total inside a loop. Keep using mutable variables for that.</p>
+<p>State is useful when several calls or async tasks need to share a changing value. A request counter belongs to the running service, so each request must update the same counter.</p>
+<p>Sharing a mutable variable alone would not make that update safe. Two requests could both read <code>10</code>, both add one, and both write <code>11</code>. One request would go uncounted.</p>
+<p>With <code>state.update</code>, reading the current value and replacing it happen as one coordinated operation. Two increments take the count from <code>10</code> to <code>12</code>.</p>
+<p>Panack also rejects mutable-variable capture in closures. A closure can retain a State handle instead, making shared changes explicit at each <code>state.update</code> call.</p>
+<h2 id="create-update-and-read-a-cell">Create, update and read a cell</h2>
+<pre><code class="language-panack">import stdlib/state as state
+
+main(): Void {
+  count = state.create[Nat](0)
+  total = state.update(count, (current: Nat) =&gt; current + 1)
+  print(total)
+  print(state.read(count))
+}</code></pre>
+<p>This prints <code>1</code> twice. <code>create</code> makes a cell initially holding zero. <code>update</code> gives its current value to the callback, stores the callback&#39;s result and returns that new value. <code>read</code> returns an immutable snapshot of the value.</p>
+<p>Copying a State handle shares the same cell. Creating another cell makes a separate container, even if both start with the same value.</p>
+<h2 id="keep-the-whole-update-together">Keep the whole update together</h2>
+<p>Keep the read and calculation inside <code>update</code>. Reading a snapshot with <code>read</code> and calculating a replacement before calling <code>update</code> can still lose someone else&#39;s change. Use the current value supplied to the update callback.</p>
+<p>The update callback is pure and runs once. It cannot perform I/O, read the clock, await work or create, read or update a cell. Obtain external values before the update and capture the resulting immutable data if needed.</p>
+<h2 id="use-state-with-async-functions">Use State with async functions</h2>
+<p>To use the async State API, import:</p>
+<pre><code class="language-panack">import stdlib/state/async as state</code></pre>
+<p>Call <code>create</code>, <code>read</code> and <code>update</code> with <code>await</code> inside an async function. Both APIs use the same <code>State[T]</code> type. An async operation waiting for a cell lets other runnable tasks progress.</p>
+<h2 id="choose-what-to-store">Choose what to store</h2>
+<p>Cells hold immutable data such as numbers, text, records and collections. Their contents cannot include other cells, callbacks, tasks or native resources. A closure can retain a cell&#39;s handle, so multiple calls can use the same cell.</p>
+<p>See the <a href="../../reference/stdlib-state/">State API reference</a> for signatures, identity and cancellation behaviour. The <a href="../../playbook/callables-and-state/">cookbook</a> shows a retained counter and two HTTP services combining State with the async clock.</p></article></div>
+<!-- SITE_CLOSING -->
+</main><!-- SITE_FOOTER -->
+<script src="../../site.js" defer></script>
+</body></html>

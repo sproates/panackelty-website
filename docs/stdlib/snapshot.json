@@ -1,6 +1,6 @@
 {
   "repository": "sproates/panackelty",
-  "revision": "d57d2473da478424066dc8d4d777fd9a0b979645",
+  "revision": "df1aaf861eb1b89a8f28cac92e02d4d6d8107d31",
   "version": "alpha.16 development",
   "documents": [
     {
@@ -369,6 +369,71 @@
       "aliases": [
         "src/stdlib/testing/process/async.panack"
       ]
+    },
+    {
+      "source": "src/stdlib/state.panack",
+      "name": "API_STATE.md",
+      "route": "reference/stdlib-state",
+      "title": "State",
+      "intro": "Shared cells with ordinary and async operations, pure updates and explicit cancellation rules.",
+      "apiReference": true,
+      "siteAuthored": true,
+      "examples": [],
+      "aliases": [
+        "src/stdlib/state/async.panack"
+      ]
+    },
+    {
+      "source": "docs/guides/CALLABLES_AND_STATE.md",
+      "name": "CALLABLES_AND_STATE.md",
+      "route": "playbook/callables-and-state",
+      "title": "Functions and State cookbook",
+      "intro": "Build a retained counter and HTTP services with request counts and uptime.",
+      "examples": [
+        {
+          "source": "examples/state/counter.panack",
+          "file": "state_counter.panack",
+          "title": "A counter without HTTP"
+        },
+        {
+          "source": "examples/network/http_state_closure/src/main.panack",
+          "file": "http_state_closure.panack",
+          "title": "Request count and uptime with a closure"
+        },
+        {
+          "source": "examples/network/http_state_contextual/src/main.panack",
+          "file": "http_state_contextual.panack",
+          "title": "Request count and uptime with a named handler"
+        }
+      ],
+      "siteAuthored": true
+    },
+    {
+      "source": "docs/guides/ANONYMOUS_FUNCTIONS.md",
+      "name": "ANONYMOUS_FUNCTIONS.md",
+      "route": "playbook/anonymous-functions",
+      "title": "Anonymous functions",
+      "intro": "Define a small function where you need it, then call it or pass it to another function.",
+      "siteAuthored": true,
+      "examples": []
+    },
+    {
+      "source": "docs/guides/CLOSURES.md",
+      "name": "CLOSURES.md",
+      "route": "playbook/closures",
+      "title": "Closures",
+      "intro": "Keep the immutable values a callback needs from its surrounding scope.",
+      "siteAuthored": true,
+      "examples": []
+    },
+    {
+      "source": "docs/guides/STATE.md",
+      "name": "STATE.md",
+      "route": "playbook/state",
+      "title": "Shared State",
+      "intro": "Share a value across calls and update it safely.",
+      "siteAuthored": true,
+      "examples": []
     }
   ]
 }
