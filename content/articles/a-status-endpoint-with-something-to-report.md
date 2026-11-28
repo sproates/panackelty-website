@@ -1,8 +1,9 @@
 ---
 title: A status endpoint with something to report
 summary: Build and run an alpha.16 HTTP service that combines an anonymous async handler, retained values and shared State to report its uptime and request count.
-status: draft
-previewOrder: 1
+status: published
+date: 2026-11-28
+publishedAt: 2026-11-28T14:06:02.067Z
 tags:
   - standard library
   - language design
