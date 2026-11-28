@@ -8,14 +8,15 @@ Share a cell across calls while keeping changes explicit and atomic.
 import stdlib/state as state
 ```
 
-From async code, use:
+To use the async State API, import:
 
 ```panack
 import stdlib/state/async as state
 ```
 
 Both imports use the same `State[T]` type. All three operations are effectful;
-the async versions have the same names and types and require `await`.
+the async versions have the same names and types. Call these functions with
+`await` inside an async function.
 
 ## create()
 

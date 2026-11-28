@@ -23,9 +23,9 @@
 <article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Share a cell across calls while keeping changes explicit and atomic.</p>
 <h2 id="import">Import</h2>
 <pre><code class="language-panack">import stdlib/state as state</code></pre>
-<p>From async code, use:</p>
+<p>To use the async State API, import:</p>
 <pre><code class="language-panack">import stdlib/state/async as state</code></pre>
-<p>Both imports use the same <code>State[T]</code> type. All three operations are effectful; the async versions have the same names and types and require <code>await</code>.</p>
+<p>Both imports use the same <code>State[T]</code> type. All three operations are effectful; the async versions have the same names and types. Call these functions with <code>await</code> inside an async function.</p>
 <h2 id="create">create()</h2>
 <pre><code class="language-panack">create[T](initial: T): State[T]</code></pre>
 <p><strong>Parameters</strong></p>
