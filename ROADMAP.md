@@ -1,15 +1,14 @@
 # Website roadmap
 
-## In review: alpha.16 standard library documentation
+## Completed: alpha.16 promotion and documentation
 
-23 November 2026: five development pages cover the module reference, migration,
-async resources, bounded input and file publication, and practical async stdlib
-usage. Nine complete examples are copied from validated core revision
-`d57d2473da478424066dc8d4d777fd9a0b979645`. Local website checks pass; owner preview
-review, integration and publication remain pending. This delivers the website
-part of core RM#162 / AS5 without changing released downloads, the playground
-or published articles. No compiler/runtime performance impact: static pages and
-scoped table styles only; browser assets are unchanged.
+Published 28 November 2026. PR #77 delivered the standard-library API reference
+and guides; PR #80 added anonymous functions, closures and State documentation.
+PR #81 promoted the complete alpha.16 release, and PR #82 published the browser
+v0.4.2 examples. The native packages, installer and playground are available.
+The subsequent article series and homepage changes are also published: PRs
+#83–#87. Publication run 46158097907 passed deployed-byte and provenance
+verification for current main `54170bc`.
 
 ## Completed: alpha.15 promotion
 
@@ -137,42 +136,36 @@ server. Production canonical URLs remain intact.
 
 ## Website information architecture
 
-**In progress.** [GI#8: Refactor the information structure](https://github.com/sproates/panackelty-website/issues/8)
-was selected by the owner on 2026-10-06. Shorten Home and organise the existing
-content into Capabilities, Get started, Examples, Under the hood, Releases and
-roadmap, and About. Keep the current styling and feel, provide clean directory
-URLs and distinguish Available now, the next planned release and the first
-non-alpha target. No old URL or anchor compatibility is required. The
-[page map](docs/INFORMATION_ARCHITECTURE.md) owns the detailed structure.
-Acceptance requires the assembled site and native/browser checks plus a working
-iPhone preview and explicit merge approval. Implementation does not publish a
-new language release or change runtime pins.
+**Done.** [GI#8: Refactor the information structure](https://github.com/sproates/panackelty-website/issues/8)
+was delivered by PR #9 on 6 October 2026. Home and the focused Capabilities,
+Get started, Examples, Under the hood, Releases and roadmap, and About pages
+are published. The [page map](docs/INFORMATION_ARCHITECTURE.md) records the
+structure; subsequent documentation and Articles pages extend it.
 
 ## Website-owned backlog
 
 ### Articles publishing and archive
 
-**In progress.** [GI#15: Articles publishing and archive](https://github.com/sproates/panackelty-website/issues/15)
+**Done.** [GI#15: Articles publishing and archive](https://github.com/sproates/panackelty-website/issues/15)
 records the Markdown-based authoring and publishing workflow. Articles have
 stable individual URLs, title/body/date/tag metadata, a **Copy link** action and
 author attribution. The `/articles/` archive lists newest first with Older/Newer
 pagination, with up to five previews per page. Shared tags link to generated
 topic pages. Editing an article keeps its URL and original publication date
-stable and regenerates the article/tag listings and sitemap.
+stable and regenerates the article/tag listings and sitemap. PR #17 delivered
+the system; PR #26 corrected same-day ordering. Repeated publication, including
+the alpha.16 series, verifies the workflow. Completion reconciled 28 November 2026.
 
 <a id="rm-119"></a>
 ### RM#119: Cookie-free website analytics
 
-**In progress.** [GI#2: Add basic cookie-free website analytics](https://github.com/sproates/panackelty-website/issues/2)
-was transferred from core GI#252 with its history. Cloudflare Web Analytics is
-configured in the owner's personal account; collection awaits the reviewed
-production change. The beacon is added to the production deployment artifact
-only, while local and pull-request previews omit it. The article explaining why
-analytics is used and what it does and does not measure is included in this
-change. [GI#65](https://github.com/sproates/panackelty-website/issues/65) tracks
-publication. Acceptance still includes confirming deployed collection and
-dashboard verification. Provisional size: small, one website PR plus deployment
-verification.
+**Partially delivered.** [GI#2: Add basic cookie-free website analytics](https://github.com/sproates/panackelty-website/issues/2)
+was transferred from core GI#252. PR #66 published the production-only Cloudflare
+Web Analytics beacon and explanatory article on 3 November 2026; PR #67 corrected
+the article URL. Local and pull-request previews omit the beacon. The remaining
+acceptance is confirmation of dashboard collection and the issue's privacy-notice
+review; those checks are not established by the deployment record. Keep this
+issue open until that evidence is recorded.
 
 <a id="rm-8"></a>
 ### RM#8: Website CI follow-ups
