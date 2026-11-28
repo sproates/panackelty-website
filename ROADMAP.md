@@ -45,8 +45,8 @@ numbers. Do not renumber or duplicate programme completion credit.
 ## Inference assessment release allocation, 26 October 2026
 
 Delivered in [PR#58](https://github.com/sproates/panackelty-website/pull/58).
-The public roadmap places the inference/diagnostics assessment in alpha.16 and
-keeps the library-boundary assessment in alpha.15, consistent with core GI#170
+At that checkpoint, the public roadmap placed the inference/diagnostics assessment in alpha.16 and
+kept the library-boundary assessment in alpha.15, consistent with core GI#170
 and merged [core PR#611](https://github.com/sproates/panackelty/pull/611).
 Live verification on 27 October confirmed that allocation and native alpha.14
 availability. Publication provenance identifies source
@@ -59,16 +59,15 @@ allocation update.
 
 This repository owns and serves the production website. Independent publication
 and core source retirement are delivered; [migration acceptance](docs/MIGRATION.md)
-records the evidence and recovery limitations. Native alpha.14 and browser v0.2.1
-are promoted. Alpha.15 package management is accepted on core `next` but remains
-unreleased; use the [core release summary](https://github.com/sproates/panackelty/blob/next/docs/NEXT_RELEASE_STATUS.md)
+records the evidence and recovery limitations. Native alpha.16 and browser v0.4.2
+are published and verified. Alpha.17 is the next planned release; use the [core release summary](https://github.com/sproates/panackelty/blob/next/docs/NEXT_RELEASE_STATUS.md)
 for implementation status. Website release promotion remains a separate decision.
 
 ## Release rebalance: alpha.14 through alpha.19
 
 Delivered by [PR#51](https://github.com/sproates/panackelty-website/pull/51), including
 the reviewed release rebalance from PR#50. Alpha.14 methods, HTTP and reference
-material are published; alpha.15–alpha.19 remain planned. Later allocation
+material were published; alpha.15–alpha.19 were planned at that checkpoint. Later allocation
 changes belong in the current release descriptions and their specific records.
 
 The older delivery records below retain the release pins and acceptance context
@@ -181,8 +180,8 @@ Migration timing acceptance is tracked separately in core GI#178.
 <a id="rm-102"></a>
 ### RM#102: Source-map website adoption
 
-**Promotion pending; dedicated examples unscheduled.** Native alpha.11 is already
-advertised, but that does not complete the dedicated source-map guide/example.
+**Dedicated guide/example remains unscheduled.** Native alpha.16 is published,
+but release promotion does not complete the dedicated source-map guide/example.
 The website maintainer owns adoption, linked to U2 in
 [core GI#180: Compiler understanding](https://github.com/sproates/panackelty/issues/180).
 Document exact-source reproduction, unavailable fallback, lookup cost and
@@ -204,15 +203,13 @@ against the immutable release. See the completed promotion record below.
 <a id="rm-104"></a>
 ### RM#104: Explanation website adoption
 
-**Promotion pending; dedicated examples unscheduled.** Native alpha.11 is
-advertised, but dedicated U3 explanation examples remain pending under
-[core GI#180](https://github.com/sproates/panackelty/issues/180). Website adoption
-must describe bounded Nat-subtraction and local call/await effects, local versus
-whole-program validity, unavailable cases and original diagnostics. Include
-supported per-function recovery without implying transitive effects or runtime
-execution. Browser support must be checked separately. The website maintainer
-owns example/claim changes and live verification; broader demonstrations remain
-in U9 below.
+**Published.** The released explanation guide covers an accepted and rejected
+subtraction, local call/await effect boundaries, project versus individual-check
+status, unavailable decisions and per-function exploration. Website PR #68 and
+the subsequent alpha.15 acceptance records delivered the native walkthrough;
+alpha.16 promotion retains it. This does not claim interactive browser support
+or runtime/transitive-effect analysis. The broader programme demonstrations
+remain separately scoped under RM#11 below.
 
 ## Cross-repository dependencies
 
@@ -312,26 +309,17 @@ issues. Future enhancements use this repository's issues and roadmap.
 The v0.1.3 browser archive retained a hard-coded alpha.12 label despite its
 alpha.13 compiler. Website assembly now owns that presentation text, using
 reviewed compiler/bytecode metadata alongside the immutable browser pin. Runtime
-asset bytes and checksums are unchanged. Publication acceptance remains pending.
+asset bytes and checksums were unchanged. PR #45 merged on 15 October 2026;
+the correction is included in the subsequently verified production promotions.
 
 ## Stdlib reference review correction — 23 November 2026
 
-Owner feedback: reference pages must explain the APIs directly, in the style of
-Node API documentation, rather than send readers to GitHub for essential detail.
-Website PR #77 now includes nineteen module pages and 72 function entries with
-signatures, parameters, results, errors and lifetime/bounds information. The index
-links to those pages; source links are supplementary. The standard library stays
-ahead of HTTP on API Docs. Preview review and publication remain pending.
-
-Owner accepted the documentation approach and preview on 23 November 2026.
-This is preview approval, not permission to publish. PR #77 remains unmerged;
-website integration/publication requires separate authorisation.
-
-The owner authorised PR #77 checks and publication on 23 November 2026, conditional
-on passing checks. Completion takes effect after merge, successful deployment and
-live verification of the module reference/navigation. Until then, publication
-acceptance remains pending. Released version pins and articles are unchanged.
-
+**Completed.** Owner feedback required reference pages to explain APIs directly,
+in the style of Node API documentation, with source links as supplementary detail.
+PR #77 delivered nineteen module pages and 72 function entries with signatures,
+parameters, results, errors and lifetime/bounds information. The standard library
+appears ahead of HTTP on API Docs. The owner approved publication; PR #77 merged
+23 November and the reference is included in the verified alpha.16 promotion.
 
 ## Faster article publication, 23 November 2026
 
@@ -343,4 +331,6 @@ existing expiration, attempt, repository, current-main and deployed-byte checks.
 This addresses the repeated work observed while publishing the stdlib article.
 Regression checks cover mixed changes, unavailable history, symlinks, publication
 and deletion, failed/skipped gates and manual artifact reuse. No product runtime
-or release pins change. Hosted acceptance and merge remain pending.
+or release pins change. PR #79 merged on 23 November after its checks passed.
+Subsequent alpha.16 article publications exercised the focused route and exact-tree
+artifact reuse; this workflow change is delivered.
