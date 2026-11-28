@@ -19,20 +19,48 @@ That gives each feature a job. The anonymous function is the handler, its closur
 
 Install [Panackelty alpha.16](/get-started/) or use an existing alpha.16 installation. This is a native HTTP service: the browser playground can't open a listening socket.
 
-Get the matching example project and its HTTP package:
+Check that your shell is using alpha.16:
 
 ```sh
-git clone --depth 1 --branch v0.1.0-alpha.16 https://github.com/sproates/panackelty.git panack-alpha16
-cd panack-alpha16
+panack --version
 ```
 
-Git is used here to obtain the source, not by the running service. Under `examples/network/`, the `http_state_closure` directory contains the project. Its `panack.json` manifest points to `src/main.panack` and declares the local HTTP package dependency. Keep the repository layout intact so that dependency can be found.
+This should report `panack 0.1.0-alpha.16 (bytecode 9)`.
 
-You don't need to build the compiler from this checkout. The installed `panack` command runs the example.
+The release includes the HTTP package. Create a project and copy that package into it. These commands use the installation directory created by the one-command installer:
+
+```sh
+panack_home="$HOME/.local/opt/panackelty-installer/current"
+mkdir -p status-service/src status-service/vendor
+cp -R "$panack_home/packages/http" status-service/vendor/http
+cd status-service
+```
+
+If you installed from an archive instead, set `panack_home` to the extracted `panackelty` directory before running the remaining commands. The directory contains `bin`, `packages` and `share`. Use a new `status-service` directory for this walkthrough.
+
+Save this as `panack.json` inside `status-service`:
+
+```json
+{
+  "schema": 1,
+  "package": "examples.status_service",
+  "version": "0.1.0",
+  "language": "modules-v1",
+  "toolchain": "0.1.0-alpha.16",
+  "source": "src",
+  "entry": "main.panack",
+  "exports": {},
+  "dependencies": {
+    "http": { "path": "vendor/http" }
+  }
+}
+```
+
+The manifest tells Panack where the program starts and where to find its HTTP dependency. The standard library comes from the installed toolchain. There's no repository to clone and no compiler to build.
 
 ## The complete program
 
-Replace the contents of the example’s `src/main.panack` file with this version. It formats uptime as decimal seconds:
+Save this as `src/main.panack` inside your project:
 
 ```panack
 import http/server as http
@@ -112,11 +140,14 @@ The handler returns `Result[Unit,Str]`. Here, `Ok(())` says the handler complete
 
 ## Run it and make a request
 
-From the repository root, start the service:
+From the `status-service` directory, lock the dependency and start the service:
 
 ```sh
-panack run --project examples/network/http_state_closure/panack.json 8082
+panack deps lock --project panack.json
+panack run --project panack.json 8082
 ```
+
+The lock command creates `panack.lock.json` beside your manifest. Run it once when setting up this project; subsequent starts only need the `panack run` command.
 
 Leave that terminal running. In another terminal, request the endpoint:
 
