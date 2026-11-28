@@ -2,7 +2,7 @@
 title: Closures can remember things without hiding mutation
 summary: Panackelty now has anonymous functions and closures. Shared changes use an explicit State API, because retaining a value and changing a value are different jobs.
 status: draft
-previewOrder: 2
+previewOrder: 3
 tags:
   - language design
   - standard library

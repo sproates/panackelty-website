@@ -1,52 +1,32 @@
 ---
-title: Alpha.16 is here
-summary: Anonymous functions, closures, explicit State and a more useful async standard library are now released, alongside the compiler and VM work that helped make them possible.
+title: What's in alpha.16?
+summary: A quick overview of the new functions, shared State, standard-library changes and faster tools in Panackelty alpha.16.
 status: draft
-previewOrder: 3
+previewOrder: 4
 tags:
   - development
   - language design
   - standard library
 ---
 
-Panackelty alpha.16 is released. The native packages, installer and browser playground are all updated, and the documentation is on the site.
+Panackelty alpha.16 is released. This one brings together quite a lot of work on making the language more useful and expressive, along with improvements to the tools used to build programs.
 
-I wrote about the standard library recently, but there was another part of the work I particularly wanted to get finished: making it straightforward to pass behaviour around and give that behaviour the context it needs.
+Here's the basic overview. I'll go into the features properly in the articles that follow.
 
-An HTTP handler is a good example. It might need the time the service started, some configuration and a request counter. Those are fairly ordinary requirements, but they touch several parts of the language.
+## What's new?
 
-Alpha.16 brings those parts together.
+- **Anonymous functions.** Write a small function where you need it, for example when transforming a collection or registering a request handler.
+- **Closures.** Functions can retain immutable values from the context where they were created. A callback can keep the configuration it needs without receiving it on every call.
+- **Explicit shared State.** Several calls can share a changing value, such as a request counter, through an API that makes reads and updates visible.
+- **A more useful standard library.** Ordinary and async module imports provide consistent ways to work with clocks, files, processes, console I/O and networking, with structured errors and expanded documentation.
+- **Faster compiler and VM, plus incremental compilation.** Less repeated work during execution and compilation, with an optional persistent cache for subsequent checks and builds.
 
-## Functions where you need them
+The combination is what interests me most. An HTTP handler can now retain its startup time, read the clock and update a shared counter. Each feature is useful on its own, but together they make that sort of program much more straightforward to write.
 
-You can now write an anonymous function directly where you're passing it to another function. A short array transformation doesn't need a separate named declaration just to add a few lines of behaviour.
+## Give it a go
 
-A function can also retain immutable values from the context where it was created. That's a closure. It means a handler can keep its configuration, or a function can return another function configured for a particular job.
+The [browser playground](/playground/) has examples for anonymous functions, closures and State, with expected output and suggested edits. For HTTP services and other native capabilities, use the [native installation](/get-started/).
 
-For values that need to change across calls, there's explicit State. A closure can retain a handle to shared state, and the code says when it reads or updates the value. Implicitly capturing a mutable variable is rejected.
+The [release page](/releases/) has the full change list and downloads. If you're updating existing code, the [stdlib migration guide](/playbook/stdlib-migration/) covers the API changes.
 
-I like that distinction. Retaining a startup time and updating a counter are different things, and I want the code to make that difference visible.
-
-## Useful operations from async code
-
-The standard library has ordinary and async module paths. Choose `stdlib/time/async` and a clock read is `await time.now()`. The function hasn't acquired an `Async` suffix; the import selects the interface.
-
-The work goes well beyond time. There are async APIs for the supported console, file, process and network operations, along with resource APIs such as SHA-256 and gzip. Pure operations still use ordinary calls.
-
-The [standard-library article](/articles/a-more-useful-standard-library/) covers the reasoning, and the [reference](/reference/standard-library/) has the actual APIs. The [functions and State cookbook](/playbook/callables-and-state/) shows how the pieces fit together, including an HTTP service with a request count and uptime.
-
-## The less visible work
-
-Before making these language changes, I spent time on VM and compiler performance. I wanted the development loop to be less painful, especially when changing something that needs a compiler rebuild and verification.
-
-That work is included in alpha.16 too. It reduces repeated work in the VM and compiler, and adds persistent incremental compilation. Separate invocations of `panack check --incremental` and `panack compile --incremental` can reuse valid cached work. The cache checks dependencies; it isn't permission to use stale results after changing the program.
-
-I've already [written about the optimisation work](/articles/making-panackelty-easier-to-develop/), so I won't repeat the measurements here. The bytecode format remains v9, although you should still use the compiler, VM and standard library from the same release.
-
-## Try it
-
-The [playground](/playground/) now includes selectable examples for anonymous functions, closures and a shared counter. Each has expected output and a suggested change to try. Those examples run in your browser; HTTP services still need the native toolchain.
-
-For native programs, start with [installation](/get-started/). If you're updating existing code, the [stdlib migration guide](/playbook/stdlib-migration/) covers the API changes. The [release page](/releases/) has the complete release notes and downloads.
-
-There's still plenty I want to do, but this felt like a sensible release boundary. I want to use these features to build more real programs and let that experience drive the next work.
+Next I'll look more closely at closures, explain the new State system, and put them together in a working HTTP service.
