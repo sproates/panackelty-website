@@ -1,8 +1,9 @@
 ---
 title: What's in alpha.16?
 summary: Panackelty alpha.16 adds anonymous functions, closures and shared State, expands what async code can do, and brings faster compiler and VM tools.
-status: draft
-previewOrder: 4
+status: published
+date: 2026-11-28
+publishedAt: 2026-11-28T10:48:00+01:00
 tags:
   - development
   - language design
