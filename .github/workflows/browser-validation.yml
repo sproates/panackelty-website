@@ -100,4 +100,8 @@ jobs:
           export PLAYGROUND_SITE_DIR="$GITHUB_WORKSPACE/build/website"
           export PLAYGROUND_BUILD_DIR="$GITHUB_WORKSPACE/build/website/playground"
           cd build/browser-tests
-          npx playwright test --config website.playwright.config.mjs --workers=1
+          # Give each engine a fresh bounded preview server; fast editorial
+          # checks must not inherit connections from the preceding engine.
+          for engine in chromium firefox webkit; do
+            npx playwright test --config website.playwright.config.mjs --workers=1 --project "$engine"
+          done
