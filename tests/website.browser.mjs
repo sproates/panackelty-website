@@ -34,14 +34,13 @@ test('editorial pages have consistent clean navigation at desktop and phone widt
 });
 test('release availability and copy controls remain explicit',async({page,context,browserName})=>{
   await page.goto('/roadmap/');
-  await expect(page.locator('#available-now')).toContainText('Native alpha.15.');
-  await expect(page.locator('#alpha-15')).toHaveCount(1);
-  await expect(page.locator('#next-release')).toContainText('Alpha.16');
+  await expect(page.locator('#available-now')).toContainText('Native alpha.16.');
+  await expect(page.locator('#alpha-16')).toHaveCount(1);
+  await expect(page.locator('#next-release')).toContainText('Alpha.17');
   await expect(page.locator('#next-release')).toContainText('not released');
   await expect(page.locator('#first-non-alpha')).toContainText('not released');
-  await expect(page.locator('#alpha-13 a')).toHaveAttribute('href', '../previous-releases/');
-  await expect(page.locator('#alpha-14')).toContainText('Released');
-  await page.getByRole('link', {name:'Explore alpha.13 and earlier releases →'}).click();
+  await page.getByRole('link', {name:'Explore previous releases →'}).click();
+  await expect(page.locator('#alpha-15')).toContainText('Previously released');
   await expect(page.locator('#alpha-13')).toContainText('HTTP client and server');
   await expect(page.locator('#alpha-12')).toBeVisible();
   await expect(page.locator('#alpha-12')).toContainText('Executable namespaces');
