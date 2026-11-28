@@ -82,6 +82,12 @@ Sharing a value doesn't by itself make a read-modify-write sequence safe. Imagin
 
 This is the atomic-update guarantee. It applies to one cell, not to every operation the surrounding function happens to perform.
 
+## A familiar idea if you use React
+
+If you've used React's functional state updates, such as `setCount(current => current + 1)`, this may look familiar. You give the API a function that calculates the next value from the current one.
+
+Panackelty applies that idea to general-purpose shared state, exposed through the standard library with compiler and runtime support. There are no components or automatic re-renders involved. React queues updates for rendering; Panack's `state.update` commits the new value and returns it. The [React documentation](https://react.dev/reference/react/useState) describes its own update behaviour.
+
 ## The callback is deliberately restricted
 
 The transformation passed to `update` must be pure. It cannot perform I/O, read the clock, await work, or create, read or update any cell. A completed update runs its transformation once. The API doesn't retry the callback behind your back.
