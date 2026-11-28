@@ -7,6 +7,20 @@ const {build, markdown, parseArticle} = require('../scripts/articles.cjs');
 
 const article = (slug, status, date, tags = ['compiler'], publishedAt = '') => `---\ntitle: ${slug}\nstatus: ${status}\n${date ? `date: ${date}\n` : ''}${publishedAt ? `publishedAt: ${publishedAt}\n` : ''}tags:\n${tags.map(tag => `  - ${tag}`).join('\n')}\n---\n\nAn article about **${slug}**.\n`;
 
+test('article copy controls target distinct complete blocks without changing inline code or other renderers', () => {
+  const source = 'An `inline` value.\n\n```sh\necho "<hello> & goodbye"\n  echo done\n```\n\n```\noutput\n```';
+  const html = markdown(source, '../../', {copyCode: true});
+  for (const n of [1, 2]) {
+    assert.match(html, new RegExp(`data-copy-target="article-code-${n}"`));
+    assert.match(html, new RegExp(`aria-describedby="article-code-${n}-copy-status"`));
+    assert.match(html, new RegExp(`id="article-code-${n}-copy-status"[^>]*role="status"`));
+  }
+  assert.match(html, /<code id="article-code-1" class="language-sh">echo &quot;&lt;hello&gt; &amp; goodbye&quot;\n  echo done<\/code>/);
+  assert.match(html, /<code>inline<\/code>/);
+  assert.equal((html.match(/data-copy-target=/g) || []).length, 2);
+  assert.doesNotMatch(markdown(source), /data-copy-target|article-code-/);
+});
+
 test('article Markdown renders common prose, links, headings and code safely', () => {
   const html = markdown('# Heading\n\nA `value`, [link](https://example.com/?a=1&b=2), and ![source to output diagram](/images/flow.svg).\n\n```panackelty\npure main(): Unit {}\n```\n\n<script>alert(1)</script>', '../../');
   assert.match(html, /<h1 id="heading">Heading<\/h1>/);
