@@ -26,13 +26,13 @@ git clone --depth 1 --branch v0.1.0-alpha.16 https://github.com/sproates/panacke
 cd panack-alpha16
 ```
 
-Git is used here to obtain the source, not by the running service. The project manifest at `examples/network/http_state_closure/panack.json` points to `src/main.panack` and declares the local HTTP package dependency. Keep the repository layout intact so that dependency can be found.
+Git is used here to obtain the source, not by the running service. Under `examples/network/`, the `http_state_closure` directory contains the project. Its `panack.json` manifest points to `src/main.panack` and declares the local HTTP package dependency. Keep the repository layout intact so that dependency can be found.
 
 You don't need to build the compiler from this checkout. The installed `panack` command runs the example.
 
 ## The complete program
 
-This is the entire `examples/network/http_state_closure/src/main.panack` file in the released project:
+This is the entire `src/main.panack` file in that released project:
 
 ```panack
 import http/server as http
