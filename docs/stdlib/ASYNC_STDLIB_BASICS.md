@@ -1,8 +1,8 @@
 # Async stdlib in practice
 
-These examples target **alpha.16 development**, not the released alpha.15
-installation or browser playground. Build the matching native development
-checkout to run them. The full source is included below each recipe.
+These examples use the **native alpha.16 toolchain**. Install the release to run
+them; their host I/O is unavailable in the browser playground. The full source
+is included below each recipe.
 
 ## Choose the effect at the import
 

@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs stdlib-api-reference">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Raw HTTP streams</h1><p class="lede">Send raw HTTP request bytes and read a bounded response stream. Parsing and framing belong to the HTTP package.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
 <li class="toc-level-2"><a href="#open">open()</a></li>
@@ -66,7 +66,7 @@
   InvalidArguments, TimedOut, NameResolutionFailed, TlsVerificationFailed, TlsFailed, ConnectionFailed, WriteFailed, ReadFailed, ResponseLimitExceeded, InvalidStream, ReadBusy, ResourceLimit, Unavailable, ResolverUnavailable, ClockFailed, InitializationFailed, PollingFailed, InvocationEnded, OtherFailure
 }</code></pre>
 <h2 id="use-the-http-package-for-urls">Use the HTTP package for URLs</h2>
-<p>Most applications should use <code>http/client/async</code>, not construct raw HTTP bytes. <a href="../../playbook/async-stdlib/#complete-example-diagnostic-http-client">The diagnostic client example</a> shows URL requests, status handling and detailed errors. Browser/WASI hosts do not provide this native transport.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/src/stdlib/network/http_stream.panack">view source on GitHub</a>.</p></article></div>
+<p>Most applications should use <code>http/client/async</code>, not construct raw HTTP bytes. <a href="../../playbook/async-stdlib/#complete-example-diagnostic-http-client">The diagnostic client example</a> shows URL requests, status handling and detailed errors. Browser/WASI hosts do not provide this native transport.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/src/stdlib/network/http_stream.panack">view source on GitHub</a>.</p></article></div>
 <!-- SITE_CLOSING -->
 </main><!-- SITE_FOOTER -->
 <script src="../../site.js" defer></script>

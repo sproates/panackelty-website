@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Async resources</h1><p class="lede">Use SHA-256 and gzip with explicit ownership and cleanup.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#choose-the-resource-api-when-input-arrives-in-pieces">Choose the resource API when input arrives in pieces</a></li>
 <li class="toc-level-2"><a href="#bound-decompression-before-accepting-input">Bound decompression before accepting input</a></li>
@@ -21,7 +21,7 @@
 <li class="toc-level-2"><a href="#using-async-apis-inside-an-http-handler">Using async APIs inside an HTTP handler</a></li>
 <li class="toc-level-2"><a href="#complete-example-async-digest">Complete example: async digest</a></li>
 <li class="toc-level-2"><a href="#complete-example-async-gzip">Complete example: async gzip</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>This guide and its examples require the <strong>alpha.16 development toolchain</strong>. They use existing named functions and explicit state passed as arguments; they do not depend on future closure or shared-state features.</p>
+<article class="capabilities-content http-docs-content"><p>This guide and its examples require the <strong>native alpha.16 toolchain</strong>. They use named functions and pass resource handles explicitly.</p>
 <h2 id="choose-the-resource-api-when-input-arrives-in-pieces">Choose the resource API when input arrives in pieces</h2>
 <p>For a small buffer already in memory, <code>sha256.hash(data)</code> is a pure one-shot call. For input arriving in pieces, use a SHA-256 context through <code>stdlib/digest/sha256/async</code>. The operation names stay <code>create</code>, <code>update</code>, <code>finish</code> and <code>close</code>.</p>
 <p>Run <a href="../../playbook/async-resources/#complete-example-async-digest">the complete example</a>:</p>
@@ -46,9 +46,9 @@
 <p>A gzip decoder still needs <code>close</code> after successful completion, malformed or incomplete input, or an exhausted output budget. The example closes it before returning either the decoded bytes or the original failure. If cleanup also fails, it preserves both explanations. This differs from consuming a SHA-256 context with <code>finish</code>.</p>
 <h2 id="resource-ownership-is-part-of-the-api">Resource ownership is part of the API</h2>
 <p>Copying an opaque handle creates an alias, not a new resource. Closing or consuming one alias invalidates the others. Handles cannot be transferred to another invocation. Closing releases native state, but does not replenish per-invocation creation quotas: 65,536 SHA-256 contexts and 64 gzip decoders, shared with legacy interfaces. Do not use an unbounded create/close loop as a resource pool.</p>
-<p>Async operations yield between bounded work steps. They do not imply that every operation runs on a new thread, or that CPU work is free. The <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/docs/design/STDLIB_DOMAIN_ERRORS.md#sha-256-and-gzip-resources">domain-error contract</a> documents failure categories and lifecycle limits.</p>
+<p>Async operations yield between bounded work steps. They do not imply that every operation runs on a new thread, or that CPU work is free. The <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/docs/design/STDLIB_DOMAIN_ERRORS.md#sha-256-and-gzip-resources">domain-error contract</a> documents failure categories and lifecycle limits.</p>
 <h2 id="using-async-apis-inside-an-http-handler">Using async APIs inside an HTTP handler</h2>
-<p>The <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/examples/network/http_uptime/README.md">healthcheck service</a> is the worked example of this integration. Its immutable context holds the start <code>Instant</code> and a service name. Each <code>/health</code> request awaits <code>time.now()</code> and computes <code>now.difference(context.started)</code>. The output is elapsed nanoseconds, not a calendar timestamp. Clock failure produces an explanatory HTTP 503 response.</p>
+<p>The <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/examples/network/http_uptime/README.md">healthcheck service</a> is the worked example of this integration. Its immutable context holds the start <code>Instant</code> and a service name. Each <code>/health</code> request awaits <code>time.now()</code> and computes <code>now.difference(context.started)</code>. The output is elapsed nanoseconds, not a calendar timestamp. Clock failure produces an explanatory HTTP 503 response.</p>
 <p>The context does not need mutable capture to preserve the start value. This example does not count requests: shared mutable state is separate work.</p>
 <p>For network data, the high-level HTTP client is usually easier than raw stream management. <code>http/client/async</code> owns its underlying stream lifecycle and retains detailed transport errors. Use raw <code>network/http_stream/async</code> only when the application needs to handle request/response bytes and explicit stream ownership.</p>
 <h2 id="complete-example-async-digest">Complete example: async digest</h2>

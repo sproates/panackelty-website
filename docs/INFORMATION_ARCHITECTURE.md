@@ -11,10 +11,10 @@ or old-anchor compatibility is required for this refactor.
 | Capabilities | `/capabilities/` | Features of the promoted native release, with browser limits and examples |
 | Get started | `/get-started/` | Browser/native choice, greeting, one-command installer and optional manual-download reveal |
 | Examples | `/examples/` | Curated released examples and links to release-specific source |
-| HTTP Server reference | `/reference/http-server/` | Released alpha.14 reference for the routed Server and ContextualServer API, linked from Examples and the shared footer |
+| HTTP Server reference | `/reference/http-server/` | Released alpha.16 reference for the routed Server and ContextualServer API, linked from Examples and the shared footer |
 | Compiler explanations | `/explain/` | Released command, actual proof/effect output, usage and limits |
 | Under the hood | `/under-the-hood/` | Compiler/VM pipeline, bootstrap, host boundary and verification evidence |
-| Releases and roadmap | `/roadmap/` | Available alpha.14, planned alpha.15–alpha.19 and first non-alpha target, separately labelled |
+| Releases and roadmap | `/roadmap/` | Available alpha.16, planned alpha.17–alpha.20 and first non-alpha target, separately labelled |
 | Playground | `/playground/` | Separately pinned browser runtime and existing interactive examples |
 | Release history | `/releases/` | Generated historical notes, availability and migration information |
 
@@ -25,7 +25,7 @@ alongside compiler explanations, coverage, GitHub and the licence. Project motiv
 
 The homepage owns shared chrome; `scripts/site_chrome.cjs` renders page-relative
 links and one current-page marker on every editorial page and the playground.
-The HTTP Server API reference documents the released alpha.14 API and is linked
+The HTTP Server API reference documents the released alpha.16 API and is linked
 from Examples and the footer. Its examples must match the promoted native release.
 `site/site.js` owns clipboard feedback. The release history
 renderer remains based on the immutable reviewed changelog snapshot.
@@ -34,20 +34,18 @@ renderer remains based on the immutable reviewed changelog snapshot.
 
 - Available now means the deliberately promoted native release, not core main
   or next. Browser capabilities follow their separately promoted artifact.
-- Alpha.14 is the promoted native release (`site/native-release.txt`); the
-  separately pinned browser release is v0.2.1 (`site/playground.json`).
-  Alpha.15–alpha.19 have agreed general directions on the homepage and roadmap:
-  foundations; useful programs; everyday development; interactive/connected applications; language ergonomics.
+- Alpha.16 is the promoted native release (`site/native-release.txt`); the
+  matching browser release is v0.4.1 (`site/playground.json`).
+  Alpha.17–alpha.20 cover useful programs, everyday development,
+  interactive/connected applications and language ergonomics.
 - Keep the homepage outline and detailed roadmap consistent with core's agreed
-  release scope. The alpha.15 package-management scope is agreed and accepted on
-  core `next`: local folders/archives, HTTPS archives, pinned Git dependencies,
-  diagnostics and installed acceptance. It is not yet released; alpha.14's local
-  package support must not imply those later capabilities are already available.
+  release scope. Alpha.15 delivered package management, validated domain types
+  and compiler explanations. Alpha.16 delivers VM/compiler optimisations,
+  incremental compilation, the async stdlib, anonymous functions, closures and State.
   Use core's [release summary](https://github.com/sproates/panackelty/blob/next/docs/NEXT_RELEASE_STATUS.md)
-  for current implementation status. Alpha.18's Docker and Linux ARM64 work is
-  optional; alpha.19 features require design and evidence. Keep validated domain
-  types in alpha.15 and inference/diagnostics assessment in alpha.16. Avoid
-  duplicate credit.
+  for implementation status. Alpha.19's Docker and Linux ARM64 work is optional;
+  alpha.20 features require design and evidence. The inference/diagnostics
+  assessment is in alpha.17. Avoid duplicate credit.
 - Historical articles keep their publication context. Current capability pages,
   download pins and release history change only during a release promotion.
 - The first non-alpha section is a target, with scope/version/date still under

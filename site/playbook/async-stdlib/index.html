@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Async stdlib in practice</h1><p class="lede">Read the clock, work with files and subprocesses, and handle HTTP failures.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#choose-the-effect-at-the-import">Choose the effect at the import</a></li>
 <li class="toc-level-2"><a href="#measure-elapsed-time">Measure elapsed time</a></li>
@@ -26,7 +26,7 @@
 <li class="toc-level-2"><a href="#complete-example-async-pipe-input">Complete example: async pipe input</a></li>
 <li class="toc-level-2"><a href="#complete-example-http-uptime-service">Complete example: HTTP uptime service</a></li>
 <li class="toc-level-2"><a href="#complete-example-diagnostic-http-client">Complete example: Diagnostic HTTP client</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>These examples target <strong>alpha.16 development</strong>, not the released alpha.15 installation or browser playground. Build the matching native development checkout to run them. The full source is included below each recipe.</p>
+<article class="capabilities-content http-docs-content"><p>These examples use the <strong>native alpha.16 toolchain</strong>. Install the release to run them; their host I/O is unavailable in the browser playground. The full source is included below each recipe.</p>
 <h2 id="choose-the-effect-at-the-import">Choose the effect at the import</h2>
 <pre><code class="language-panack">import stdlib/time/async as time</code></pre>
 <p>Read the clock with <code>await time.now()</code>. Use pure helpers such as <code>time.seconds(5)</code> without await. An ordinary caller instead imports <code>stdlib/time as time</code> and calls <code>time.now()</code> directly. The function names stay the same.</p>

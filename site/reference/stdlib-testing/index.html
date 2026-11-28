@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs stdlib-api-reference">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Testing assertions</h1><p class="lede">Build explicit test results using pure assertions. Reporting is a separate checked effect.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
 <li class="toc-level-2"><a href="#expect">expect()</a></li>
@@ -59,7 +59,7 @@
 enum TestOutcome { TestPassed, TestFailed(Str) }</code></pre>
 <p><code>TestFailed(reason)</code> retains the failure explanation; <code>TestPassed()</code> has no payload. Assertions do not stop later tests.</p>
 <h2 id="reporting">Reporting</h2>
-<p>Use <a href="../../reference/stdlib-testing-reporting/">testing/reporting</a> for checked output. The older <code>testing.report(results: [TestResult]): Nat</code> is an ordinary compatibility function that returns the failure count but does not expose output failure as a <code>Result</code>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/src/stdlib/testing.panack">view source on GitHub</a>.</p></article></div>
+<p>Use <a href="../../reference/stdlib-testing-reporting/">testing/reporting</a> for checked output. The older <code>testing.report(results: [TestResult]): Nat</code> is an ordinary compatibility function that returns the failure count but does not expose output failure as a <code>Result</code>.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/src/stdlib/testing.panack">view source on GitHub</a>.</p></article></div>
 <!-- SITE_CLOSING -->
 </main><!-- SITE_FOOTER -->
 <script src="../../site.js" defer></script>

@@ -9,6 +9,8 @@ tags:
   - standard library
 ---
 
+> Update, 28 November 2026: The standard-library changes described here are now released in alpha.16. [Install the release](/get-started/) or browse the [standard-library reference](/reference/standard-library/).
+
 I've finished a fairly substantial round of work on Panackelty's standard library. This is part of alpha.16, so it isn't in the current release yet, but the implementation is on the development branch and the new documentation is now on the site.
 
 The motivation was quite simple. If I want to write an HTTP endpoint that reports how long the service has been running, the handler needs to read a clock. That shouldn't be an architectural event.

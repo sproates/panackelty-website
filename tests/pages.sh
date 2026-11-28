@@ -36,7 +36,7 @@ fs.writeFileSync(process.argv[3], source.replace(/<!-- LATEST_ARTICLE_START -->[
 NODE
 cmp "$work/home" "$work/generated-home-shell"
 for page in index.html releases/index.html playground/index.html capabilities/index.html get-started/index.html examples/index.html explain/index.html under-the-hood/index.html roadmap/index.html; do
-    test "$(grep -c 'aria-current="page"' "$work/pages/$page")" = 1
+    test "$(grep -o '<[^>]*aria-current="page"[^>]*>' "$work/pages/$page" | wc -l)" -eq 1
     grep -q 'Releases &amp; roadmap' "$work/pages/$page"
     grep -q 'Under the hood' "$work/pages/$page"
 done

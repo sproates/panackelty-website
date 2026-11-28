@@ -11,9 +11,9 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs stdlib-api-reference">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">State</h1><p class="lede">Shared cells with ordinary and async operations, pure updates and explicit cancellation rules.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#import">Import</a></li>
 <li class="toc-level-2"><a href="#create">create()</a></li>
@@ -58,7 +58,7 @@
 <p><strong>Errors:</strong> There is no recoverable <code>Result</code> wrapper. A callback trap or cancellation before commit leaves the old value intact and releases the reservation. Cancellation after commit does not undo the change. Cancelling a waiter never runs its callback. There are no implicit retries, public locks or multi-cell transactions.</p>
 <h2 id="identity-and-use-in-closures">Identity and use in closures</h2>
 <p>Closures may retain State handles. <code>a == b</code> compares cell identity without reading or reserving either payload. Cells cannot be Map keys or Set elements, including when nested in another value, but may be stored as Map values.</p>
-<p>See <a href="../../playbook/state/">Shared State</a> for an introduction, or the <a href="../../playbook/callables-and-state/">Functions and State cookbook</a> for the closure-based and named contextual HTTP examples and their counting rules.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/src/stdlib/state.panack">view source on GitHub</a>.</p></article></div>
+<p>See <a href="../../playbook/state/">Shared State</a> for an introduction, or the <a href="../../playbook/callables-and-state/">Functions and State cookbook</a> for the closure-based and named contextual HTTP examples and their counting rules.</p><p class="source-reference">Implementation: <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/src/stdlib/state.panack">view source on GitHub</a>.</p></article></div>
 <!-- SITE_CLOSING -->
 </main><!-- SITE_FOOTER -->
 <script src="../../site.js" defer></script>

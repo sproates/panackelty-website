@@ -11,16 +11,16 @@
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">Alpha.16 · development documentation</p>
+<p class="eyebrow">Alpha.16 · standard library</p>
 <h1 id="page-title">Input and file publication</h1><p class="lede">Read bounded input, publish a complete directory and use confined reads.</p>
-<p><strong>Not available in the alpha.15 release or browser playground.</strong> These pages describe the native development branch. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
+<p><strong>These pages describe alpha.16.</strong> Host I/O requires the native toolchain; browser capabilities are limited. <a href="../../api/#stdlib-development">Browse the stdlib guides</a>.</p>
 </section>
 <div class="capabilities-layout"><nav class="capabilities-toc" aria-label="On this page"><p class="eyebrow">On this page</p><ul><li class="toc-level-2"><a href="#read-bounded-input-until-eof">Read bounded input until EOF</a></li>
 <li class="toc-level-2"><a href="#publish-a-complete-directory-then-read-within-it">Publish a complete directory, then read within it</a></li>
 <li class="toc-level-2"><a href="#confinement-is-an-operation-not-a-string-prefix">Confinement is an operation, not a string prefix</a></li>
 <li class="toc-level-2"><a href="#complete-example-async-console-input">Complete example: async console input</a></li>
 <li class="toc-level-2"><a href="#complete-example-async-publish-note">Complete example: async publish note</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p>These examples require the <strong>alpha.16 development toolchain</strong>. They use the ordinary operation names through <code>/async</code> imports and explicitly await host work.</p>
+<article class="capabilities-content http-docs-content"><p>These examples require the <strong>native alpha.16 toolchain</strong>. They use the ordinary operation names through <code>/async</code> imports and explicitly await host work.</p>
 <h2 id="read-bounded-input-until-eof">Read bounded input until EOF</h2>
 <p><a href="../../playbook/async-input-and-files/#complete-example-async-console-input">async_console_input.panack</a> reads standard input in chunks of at most 512 bytes, with a separate 4096-byte total message limit. It converts the complete message with the checked pure UTF-8 API and prints the Unicode scalar count.</p>
 <pre><code class="language-sh">printf &#39;Aλ🙂&#39; | ./bin/panack run examples/async_console_input.panack</code></pre>
@@ -42,7 +42,7 @@
 <li><code>confined.read(published_root, relative, limit)</code> performs the bounded read beneath that root and returns contents plus its physical root identity.</li>
 </ol>
 <p>A successful publication consumes the stage. Do not discard it afterwards. For an operation or pre-commit publication failure, the example attempts <code>discard</code> and preserves any cleanup failure alongside the original error. Publication is not implemented by exposing a partly written directory and hoping readers wait for the last file.</p>
-<p>The API also offers <code>ReplaceExisting</code>, but replacement has additional generation and cleanup rules. This introductory example deliberately uses <code>CreateOnly</code>. Read the <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/docs/STDLIB_API_CONTRACT.md#staging-operations">publication contract</a> and <a href="https://github.com/sproates/panackelty/blob/df1aaf861eb1b89a8f28cac92e02d4d6d8107d31/docs/reference/SPEC.md">filesystem specification</a> before implementing replacement. An error after an unrelated operation is not proof that a previously successful publication was rolled back.</p>
+<p>The API also offers <code>ReplaceExisting</code>, but replacement has additional generation and cleanup rules. This introductory example deliberately uses <code>CreateOnly</code>. Read the <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/docs/STDLIB_API_CONTRACT.md#staging-operations">publication contract</a> and <a href="https://github.com/sproates/panackelty/blob/5e9fc13eccec0ed4c77db8ac0f961e07533cf3e4/docs/reference/SPEC.md">filesystem specification</a> before implementing replacement. An error after an unrelated operation is not proof that a previously successful publication was rolled back.</p>
 <h2 id="confinement-is-an-operation-not-a-string-prefix">Confinement is an operation, not a string prefix</h2>
 <p><code>confined.read(root, relative, limit)</code> enforces the filesystem boundary using the native confined operation. Joining a root with user-provided text and calling an ordinary read is not equivalent. The read result carries a physical root identity; applications that need to bind multiple operations to an expected root must check the relevant identity contract rather than assuming a pathname never changes.</p>
 <p>The example&#39;s cleanup removes only paths it created beneath its unique parent. It attempts cleanup after a read failure too, and reports cleanup errors instead of claiming that temporary files were removed. It does not promise cleanup code will execute after cancellation or process termination. The native staging resource has its own cancellation and shutdown rules; arbitrary published files do not acquire automatic lifetime management.</p>

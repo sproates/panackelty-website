@@ -8,6 +8,8 @@ tags:
   - standard library
 ---
 
+> Update, 28 November 2026: Async stdlib APIs, anonymous functions, closures and State are now included in alpha.16. This article records the design direction before implementation. See the [functions and State cookbook](/playbook/callables-and-state/) for working examples and the [stdlib reference](/reference/standard-library/) for the APIs.
+
 I want building useful programs in Panackelty to feel straightforward. An HTTP handler should be able to read the clock, access a file or update a request counter without the programmer having to work around the language.
 
 The next work brings together a broader async standard library, anonymous functions, closures and explicit state management. Each is useful independently, but the combination is what interests me most.

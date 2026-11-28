@@ -4,6 +4,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const {markdown} = require('./articles.cjs');
 const root = path.resolve(__dirname, '..');
+const releaseSource = require('../release-source.json');
 const documents = [
   {source:'docs/reference/http-client.md', name:'http-client.md', route:'reference/http-client', title:'HTTP Client', label:'API reference', intro:'GET requests, response types and errors for the native HTTP client.'},
   {source:'docs/reference/http-server.md', name:'http-server.md', route:'reference/http-server', title:'HTTP Server', label:'API reference', intro:'Signatures, behaviour and limits for the routed HTTP server.'},
@@ -28,7 +29,7 @@ function render(doc, sources) {
     const [file, fragment] = target.split('#');
     const resolved = file ? path.posix.normalize(path.posix.join(path.posix.dirname(doc.source),file)) : doc.source;
     const destination = documents.find(d => d.source === resolved);
-    if (!destination) return `[${label}](https://github.com/sproates/panackelty/blob/next/${resolved}${fragment ? '#'+fragment : ''})`;
+    if (!destination) return `[${label}](https://github.com/sproates/panackelty/blob/${releaseSource.commit}/${resolved}${fragment ? '#'+fragment : ''})`;
     const h = headings(sources[destination.name]).find(h => h.github === fragment || h.id === fragment);
     if (fragment && !h) throw new Error(`Unknown heading: ${target}`);
     return `[${label}](/${destination.route}/${fragment ? '#'+h.id : ''})`;
@@ -49,7 +50,7 @@ function render(doc, sources) {
 <!-- SITE_HEADER -->
 <main id="main" class="capabilities-page http-docs">
 <section class="capabilities-hero" aria-labelledby="page-title">
-<p class="eyebrow">${doc.label} · alpha.15</p>
+<p class="eyebrow">${doc.label} · alpha.16</p>
 <h1 id="page-title">${doc.title}</h1><p class="lede">${doc.intro}</p>
 <p>${doc.label === 'API reference' ? `Want to get started quickly? See the <a href="../../${companion.route}/">HTTP Server Playbook</a>` : `Looking up a method? See the <a href="../../${companion.route}/">HTTP Server Reference</a>`}</p>
 </section>
