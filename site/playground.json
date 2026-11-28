@@ -1,8 +1,8 @@
 {
   "repository": "sproates/panackelty-browser",
-  "tag": "v0.4.1",
-  "sha256": "d5ccc8fef6cfe5089232a9d7de7ebe48495800bd88e680289c15b6762ea589e4",
-  "assetVersion": "ad161a9f8ce8ebd0239bac192feda66670366032337cc294549ef68456982aea",
+  "tag": "v0.4.2",
+  "sha256": "79f999ab018b812d82f486bd8173b2e3acc058f77f3e5977eedf0af88b5a3c3a",
+  "assetVersion": "69ddf4c3f7b7eda29fab031fbafc991d1fddfbb7485da25b0518d0f5abbe43be",
   "coreVersion": "0.1.0-alpha.16",
   "bytecodeVersion": 9
 }
