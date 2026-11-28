@@ -1,8 +1,9 @@
 ---
 title: Closures can remember things without hiding mutation
 summary: Anonymous functions let you put behaviour where it's used. Closures let that behaviour retain the values it needs. Alpha.16 supports both, with explicit State for shared changes.
-status: draft
-previewOrder: 3
+status: published
+date: 2026-11-28
+publishedAt: 2026-11-28T11:15:39.247Z
 tags:
   - language design
   - standard library
