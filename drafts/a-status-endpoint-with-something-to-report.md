@@ -27,40 +27,20 @@ panack --version
 
 This should report `panack 0.1.0-alpha.16 (bytecode 9)`.
 
-The release includes the HTTP package. Create a project and copy that package into it. These commands use the installation directory created by the one-command installer:
+[Download the complete status-service project](/downloads/status-service-alpha16.zip) and extract it. The download includes the program, its manifest and lockfile, and the matching HTTP package. You don't need to create or copy any project files.
+
+Open a terminal in the extracted `status-service` directory. To extract it from the command line instead:
 
 ```sh
-panack_home="$HOME/.local/opt/panackelty-installer/current"
-mkdir -p status-service/src status-service/vendor
-cp -R "$panack_home/packages/http" status-service/vendor/http
+unzip status-service-alpha16.zip
 cd status-service
 ```
 
-If you installed from an archive instead, set `panack_home` to the extracted `panackelty` directory before running the remaining commands. The directory contains `bin`, `packages` and `share`. Use a new `status-service` directory for this walkthrough.
-
-Save this as `panack.json` inside `status-service`:
-
-```json
-{
-  "schema": 1,
-  "package": "examples.status_service",
-  "version": "0.1.0",
-  "language": "modules-v1",
-  "toolchain": "0.1.0-alpha.16",
-  "source": "src",
-  "entry": "main.panack",
-  "exports": {},
-  "dependencies": {
-    "http": { "path": "vendor/http" }
-  }
-}
-```
-
-The manifest tells Panack where the program starts and where to find its HTTP dependency. The standard library comes from the installed toolchain. There's no repository to clone and no compiler to build.
+The installed alpha.16 toolchain provides the compiler and standard library. The project includes everything else it needs.
 
 ## The complete program
 
-Save this as `src/main.panack` inside your project:
+This is `src/main.panack` in the download:
 
 ```panack
 import http/server as http
@@ -140,14 +120,11 @@ The handler returns `Result[Unit,Str]`. Here, `Ok(())` says the handler complete
 
 ## Run it and make a request
 
-From the `status-service` directory, lock the dependency and start the service:
+From the extracted `status-service` directory, start the service:
 
 ```sh
-panack deps lock --project panack.json
 panack run --project panack.json 8082
 ```
-
-The lock command creates `panack.lock.json` beside your manifest. Run it once when setting up this project; subsequent starts only need the `panack run` command.
 
 Leave that terminal running. In another terminal, request the endpoint:
 
