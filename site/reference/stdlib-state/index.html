@@ -20,7 +20,8 @@
 <li class="toc-level-2"><a href="#read">read()</a></li>
 <li class="toc-level-2"><a href="#update">update()</a></li>
 <li class="toc-level-2"><a href="#identity-and-use-in-closures">Identity and use in closures</a></li></ul></nav>
-<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>Share a cell across calls while keeping changes explicit and atomic.</p>
+<article class="capabilities-content http-docs-content"><p><a href="../standard-library/">All standard library modules</a></p><p>State provides a shared container for a value. Functions can read that value or update it safely, even when several async tasks use the same container. This container is called a <strong>cell</strong>.</p>
+<p>For example, several HTTP request handlers can share a cell holding a request count. Each handler can increment the count with <code>update()</code>. Panack coordinates these updates so that two requests cannot overwrite each other&#39;s increment.</p>
 <h2 id="import">Import</h2>
 <pre><code class="language-panack">import stdlib/state as state</code></pre>
 <p>To use the async State API, import:</p>

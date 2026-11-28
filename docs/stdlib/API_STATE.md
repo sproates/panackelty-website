@@ -1,6 +1,12 @@
 # State
 
-Share a cell across calls while keeping changes explicit and atomic.
+State provides a shared container for a value. Functions can read that value or
+update it safely, even when several async tasks use the same container. This
+container is called a **cell**.
+
+For example, several HTTP request handlers can share a cell holding a request
+count. Each handler can increment the count with `update()`. Panack coordinates
+these updates so that two requests cannot overwrite each other's increment.
 
 ## Import
 
