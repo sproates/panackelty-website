@@ -8,11 +8,13 @@ tags:
   - standard library
 ---
 
-A request counter is a fairly simple requirement. Each request adds one, and the next request sees the updated count.
+A request counter is a fairly simple requirement. Each request adds one, and the count needs to survive between calls.
 
 But the counter belongs to the running service, rather than to an individual request. Creating a local variable inside the handler would start the count again on every call. Sharing a changing value introduces another question too: what happens when two calls try to update it?
 
 Panackelty alpha.16 has an explicit State API for this. I wanted shared changes to be easy to express and easy to spot when reading the code.
+
+For a running total inside a loop, I would still use a local mutable variable. State is useful when several calls or tasks need to share changes to the same value. It gives that shared value an identity and controls how reads and updates happen.
 
 ## What is a cell?
 
@@ -28,7 +30,7 @@ The handle and the value are different things. Copying a handle gives another pa
 
 That's why an immutable binding can refer to State. The binding continues to identify the same cell; the value inside that cell can change.
 
-## A complete example, without a closure
+## Share a counter between calls
 
 ```panack
 import stdlib/state as state
@@ -53,33 +55,40 @@ main(): Void {
 }
 ```
 
-This prints `1`, `2`, `0`, then `2`.
+`State[Nat]` is a handle to a cell containing a non-negative integer. It isn't itself the number.
 
-The first two calls update the same cell. `same_count = count` copies the handle, so it doesn't create an independent counter.
+The output is:
 
-`before` is different. It's the number returned by the earlier read, when the cell contained zero. It stays zero after the updates. Reading State doesn't give you a variable that silently changes underneath you.
+```text
+1
+2
+0
+2
+```
 
-The `@increment` expression passes the named function as a value. `increment` is pure: it calculates a replacement without changing anything itself. `record_request` is effectful because `state.update` commits the change.
+The first request returns the updated count, 1. The second uses `same_count`, which is another handle to the same cell, so it returns 2.
 
-## Why not just use a mutable variable?
+The third line prints `before`: the snapshot read when the count was still zero. That number hasn't changed. The final line reads the cell again and gets its current value, 2.
 
-For a running total inside a loop, I would still use a local mutable variable. State would add unnecessary machinery to that job.
+A snapshot is a value you can keep using. It isn't a live view that changes whenever someone updates the cell.
 
-The useful distinction is sharing. If several handlers or tasks need access to the same changing value, the program needs to say how those accesses fit together.
+The `@increment` expression passes the named function as a value. `increment` is pure: it only calculates the next number. `record_request` is effectful because `state.update` commits the change.
 
-Imagine a shared count of 10. Two requests read it, calculate 11, and each writes back 11. There were two requests, but the count only increased once.
+## Keep an update together
 
-`state.update` keeps the read, calculation and replacement together as one operation relative to other accesses to that cell. Each increment uses the current value supplied to its callback. Two completed increments take 10 to 12.
+Sharing a value doesn't by itself make a read-modify-write sequence safe. Imagine a shared count of 10. Two requests read it, calculate 11, and each writes back 11. There were two requests, but the count only increased once.
+
+`state.update` keeps the read, calculation and replacement together as one operation relative to other accesses to that cell. Each increment uses the current value supplied to its callback. Two completed increments take 10 to 12. While the transformation is running, other reads and updates on that cell wait. Other cells and runnable tasks can still make progress.
 
 This is the atomic-update guarantee. It applies to one cell, not to every operation the surrounding function happens to perform.
 
 ## The callback is deliberately restricted
 
-The transformation passed to `update` must be pure. It cannot perform I/O, read the clock, await work, or create, read or update another cell. The callback runs once; the API doesn't retry it behind your back.
+The transformation passed to `update` must be pure. It cannot perform I/O, read the clock, await work, or create, read or update any cell. A completed update runs its transformation once. The API doesn't retry the callback behind your back.
 
-If the calculation needs information from a file or a clock, obtain that information before the update and pass the resulting immutable data into the calculation. Keep the shared value itself inside the update: reading a snapshot first and later using it to replace the current value can still overwrite someone else's intervening change.
+If the calculation needs information from a file or a clock, obtain that information before the update and pass the resulting immutable data into the calculation. For the value being updated, use the callback's parameter. If you read the count beforehand and calculate a replacement from that old snapshot, wrapping the later write in `update` won't make the old snapshot current. It can still overwrite an intervening increment.
 
-These rules also mean an update isn't somewhere to put a network request or a long sequence of work. Its job is to calculate the next value.
+The pure-callback rule keeps external effects out of the transformation. It doesn't make an expensive calculation cheap, so keep the callback short enough that other users of the cell aren't left waiting.
 
 ## Closures can carry the handle
 
@@ -94,7 +103,7 @@ print(next.call())
 
 The closure retains the handle. The change still happens at the explicit `state.update` call inside `record_request`.
 
-Panackelty rejects implicit capture of a mutable variable. I don't want the reader to have to remember that an apparently ordinary variable is actually shared with a function created elsewhere. A State handle gives that relationship a type, and the API names tell you where the contents are read or changed.
+Panackelty rejects implicit capture of a mutable variable. Retaining a State handle makes the sharing explicit without changing the closure's binding. The [closures article](/articles/closures-without-hidden-mutation/) explains that distinction in more detail.
 
 ## The async interface
 
@@ -116,7 +125,7 @@ Both imports use the same `State[T]` type. An async operation waiting for access
 
 State isn't persistent storage. A new run of the program creates new cells. It also doesn't provide a transaction across several cells, or make a cell update atomic with sending an HTTP response.
 
-If an update is cancelled or traps before it commits, the previous value is preserved. Once committed, a later cancellation or failed response doesn't undo it. That's relevant to a request counter: the number can record an increment even when the response never reaches the caller.
+If a task is cancelled while waiting for the cell, its update callback never runs. If an update is cancelled or traps before it commits, the previous value is preserved. Once committed, a later cancellation or failed response doesn't undo it. That's relevant to a request counter: the number can record an increment even when the response never reaches the caller.
 
 Cells hold immutable data, including numbers, text, records and collections. Their contents can't include other cells, callbacks, tasks or native resources. A closure can retain a State handle, but a State cell can't contain that closure.
 
